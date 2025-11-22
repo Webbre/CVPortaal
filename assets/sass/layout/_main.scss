@@ -1,0 +1,21 @@
+
+/* Main */
+
+	#main {
+		@include padding(4em, 0);
+
+		// Small.
+			@include breakpoint('<=small') {
+				@include padding(3em, 0);
+			}
+
+	}
+	
+	#one {
+    header.major {
+        h2 {
+            font-style: italic;
+			font-size: 1.2em;
+        }
+    }
+}
