@@ -12,22 +12,22 @@
 	}
 	
 	#one {
-    // 1. De achtergrondkleur (pas de hex-code aan naar wens)
-    background-color: #5e5e5f; 
-    
-    // 2. De tekstkleur algemeen (wit maken voor contrast)
-    color: #ffffff;            
+    background-color: #e6e6e6; // De lichtgrijze achtergrond
 
     header.major {
         h2 {
             font-style: italic;
             font-size: 1.3em;
-            color: #ffffff !important; // Forceer de kop ook naar wit
+            color: #444444; // Expliciet donkergrijs voor de tekst
         }
     }
-    
-    // 3. Optioneel: Zorg dat de iconen ook wit/licht worden
+
+    // ---- NIEUW STUKJE VOOR DE ICONEN ----
     .icon {
-        color: #ffffff !important;
+        // Dit zorgt dat het icoontje zelf donkergrijs wordt
+        color: #444444 !important; 
+        
+        // Dit zorgt dat het rondje/randje eromheen ook donker wordt
+        border-color: #444444 !important; 
     }
 }
