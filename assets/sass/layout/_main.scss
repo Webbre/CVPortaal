@@ -4,7 +4,7 @@
 	#main {
 		@include padding(4em, 0);
 
-		// Small.
+		
 			@include breakpoint('<=small') {
 				@include padding(3em, 0);
 			}
@@ -12,22 +12,19 @@
 	}
 	
 	#one {
-    background-color: #e6e6e6; // De lichtgrijze achtergrond
+    background-color: #e6e6e6; 
 
     header.major {
         h2 {
             font-style: italic;
             font-size: 1.3em;
-            color: #444444; // Expliciet donkergrijs voor de tekst
+            color: #999999; 
         }
     }
 
-    // ---- NIEUW STUKJE VOOR DE ICONEN ----
     .icon {
-        // Dit zorgt dat het icoontje zelf donkergrijs wordt
-        color: #444444 !important; 
         
-        // Dit zorgt dat het rondje/randje eromheen ook donker wordt
-        border-color: #444444 !important; 
+        color: #999999 !important;          
+        border-color: #999999 !important; 
     }
 }
