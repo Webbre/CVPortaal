@@ -3236,16 +3236,16 @@ body.is-preload #header .image img {
 }
 
 #one {
-  background-color: #5e5e5f;
-  color: #ffffff;
+  background-color: #e6e6e6;
 }
 #one header.major h2 {
   font-style: italic;
   font-size: 1.3em;
-  color: #ffffff !important;
+  color: #999999;
 }
 #one .icon {
-  color: #ffffff !important;
+  color: #999999 !important;
+  border-color: #999999 !important;
 }
 
 /* Footer */
