@@ -2,37 +2,43 @@
 /* Footer */
 
 	#footer {
-		@include color-typography(accent3);
-		@include padding(4.5em, 0);
-		color: _palette(accent3, fg-light);
-		text-align: center;
+        // ---- NIEUWE STIJL (KOPIE VAN HEADER) ----
+        @include color(accent1);
+        background-image: url('images/overlay.png'), url('images/pattern-size1.svg');
+        background-position: top left, center center;
+        background-attachment: fixed, fixed;
+        background-size: auto, cover;
+        // -----------------------------------------
 
-		a {
-			color: inherit;
-		}
+        @include padding(4.5em, 0);
+        text-align: center;
 
-		.copyright {
-			font-size: 0.8em;
-		}
+        a {
+            color: inherit;
+        }
 
-		// Medium.
-			@include breakpoint('<=medium') {
-				@include padding(4em, 4em);
-			}
+        .copyright {
+            font-size: 0.8em;
+        }
 
-		// Small.
-			@include breakpoint('<=small') {
+        // Medium.
+            @include breakpoint('<=medium') {
+                @include padding(4em, 4em);
+            }
 
-				// Landscape.
-					@include orientation(landscape) {
-						@include padding(3em, 3em);
-					}
+        // Small.
+            @include breakpoint('<=small') {
 
-				// Portrait.
-					@include orientation(portrait) {
-						@include padding(3em, 1.5em);
-					}
+                // Landscape.
+                    @include orientation(landscape) {
+                        @include padding(3em, 3em);
+                    }
 
-			}
+                // Portrait.
+                    @include orientation(portrait) {
+                        @include padding(3em, 1.5em);
+                    }
 
-	}
+            }
+
+    }

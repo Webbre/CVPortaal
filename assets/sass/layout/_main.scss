@@ -12,10 +12,22 @@
 	}
 	
 	#one {
+    // 1. De achtergrondkleur (pas de hex-code aan naar wens)
+    background-color: #5e5e5f; 
+    
+    // 2. De tekstkleur algemeen (wit maken voor contrast)
+    color: #ffffff;            
+
     header.major {
         h2 {
             font-style: italic;
-			font-size: 1.2em;
+            font-size: 1.3em;
+            color: #ffffff !important; // Forceer de kop ook naar wit
         }
+    }
+    
+    // 3. Optioneel: Zorg dat de iconen ook wit/licht worden
+    .icon {
+        color: #ffffff !important;
     }
 }
