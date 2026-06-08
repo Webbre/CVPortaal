@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>CVPortaal - Basis Setup</title>
+</head>
+<body>
+    <h1>Welkom bij de ontwikkelomgeving van CVPortaal</h1>
+    <p>Druk op F12 op je toetsenbord, ga naar het tabblad 'Console' en controleer of het opslaan is gelukt.</p>
+
+    <script type="module">
+        // We 'pluggen' onze stekker in de webpagina
+        import { slaGegevensOp } from './databaseService.js';
+
+        // We maken een stukje testdata aan, bijvoorbeeld voor de collectie 'organisaties'
+        const testOrganisatie = {
+            naam: "Test Gemeente",
+            actief: true
+        };
+
+        // We geven alleen de opdracht: sla dit op in de map 'organisaties'. 
+        // De webpagina weet niet of dit naar Firebase of een andere database gaat!
+        slaGegevensOp("organisaties", testOrganisatie);
+    </script>
+</body>
+</html>
