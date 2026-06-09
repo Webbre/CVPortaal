@@ -1,18 +1,17 @@
 <script setup>
 import { ref, watch } from 'vue'
-// We importeren onze database service die we netjes in de src map hebben gezet
 import { slaGegevensOp } from './databaseService.js'
 
-// De reactieve variabelen voor de inwoner
+// 1. Basisgegevens (Strikt volgens jouw originele bronbestanden)
 const voornaam = ref('')
 const achternaam = ref('')
 const adres = ref('')
-const postcode = ref('')
+const postcode = ref('') // "Postcode en Plaats"
 const email = ref('')
 const telefoon = ref('')
 const profieltekst = ref('')
 
-// Logica voor de kleurenkiezer
+// 2. Kleurenkiezer
 const gekozenKleur = ref('#4A90E2')
 const kleuren = [
   '#4A90E2', '#E24A4A', '#2ECC71', '#9B59B6', '#F1C40F',
@@ -23,10 +22,25 @@ function veranderKleur(kleur) {
   gekozenKleur.value = kleur
 }
 
-// DE LIVE DATABASE-KOPPELING:
-// Vue 'kijkt' naar alle veranderingen en slaat deze direct op in Firebase
+// 3. Dynamische Werkervaring
+const werkervaringen = ref([])
+
+function voegWerkervaringToe() {
+  werkervaringen.value.push({
+    functie: '',
+    bedrijf: '',
+    periode: '',
+    omschrijving: ''
+  })
+}
+
+function verwijderWerkervaring(index) {
+  werkervaringen.value.splice(index, 1)
+}
+
+// 4. Database koppeling (Terug naar originele velden)
 watch(
-  [voornaam, achternaam, adres, postcode, email, telefoon, profieltekst, gekozenKleur],
+  [voornaam, achternaam, adres, postcode, email, telefoon, profieltekst, gekozenKleur, werkervaringen],
   () => {
     slaGegevensOp({
       voornaam: voornaam.value,
@@ -36,10 +50,12 @@ watch(
       email: email.value,
       telefoon: telefoon.value,
       profieltekst: profieltekst.value,
-      gekozenKleur: gekozenKleur.value
+      gekozenKleur: gekozenKleur.value,
+      werkervaringen: werkervaringen.value
     })
-    console.log("Gegevens live gesynchroniseerd met Firebase!")
-  }
+    console.log("Gegevens opgeslagen in Firebase (originele indeling)!")
+  },
+  { deep: true } 
 )
 </script>
 
@@ -57,14 +73,9 @@ watch(
 
       <p style="font-size: 13px; font-weight:600; color:#718096; margin-bottom:8px;">Kies je kleur</p>
       <div class="kleur-kiezer">
-          <div
-            v-for="kleur in kleuren"
-            :key="kleur"
-            class="kleur-rondje"
-            :class="{ actief: gekozenKleur === kleur }"
-            :style="{ backgroundColor: kleur }"
-            @click="veranderKleur(kleur)"
-          ></div>
+          <div v-for="kleur in kleuren" :key="kleur" class="kleur-rondje"
+            :class="{ actief: gekozenKleur === kleur }" :style="{ backgroundColor: kleur }"
+            @click="veranderKleur(kleur)"></div>
       </div>
 
       <h2 class="hoofdtitel">Kies je cv onderdelen</h2>
@@ -78,36 +89,59 @@ watch(
       </div>
 
       <h3 class="sectie-titel">Mijn Gegevens</h3>
-      <div class="form-groep">
-          <label>Voornaam</label>
-          <input type="text" v-model="voornaam" placeholder="Bijv. Elin">
-      </div>
-      <div class="form-groep">
-          <label>Achternaam</label>
-          <input type="text" v-model="achternaam" placeholder="Bijv. Baanzicht">
-      </div>
-      <div class="form-groep">
-          <label>Adres</label>
-          <input type="text" v-model="adres" placeholder="Straat en huisnummer">
-      </div>
-      <div class="form-groep">
-          <label>Postcode en Plaats</label>
-          <input type="text" v-model="postcode" placeholder="Bijv. 1234 AB Amsterdam">
-      </div>
-      <div class="form-groep">
-          <label>E-mail</label>
-          <input type="email" v-model="email" placeholder="jouwadres@mail.com">
-      </div>
-      <div class="form-groep">
-          <label>Telefoon</label>
-          <input type="tel" v-model="telefoon" placeholder="06 - 12345678">
+      
+      <div class="form-grid">
+        <div class="form-groep">
+            <label>Voornaam</label>
+            <input type="text" v-model="voornaam" placeholder="Bijv. Elin">
+        </div>
+        <div class="form-groep">
+            <label>Achternaam</label>
+            <input type="text" v-model="achternaam" placeholder="Bijv. Baanzicht">
+        </div>
+
+        <div class="form-groep">
+            <label>Adres</label>
+            <input type="text" v-model="adres" placeholder="Straat en huisnummer">
+        </div>
+        <div class="form-groep">
+            <label>Postcode en Plaats</label>
+            <input type="text" v-model="postcode" placeholder="Bijv. 1234 AB Amsterdam">
+        </div>
+
+        <div class="form-groep">
+            <label>E-mail</label>
+            <input type="email" v-model="email" placeholder="jouwadres@mail.com">
+        </div>
+        <div class="form-groep">
+            <label>Telefoon</label>
+            <input type="tel" v-model="telefoon" placeholder="06 - 12345678">
+        </div>
       </div>
 
       <h3 class="sectie-titel">Dit ben ik</h3>
-      <div class="form-groep">
+      <div class="form-groep" style="margin-bottom: 20px;">
           <label>Vertel iets over jezelf</label>
           <textarea v-model="profieltekst" rows="5" placeholder="Ik ben een enthousiaste werknemer..."></textarea>
       </div>
+
+      <h3 class="sectie-titel">Werkervaring</h3>
+      <div v-for="(werk, index) in werkervaringen" :key="index" class="dynamisch-blok">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <strong style="font-size: 14px; color: #4A90E2;">Ervaring {{ index + 1 }}</strong>
+            <button class="verwijder-knop" @click="verwijderWerkervaring(index)">Verwijderen</button>
+        </div>
+        
+        <div class="form-grid">
+            <div class="form-groep volledige-breedte"><label>Functie</label><input type="text" v-model="werk.functie" placeholder="Bijv. Verkoopmedewerker"></div>
+            <div class="form-groep"><label>Bedrijf of Organisatie</label><input type="text" v-model="werk.bedrijf" placeholder="Bijv. Supermarkt De Boer"></div>
+            <div class="form-groep"><label>Periode</label><input type="text" v-model="werk.periode" placeholder="Bijv. 2020 - Heden"></div>
+            <div class="form-groep volledige-breedte"><label>Korte Omschrijving</label><textarea v-model="werk.omschrijving" rows="3" placeholder="Wat waren je taken?"></textarea></div>
+        </div>
+      </div>
+
+      <button class="toevoeg-knop" @click="voegWerkervaringToe">+ Voeg werkervaring toe</button>
+
     </div>
 
     <div class="rechterkolom">
@@ -115,18 +149,15 @@ watch(
             
             <div class="cv-zijbalk" :style="{ backgroundColor: gekozenKleur }">
                 <div class="cv-profielfoto"></div>
-                
                 <div class="cv-sectie-titel-zijbalk">Mijn Gegevens</div>
                 <div class="cv-tekst-zijbalk">{{ adres || 'Jouw adres' }}</div>
                 <div class="cv-tekst-zijbalk">{{ postcode || 'Postcode & Plaats' }}</div>
-                <div class="cv-tekst-zijbalk">{{ email || 'E-mailadres' }}</div>
+                <div class="cv-tekst-zijbalk" style="margin-top: 12px;">{{ email || 'E-mailadres' }}</div>
                 <div class="cv-tekst-zijbalk">{{ telefoon || 'Telefoonnummer' }}</div>
             </div>
 
             <div class="cv-hoofdkolom">
-                <div class="cv-naam">
-                    {{ voornaam || 'Ewout' }} {{ achternaam }}
-                </div>
+                <div class="cv-naam" style="margin-bottom: 25px;">{{ voornaam || 'Ewout' }} {{ achternaam }}</div>
                 
                 <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Dit ben ik</div>
                 <p style="font-size: 13px; line-height: 1.6; color: #4a5568;">
@@ -134,7 +165,16 @@ watch(
                 </p>
                 
                 <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Werkervaring</div>
-                <p style="font-size: 13px; color: #a0aec0; font-style: italic; margin-bottom: 20px;">Nog geen werkervaring toegevoegd.</p>
+                <div v-if="werkervaringen.length === 0">
+                    <p style="font-size: 13px; color: #a0aec0; font-style: italic; margin-bottom: 20px;">Nog geen werkervaring toegevoegd.</p>
+                </div>
+                <div v-else>
+                    <div v-for="(werk, index) in werkervaringen" :key="index" style="margin-bottom: 20px;">
+                        <div style="font-weight: 700; font-size: 14px; color: #333;">{{ werk.functie || 'Vul functie in' }}</div>
+                        <div style="font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 4px;">{{ werk.bedrijf || 'Bedrijfsnaam' }} | {{ werk.periode || 'Periode' }}</div>
+                        <p style="font-size: 13px; line-height: 1.5; color: #4a5568;">{{ werk.omschrijving }}</p>
+                    </div>
+                </div>
 
                 <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Opleiding, cursus en certificaten</div>
                 <p style="font-size: 13px; color: #a0aec0; font-style: italic;">Nog geen opleiding toegevoegd.</p>
@@ -146,123 +186,53 @@ watch(
 </template>
 
 <style>
-/* 3. Onze vertrouwde CSS is volledig intact gebleven */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-}
-
-body {
-    background-color: #f5f7fb;
-    color: #333;
-}
-
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
+body { background-color: #f5f7fb; color: #333; }
 .container { display: flex; height: 100vh; }
-
-.linkerkolom {
-    width: 50%; padding: 40px; background-color: #ffffff;
-    overflow-y: auto; border-right: 1px solid #e2e8f0;
-}
-
-.rechterkolom {
-    width: 50%; 
-    padding: 40px; 
-    background-color: #DBEAFE; /* Een zachte, lichte ijsblauwe tint voor beter contrast */
-    display: flex; 
-    justify-content: center; 
-    align-items: flex-start; 
-    overflow-y: auto;
-}
-
-.cv-papier {
-    width: 100%; max-width: 210mm; height: 297mm; background-color: white;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 0; overflow: hidden;
-    display: flex; flex-shrink: 0;
-}
-
-.cv-zijbalk {
-    width: 35%; color: white; padding: 40px 25px;
-    transition: background-color 0.3s ease; /* Mooie zachte kleurovergang! */
-}
-
-.cv-hoofdkolom {
-    width: 65%; background-color: white; padding: 40px 35px;
-}
-
-.cv-profielfoto {
-    width: 130px; height: 130px; background-color: #e2e8f0;
-    border-radius: 50%; margin: 0 auto 30px auto; border: 4px solid white;
-}
-
-.cv-sectie-titel-zijbalk {
-    font-size: 13px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase;
-    letter-spacing: 1px; border-bottom: 1px solid rgba(255, 255, 255, 0.3); padding-bottom: 5px;
-}
-
-.cv-sectie-titel-hoofd {
-    font-size: 14px; font-weight: 700; margin-bottom: 10px; margin-top: 25px;
-    text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #edf2f7;
-    padding-bottom: 5px; transition: color 0.3s ease;
-}
-
+.linkerkolom { width: 50%; padding: 40px; background-color: #ffffff; overflow-y: auto; border-right: 1px solid #e2e8f0; }
+.rechterkolom { width: 50%; padding: 40px; background-color: #DBEAFE; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; }
+.cv-papier { width: 100%; max-width: 210mm; height: 297mm; background-color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 0; overflow: hidden; display: flex; flex-shrink: 0; }
+.cv-zijbalk { width: 35%; color: white; padding: 40px 25px; transition: background-color 0.3s ease; }
+.cv-hoofdkolom { width: 65%; background-color: white; padding: 40px 35px; }
+.cv-profielfoto { width: 130px; height: 130px; background-color: #e2e8f0; border-radius: 50%; margin: 0 auto 30px auto; border: 4px solid white; }
+.cv-sectie-titel-zijbalk { font-size: 13px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255, 255, 255, 0.3); padding-bottom: 5px; }
+.cv-sectie-titel-hoofd { font-size: 14px; font-weight: 700; margin-bottom: 10px; margin-top: 25px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #edf2f7; padding-bottom: 5px; transition: color 0.3s ease; }
 .cv-tekst-zijbalk { font-size: 12px; margin-bottom: 12px; line-height: 1.4; }
-
-.cv-naam {
-    font-size: 32px; font-weight: 700; color: #333; margin-bottom: 25px;
-    text-transform: uppercase; letter-spacing: 1px;
-}
-
-.hoofdtitel {
-    font-size: 18px; font-weight: 700; color: #4a5568; text-transform: uppercase;
-    letter-spacing: 0.5px; margin-top: 30px; margin-bottom: 15px;
-}
-
-.sectie-titel {
-    color: #718096; font-size: 14px; font-weight: 600; margin-top: 25px;
-    margin-bottom: 15px; text-transform: uppercase; border-bottom: 2px solid #edf2f7;
-    padding-bottom: 5px;
-}
-
+.cv-naam { font-size: 32px; font-weight: 700; color: #333; text-transform: uppercase; letter-spacing: 1px; }
+.hoofdtitel { font-size: 18px; font-weight: 700; color: #4a5568; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 30px; margin-bottom: 15px; }
+.sectie-titel { color: #718096; font-size: 14px; font-weight: 600; margin-top: 25px; margin-bottom: 15px; text-transform: uppercase; border-bottom: 2px solid #edf2f7; padding-bottom: 5px; }
 .varianten-grid { display: flex; gap: 15px; margin-bottom: 20px; }
-.variant-kaart {
-    flex: 1; border: 2px solid #edf2f7; border-radius: 6px; padding: 15px;
-    text-align: center; cursor: pointer; font-size: 12px; font-weight: 600;
-    color: #a0aec0; background-color: #fafbfe;
-}
+.variant-kaart { flex: 1; border: 2px solid #edf2f7; border-radius: 6px; padding: 15px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600; color: #a0aec0; background-color: #fafbfe; }
 .variant-kaart.actief { border-color: #4A90E2; color: #4A90E2; background-color: #ffffff; }
-
 .kleur-kiezer { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
-.kleur-rondje {
-    width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
-    border: 2px solid transparent; transition: transform 0.1s ease;
-}
+.kleur-rondje { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.1s ease; }
 .kleur-rondje:hover { transform: scale(1.1); }
 .kleur-rondje.actief { border-color: #333; }
-
-.onderdelen-grid {
-    display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px;
-    border-bottom: 2px solid #edf2f7; padding-bottom: 25px;
-}
-.onderdeel-knop {
-    background-color: #4A90E2; color: white; border: none; padding: 10px 18px;
-    border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer;
-    transition: background-color 0.2s;
-}
+.onderdelen-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #edf2f7; padding-bottom: 25px; }
+.onderdeel-knop { background-color: #4A90E2; color: white; border: none; padding: 10px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
 .onderdeel-knop:hover { background-color: #357ABD; }
 
-.form-groep { margin-bottom: 20px; }
+/* CSS Grid voor de formulieren */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Twee gelijke kolommen */
+    gap: 15px; /* Ruimte tussen de velden */
+    margin-bottom: 15px;
+}
+.volledige-breedte {
+    grid-column: span 2; /* Dit veld pakt de hele breedte */
+}
 .form-groep label { display: block; margin-bottom: 8px; color: #4a5568; font-size: 13px; font-weight: 600; }
-.form-groep input, .form-groep textarea {
-    width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px;
-    font-size: 14px; background-color: #f8fafc; transition: border-color 0.2s, background-color 0.2s;
-}
-.form-groep input:focus, .form-groep textarea:focus {
-    outline: none; border-color: #4A90E2; background-color: #ffffff;
-}
+.form-groep input, .form-groep textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background-color: #f8fafc; transition: border-color 0.2s, background-color 0.2s; }
+.form-groep input:focus, .form-groep textarea:focus { outline: none; border-color: #4A90E2; background-color: #ffffff; }
+
+.dynamisch-blok { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+.toevoeg-knop { background-color: transparent; color: #4A90E2; border: 2px dashed #4A90E2; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 30px; transition: all 0.2s; }
+.toevoeg-knop:hover { background-color: #eff6ff; }
+.verwijder-knop { background-color: transparent; color: #e53e3e; border: none; font-size: 12px; font-weight: 600; cursor: pointer; }
+.verwijder-knop:hover { text-decoration: underline; }
 
 @media (max-width: 1024px) {
     .container { flex-direction: column; height: auto; }
@@ -272,5 +242,7 @@ body {
 @media (max-width: 600px) {
     .cv-papier { flex-direction: column; height: auto; }
     .cv-zijbalk, .cv-hoofdkolom { width: 100%; padding: 20px; }
+    .form-grid { grid-template-columns: 1fr; } /* Op mobiel zetten we de velden weer onder elkaar! */
+    .volledige-breedte { grid-column: span 1; }
 }
 </style>
