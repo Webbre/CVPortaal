@@ -2,14 +2,31 @@
 import { ref, watch } from 'vue'
 import { slaGegevensOp } from './databaseService.js'
 
-// 1. Basisgegevens (Strikt volgens jouw originele bronbestanden)
+// 1. Basisgegevens
 const voornaam = ref('')
 const achternaam = ref('')
 const adres = ref('')
-const postcode = ref('') // "Postcode en Plaats"
+const postcode = ref('')
 const email = ref('')
 const telefoon = ref('')
 const profieltekst = ref('')
+
+// NIEUW: Vervoer en Profielfoto
+const heeftRijbewijs = ref(false)
+const heeftAuto = ref(false)
+const profielfoto = ref(null)
+
+// Functie om de gekozen foto in te laden
+function verwerkFoto(event) {
+  const file = event.target.files[0]
+  if (file) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      profielfoto.value = e.target.result // Slaat de foto tijdelijk op als een bruikbare link
+    }
+    reader.readAsDataURL(file)
+  }
+}
 
 // 2. Kleurenkiezer
 const gekozenKleur = ref('#4A90E2')
@@ -27,10 +44,7 @@ const werkervaringen = ref([])
 
 function voegWerkervaringToe() {
   werkervaringen.value.push({
-    functie: '',
-    bedrijf: '',
-    periode: '',
-    omschrijving: ''
+    functie: '', bedrijf: '', periode: '', omschrijving: ''
   })
 }
 
@@ -38,9 +52,9 @@ function verwijderWerkervaring(index) {
   werkervaringen.value.splice(index, 1)
 }
 
-// 4. Database koppeling (Terug naar originele velden)
+// 4. Database koppeling (Nu inclusief rijbewijs, auto en foto)
 watch(
-  [voornaam, achternaam, adres, postcode, email, telefoon, profieltekst, gekozenKleur, werkervaringen],
+  [voornaam, achternaam, adres, postcode, email, telefoon, profieltekst, gekozenKleur, werkervaringen, heeftRijbewijs, heeftAuto, profielfoto],
   () => {
     slaGegevensOp({
       voornaam: voornaam.value,
@@ -49,11 +63,14 @@ watch(
       postcode: postcode.value,
       email: email.value,
       telefoon: telefoon.value,
+      heeftRijbewijs: heeftRijbewijs.value,
+      heeftAuto: heeftAuto.value,
+      profielfoto: profielfoto.value, // Let op: Base64 foto's kunnen groot zijn voor een database, voor nu prima als test!
       profieltekst: profieltekst.value,
       gekozenKleur: gekozenKleur.value,
       werkervaringen: werkervaringen.value
     })
-    console.log("Gegevens opgeslagen in Firebase (originele indeling)!")
+    console.log("Gegevens opgeslagen, inclusief foto en vervoer!")
   },
   { deep: true } 
 )
@@ -91,32 +108,37 @@ watch(
       <h3 class="sectie-titel">Mijn Gegevens</h3>
       
       <div class="form-grid">
+        <div class="form-groep"><label>Voornaam</label><input type="text" v-model="voornaam" placeholder="Bijv. Elin"></div>
+        <div class="form-groep"><label>Achternaam</label><input type="text" v-model="achternaam" placeholder="Bijv. Baanzicht"></div>
+        <div class="form-groep"><label>Adres</label><input type="text" v-model="adres" placeholder="Straat en huisnummer"></div>
+        <div class="form-groep"><label>Postcode en Plaats</label><input type="text" v-model="postcode" placeholder="Bijv. 1234 AB Amsterdam"></div>
+        <div class="form-groep"><label>E-mail</label><input type="email" v-model="email" placeholder="jouwadres@mail.com"></div>
+        <div class="form-groep"><label>Telefoon</label><input type="tel" v-model="telefoon" placeholder="06 - 12345678"></div>
+        
         <div class="form-groep">
-            <label>Voornaam</label>
-            <input type="text" v-model="voornaam" placeholder="Bijv. Elin">
-        </div>
-        <div class="form-groep">
-            <label>Achternaam</label>
-            <input type="text" v-model="achternaam" placeholder="Bijv. Baanzicht">
+            <label>Vervoer</label>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 5px;">
+                <label class="checkbox-label">
+                    <input type="checkbox" v-model="heeftRijbewijs"> Ik heb een rijbewijs
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" v-model="heeftAuto"> Ik heb een eigen auto
+                </label>
+            </div>
         </div>
 
         <div class="form-groep">
-            <label>Adres</label>
-            <input type="text" v-model="adres" placeholder="Straat en huisnummer">
-        </div>
-        <div class="form-groep">
-            <label>Postcode en Plaats</label>
-            <input type="text" v-model="postcode" placeholder="Bijv. 1234 AB Amsterdam">
+            <label>Profielfoto</label>
+            <div class="foto-upload-container">
+                <div class="foto-preview" :style="{ backgroundImage: profielfoto ? `url(${profielfoto})` : '' }"></div>
+                
+                <label class="foto-upload-knop">
+                    + Foto toevoegen
+                    <input type="file" accept="image/*" @change="verwerkFoto" style="display: none;">
+                </label>
+            </div>
         </div>
 
-        <div class="form-groep">
-            <label>E-mail</label>
-            <input type="email" v-model="email" placeholder="jouwadres@mail.com">
-        </div>
-        <div class="form-groep">
-            <label>Telefoon</label>
-            <input type="tel" v-model="telefoon" placeholder="06 - 12345678">
-        </div>
       </div>
 
       <h3 class="sectie-titel">Dit ben ik</h3>
@@ -131,7 +153,6 @@ watch(
             <strong style="font-size: 14px; color: #4A90E2;">Ervaring {{ index + 1 }}</strong>
             <button class="verwijder-knop" @click="verwijderWerkervaring(index)">Verwijderen</button>
         </div>
-        
         <div class="form-grid">
             <div class="form-groep volledige-breedte"><label>Functie</label><input type="text" v-model="werk.functie" placeholder="Bijv. Verkoopmedewerker"></div>
             <div class="form-groep"><label>Bedrijf of Organisatie</label><input type="text" v-model="werk.bedrijf" placeholder="Bijv. Supermarkt De Boer"></div>
@@ -148,12 +169,18 @@ watch(
         <div class="cv-papier">
             
             <div class="cv-zijbalk" :style="{ backgroundColor: gekozenKleur }">
-                <div class="cv-profielfoto"></div>
+                <div class="cv-profielfoto" :style="{ backgroundImage: profielfoto ? `url(${profielfoto})` : '', backgroundSize: 'cover', backgroundPosition: 'center' }"></div>
+                
                 <div class="cv-sectie-titel-zijbalk">Mijn Gegevens</div>
                 <div class="cv-tekst-zijbalk">{{ adres || 'Jouw adres' }}</div>
                 <div class="cv-tekst-zijbalk">{{ postcode || 'Postcode & Plaats' }}</div>
                 <div class="cv-tekst-zijbalk" style="margin-top: 12px;">{{ email || 'E-mailadres' }}</div>
                 <div class="cv-tekst-zijbalk">{{ telefoon || 'Telefoonnummer' }}</div>
+
+                <div v-if="heeftRijbewijs || heeftAuto" style="margin-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.3); padding-top: 15px;">
+                    <div class="cv-tekst-zijbalk" v-if="heeftRijbewijs" style="font-weight: 600;">✓ Rijbewijs B</div>
+                    <div class="cv-tekst-zijbalk" v-if="heeftAuto" style="font-weight: 600;">✓ In bezit van auto</div>
+                </div>
             </div>
 
             <div class="cv-hoofdkolom">
@@ -196,7 +223,10 @@ body { background-color: #f5f7fb; color: #333; }
 .cv-papier { width: 100%; max-width: 210mm; height: 297mm; background-color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 0; overflow: hidden; display: flex; flex-shrink: 0; }
 .cv-zijbalk { width: 35%; color: white; padding: 40px 25px; transition: background-color 0.3s ease; }
 .cv-hoofdkolom { width: 65%; background-color: white; padding: 40px 35px; }
-.cv-profielfoto { width: 130px; height: 130px; background-color: #e2e8f0; border-radius: 50%; margin: 0 auto 30px auto; border: 4px solid white; }
+
+/* Aangepast: Een lichte schaduw voor de foto is mooi als we er een afbeelding in laden */
+.cv-profielfoto { width: 130px; height: 130px; background-color: #e2e8f0; border-radius: 50%; margin: 0 auto 30px auto; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
 .cv-sectie-titel-zijbalk { font-size: 13px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255, 255, 255, 0.3); padding-bottom: 5px; }
 .cv-sectie-titel-hoofd { font-size: 14px; font-weight: 700; margin-bottom: 10px; margin-top: 25px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #edf2f7; padding-bottom: 5px; transition: color 0.3s ease; }
 .cv-tekst-zijbalk { font-size: 12px; margin-bottom: 12px; line-height: 1.4; }
@@ -214,19 +244,30 @@ body { background-color: #f5f7fb; color: #333; }
 .onderdeel-knop { background-color: #4A90E2; color: white; border: none; padding: 10px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
 .onderdeel-knop:hover { background-color: #357ABD; }
 
-/* CSS Grid voor de formulieren */
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Twee gelijke kolommen */
-    gap: 15px; /* Ruimte tussen de velden */
-    margin-bottom: 15px;
-}
-.volledige-breedte {
-    grid-column: span 2; /* Dit veld pakt de hele breedte */
-}
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+.volledige-breedte { grid-column: span 2; }
 .form-groep label { display: block; margin-bottom: 8px; color: #4a5568; font-size: 13px; font-weight: 600; }
-.form-groep input, .form-groep textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background-color: #f8fafc; transition: border-color 0.2s, background-color 0.2s; }
+.form-groep input[type="text"], .form-groep input[type="email"], .form-groep input[type="tel"], .form-groep textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background-color: #f8fafc; transition: border-color 0.2s, background-color 0.2s; }
 .form-groep input:focus, .form-groep textarea:focus { outline: none; border-color: #4A90E2; background-color: #ffffff; }
+
+/* NIEUW: Opmaak voor Checkboxes */
+.checkbox-label {
+    display: flex; align-items: center; gap: 8px; font-size: 14px; color: #4a5568; font-weight: 400; cursor: pointer;
+}
+.checkbox-label input[type="checkbox"] {
+    width: 18px; height: 18px; cursor: pointer; accent-color: #4A90E2;
+}
+
+/* NIEUW: Opmaak voor Foto Upload */
+.foto-upload-container { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.foto-preview {
+    width: 80px; height: 80px; border-radius: 50%; background-color: #edf2f7;
+    border: 2px dashed #cbd5e0; background-size: cover; background-position: center;
+}
+.foto-upload-knop {
+    color: #4A90E2; font-size: 13px; font-weight: 600; cursor: pointer; transition: color 0.2s;
+}
+.foto-upload-knop:hover { color: #2b6cb0; text-decoration: underline; }
 
 .dynamisch-blok { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
 .toevoeg-knop { background-color: transparent; color: #4A90E2; border: 2px dashed #4A90E2; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 30px; transition: all 0.2s; }
@@ -242,7 +283,7 @@ body { background-color: #f5f7fb; color: #333; }
 @media (max-width: 600px) {
     .cv-papier { flex-direction: column; height: auto; }
     .cv-zijbalk, .cv-hoofdkolom { width: 100%; padding: 20px; }
-    .form-grid { grid-template-columns: 1fr; } /* Op mobiel zetten we de velden weer onder elkaar! */
+    .form-grid { grid-template-columns: 1fr; } 
     .volledige-breedte { grid-column: span 1; }
 }
 </style>
