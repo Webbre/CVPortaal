@@ -1,8 +1,9 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+// We importeren onze database service die we netjes in de src map hebben gezet
+import { slaGegevensOp } from './databaseService.js'
 
-// 1. We maken 'reactieve' variabelen aan. 
-// Wat de gebruiker hier typt, wordt direct door Vue opgevangen!
+// De reactieve variabelen voor de inwoner
 const voornaam = ref('')
 const achternaam = ref('')
 const adres = ref('')
@@ -11,17 +12,35 @@ const email = ref('')
 const telefoon = ref('')
 const profieltekst = ref('')
 
-// 2. Logica voor de kleurenkiezer
-const gekozenKleur = ref('#4A90E2') // Standaard blauw
+// Logica voor de kleurenkiezer
+const gekozenKleur = ref('#4A90E2')
 const kleuren = [
   '#4A90E2', '#E24A4A', '#2ECC71', '#9B59B6', '#F1C40F',
   '#E67E22', '#FF85A2', '#1ABC9C', '#34495E'
 ]
 
-// Deze functie past de kleur aan als we op een rondje klikken
 function veranderKleur(kleur) {
   gekozenKleur.value = kleur
 }
+
+// DE LIVE DATABASE-KOPPELING:
+// Vue 'kijkt' naar alle veranderingen en slaat deze direct op in Firebase
+watch(
+  [voornaam, achternaam, adres, postcode, email, telefoon, profieltekst, gekozenKleur],
+  () => {
+    slaGegevensOp({
+      voornaam: voornaam.value,
+      achternaam: achternaam.value,
+      adres: adres.value,
+      postcode: postcode.value,
+      email: email.value,
+      telefoon: telefoon.value,
+      profieltekst: profieltekst.value,
+      gekozenKleur: gekozenKleur.value
+    })
+    console.log("Gegevens live gesynchroniseerd met Firebase!")
+  }
+)
 </script>
 
 <template>
