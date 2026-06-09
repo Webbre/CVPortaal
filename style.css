@@ -245,3 +245,37 @@ body {
     border-color: #4A90E2;
     background-color: #ffffff;
 }
+
+/* Responsive design: Voor schermen kleiner dan een tablet (bijv. 1024px breed) */
+@media (max-width: 1024px) {
+    /* Zet de hoofdkolommen onder elkaar in plaats van naast elkaar */
+    .container {
+        flex-direction: column; 
+        height: auto;
+    }
+
+    /* Laat beide kolommen de volle breedte van het scherm innemen */
+    .linkerkolom, .rechterkolom {
+        width: 100%; 
+        padding: 20px;
+    }
+
+    /* Pas de hoogte van de rechterkolom aan zodat je er doorheen kunt scrollen */
+    .rechterkolom {
+        overflow-y: visible;
+    }
+}
+
+/* Responsive design: Voor hele kleine telefoonschermen (bijv. 600px breed) */
+@media (max-width: 600px) {
+    /* Binnen het A4'tje zelf: zet de donkere zijbalk en de witte hoofdkolom ook onder elkaar */
+    .cv-papier {
+        flex-direction: column;
+        height: auto; /* Laat de vaste A4 hoogte los op telefoons */
+    }
+
+    .cv-zijbalk, .cv-hoofdkolom {
+        width: 100%;
+        padding: 20px;
+    }
+}
