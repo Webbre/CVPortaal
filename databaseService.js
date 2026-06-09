@@ -5,12 +5,12 @@ import { getFirestore, collection, addDoc } from "https://www.gstatic.com/fireba
 
 // Vervang dit blokje later met jouw eigen unieke sleutels uit het Firebase dashboard
 const firebaseConfig = {
-    apiKey: "JOUW_API_KEY",
-    authDomain: "jouw-project.firebaseapp.com",
-    projectId: "jouw-project-id",
-    storageBucket: "jouw-project.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "JOUW_APP_ID"
+  apiKey: "AIzaSyCq7wkccap6BpPFRXzF6rr1BckKM4czSQA",
+  authDomain: "cvportaal-ae317.firebaseapp.com",
+  projectId: "cvportaal-ae317",
+  storageBucket: "cvportaal-ae317.firebasestorage.app",
+  messagingSenderId: "1031290268222",
+  appId: "1:1031290268222:web:166f3243ac6340991bbf6f"
 };
 
 // We starten de databaseverbinding (de 'motor')
