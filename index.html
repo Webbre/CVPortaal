@@ -51,18 +51,28 @@
 
         <div class="rechterkolom">
             <div class="cv-papier">
-                <h2>Ewout</h2>
-                <hr>
-                <br>
-                <p>Dit is de weergave van het cv. Straks vullen we dit automatisch in met de data uit de linkerkolom.</p>
+                <h2><span id="weergave-voornaam">Ewout</span> <span id="weergave-achternaam"></span></h2>
+                <p>
+                    <small>
+                        <span id="weergave-adres">Jouw adres</span> | 
+                        <span id="weergave-postcode">Postcode & Plaats</span> | 
+                        <span id="weergave-email">E-mailadres</span> | 
+                        <span id="weergave-telefoon">Telefoonnummer</span>
+                    </small>
+                </p>
+                <hr style="margin: 15px 0;">
+                
+                <h4 style="color: #4A90E2; margin-bottom: 5px;">PROFIEL</h4>
+                <p id="weergave-profieltekst" style="font-size: 14px; line-height: 1.5;">
+                    Hier verschijnt straks automatisch jouw profieltekst...
+                </p>
             </div>
         </div>
-    </div>
 
     <script type="module">
         import { slaGegevensOp } from './databaseService.js';
         console.log("De interface is geladen met style.css en de database service staat klaar.");
     </script>
-
+    <script src="script.js"></script>
 </body>
 </html>
