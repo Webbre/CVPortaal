@@ -1,0 +1,73 @@
+/* style.css */
+
+/* Basis reset voor een strakke weergave zonder ongewenste marges */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* De hoofdcontainer die het hele scherm vult en in tweeën deelt */
+.container {
+    display: flex;
+    height: 100vh; /* 100% van de schermhoogte */
+}
+
+/* De linkerkant voor de invoervelden en knoppen */
+.linkerkolom {
+    width: 50%;
+    padding: 30px;
+    background-color: #ffffff;
+    overflow-y: auto; /* Zorgt voor een scrollbalk als het formulier lang wordt */
+}
+
+/* De rechterkant voor de blauwe achtergrond en de cv-weergave */
+.rechterkolom {
+    width: 50%;
+    padding: 40px;
+    background-color: #4A90E2; /* De kenmerkende blauwe kleur van CVPortaal */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Het witte A4-tje (het cv zelf) in de rechterkolom */
+.cv-papier {
+    width: 100%;
+    max-width: 210mm; /* Standaard A4 breedte */
+    height: 297mm; /* Standaard A4 hoogte */
+    background-color: white;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    padding: 40px;
+    overflow: hidden; /* Houdt de inhoud netjes binnen het papier */
+}
+
+/* Opmaak voor de formuliervelden uit de screenshots */
+.sectie-titel {
+    color: #888;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+}
+
+.form-groep {
+    margin-bottom: 15px;
+}
+
+.form-groep label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+    font-size: 14px;
+}
+
+.form-groep input, .form-groep textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
