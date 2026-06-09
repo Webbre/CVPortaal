@@ -52,7 +52,7 @@ function verwijderWerkervaring(index) {
   werkervaringen.value.splice(index, 1)
 }
 
-// 4. Database koppeling (Nu inclusief rijbewijs, auto en foto)
+// 4. Database koppeling 
 watch(
   [voornaam, achternaam, adres, postcode, email, telefoon, profieltekst, gekozenKleur, werkervaringen, heeftRijbewijs, heeftAuto, profielfoto],
   () => {
@@ -70,7 +70,7 @@ watch(
       gekozenKleur: gekozenKleur.value,
       werkervaringen: werkervaringen.value
     })
-    console.log("Gegevens opgeslagen, inclusief foto en vervoer!")
+    console.log("Gegevens opgeslagen, inclusief visueel gecorrigeerde checkboxes!")
   },
   { deep: true } 
 )
@@ -220,12 +220,10 @@ watch(
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 
-/* GLOBALE FIX: * { text-align: center; } verwijderd! Dit loste het CV probleem op. */
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
 body { background-color: #f5f7fb; color: #333; }
 .container { display: flex; height: 100vh; }
 
-/* INVOER - Linker kolom */
 .linkerkolom { width: 50%; padding: 40px; background-color: #ffffff; overflow-y: auto; border-right: 1px solid #e2e8f0; }
 
 .hoofdtitel { font-size: 18px; font-weight: 700; color: #4a5568; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 30px; margin-bottom: 15px; }
@@ -250,15 +248,30 @@ body { background-color: #f5f7fb; color: #333; }
 .form-groep input[type="text"], .form-groep input[type="email"], .form-groep input[type="tel"], .form-groep textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background-color: #f8fafc; transition: border-color 0.2s, background-color 0.2s; }
 .form-groep input:focus, .form-groep textarea:focus { outline: none; border-color: #4A90E2; background-color: #ffffff; }
 
-/* FIX: Checkbox en Tekst perfect uitgelijnd via flexbox */
+/* FIX: Klassieke, bulletproof checkbox uitlijning zonder flexbox fratsen */
 .checkbox-label {
-    display: flex; align-items: center; gap: 10px; font-size: 14px; color: #4a5568; font-weight: 400; cursor: pointer;
+    display: block; 
+    font-size: 14px; 
+    color: #4a5568; 
+    font-weight: 400; 
+    cursor: pointer; 
+    line-height: 18px; /* Geforceerd op dezelfde hoogte als het vinkje */
 }
 .checkbox-label input[type="checkbox"] {
-    width: 18px; height: 18px; cursor: pointer; accent-color: #4A90E2; margin: 0; padding: 0;
+    width: 18px; 
+    height: 18px; 
+    cursor: pointer; 
+    accent-color: #4A90E2; 
+    margin: 0 10px 0 0; /* Alleen ruimte aan de rechterkant */
+    padding: 0; 
+    vertical-align: middle; 
+    position: relative; 
+    top: -2px; /* De optische pixel-correctie voor het 'Inter' lettertype */
+}
+.checkbox-label span {
+    vertical-align: middle;
 }
 
-/* FOTO UPLOAD - Avatar groter gemaakt (110px circle, 100px SVG) */
 .foto-upload-container { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
 .foto-preview {
     width: 110px; height: 110px; border-radius: 50%; background-color: #f8fafc;
@@ -289,7 +302,6 @@ body { background-color: #f5f7fb; color: #333; }
 .cv-sectie-titel-zijbalk { font-size: 13px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255, 255, 255, 0.3); padding-bottom: 5px; }
 .cv-sectie-titel-hoofd { font-size: 14px; font-weight: 700; margin-bottom: 10px; margin-top: 25px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #edf2f7; padding-bottom: 5px; transition: color 0.3s ease; }
 .cv-tekst-zijbalk { font-size: 12px; margin-bottom: 12px; line-height: 1.4; }
-/* CV Naam: Specifiek gecentreerd */
 .cv-naam { font-size: 32px; font-weight: 700; color: #333; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
 
 
@@ -301,7 +313,6 @@ body { background-color: #f5f7fb; color: #333; }
 }
 @media (max-width: 600px) {
     .cv-papier { flex-direction: column; height: auto; }
-    /* FIX: In mobile view, center sidebar elements, but main column remains left-aligned */
     .cv-zijbalk { width: 100%; padding: 20px; text-align: center; }
     .cv-hoofdkolom { width: 100%; padding: 20px; text-align: left; }
     
