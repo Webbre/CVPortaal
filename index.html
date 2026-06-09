@@ -3,62 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <title>CVPortaal - Generator</title>
-    <style>
-        /* Basis reset voor een strakke weergave zonder ongewenste marges */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        /* De hoofdcontainer die het hele scherm vult en in tweeën deelt */
-        .container {
-            display: flex;
-            height: 100vh; /* 100% van de schermhoogte */
-        }
-
-        /* De linkerkant voor de invoervelden en knoppen */
-        .linkerkolom {
-            width: 50%;
-            padding: 30px;
-            background-color: #ffffff;
-            overflow-y: auto; /* Zorgt voor een scrollbalk als het formulier lang wordt */
-        }
-
-        /* De rechterkant voor de blauwe achtergrond en de cv-weergave */
-        .rechterkolom {
-            width: 50%;
-            padding: 40px;
-            background-color: #4A90E2; /* De kenmerkende blauwe kleur */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Het witte A4-tje (het cv zelf) in de rechterkolom */
-        .cv-papier {
-            width: 100%;
-            max-width: 210mm; /* Standaard A4 breedte */
-            height: 297mm; /* Standaard A4 hoogte */
-            background-color: white;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            padding: 40px;
-            overflow: hidden; /* Houdt de inhoud netjes binnen het papier */
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div class="container">
-        <!-- Linkerkant: Hier programmeren we later het invoerformulier -->
         <div class="linkerkolom">
-            <h2>Kies je cv variant</h2>
-            <br>
-            <p>Hier komen de invulvelden voor de persoonsgegevens, werkervaring en opleidingen.</p>
+            <h3 class="sectie-titel">Mijn Gegevens</h3>
+            
+            <div class="form-groep">
+                <label for="voornaam">Voornaam</label>
+                <input type="text" id="voornaam" placeholder="Bijv. Elin">
+            </div>
+
+            <div class="form-groep">
+                <label for="achternaam">Achternaam</label>
+                <input type="text" id="achternaam" placeholder="Bijv. Baanzicht">
+            </div>
+
+            <div class="form-groep">
+                <label for="adres">Adres</label>
+                <input type="text" id="adres" placeholder="Straat en huisnummer">
+            </div>
+
+            <div class="form-groep">
+                <label for="postcode">Postcode en Plaats</label>
+                <input type="text" id="postcode" placeholder="Bijv. 1234 AB Amsterdam">
+            </div>
+
+            <div class="form-groep">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" placeholder="jouwadres@mail.com">
+            </div>
+
+            <div class="form-groep">
+                <label for="telefoon">Telefoon</label>
+                <input type="tel" id="telefoon" placeholder="06 - 12345678">
+            </div>
+
+            <h3 class="sectie-titel">Dit ben ik</h3>
+
+            <div class="form-groep">
+                <label for="profieltekst">Vertel iets over jezelf</label>
+                <textarea id="profieltekst" rows="5" placeholder="Ik ben een enthousiaste werknemer..."></textarea>
+            </div>
         </div>
 
-        <!-- Rechterkant: Hier komt de live weergave van het cv -->
         <div class="rechterkolom">
             <div class="cv-papier">
                 <h2>Ewout</h2>
@@ -69,10 +59,9 @@
         </div>
     </div>
 
-    <!-- Onze database koppeling blijft onzichtbaar op de achtergrond meedraaien -->
     <script type="module">
         import { slaGegevensOp } from './databaseService.js';
-        console.log("De interface is geladen en de database service staat klaar.");
+        console.log("De interface is geladen met style.css en de database service staat klaar.");
     </script>
 
 </body>
