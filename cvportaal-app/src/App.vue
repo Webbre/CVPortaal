@@ -22,7 +22,7 @@ function verwerkFoto(event) {
   if (file) {
     const reader = new FileReader()
     reader.onload = (e) => {
-      profielfoto.value = e.target.result
+      profielfoto.value = e.target.result // Slaat de foto tijdelijk op als een bruikbare link
     }
     reader.readAsDataURL(file)
   }
@@ -52,7 +52,7 @@ function verwijderWerkervaring(index) {
   werkervaringen.value.splice(index, 1)
 }
 
-// 4. Database koppeling
+// 4. Database koppeling (Nu inclusief rijbewijs, auto en foto)
 watch(
   [voornaam, achternaam, adres, postcode, email, telefoon, profieltekst, gekozenKleur, werkervaringen, heeftRijbewijs, heeftAuto, profielfoto],
   () => {
@@ -65,12 +65,12 @@ watch(
       telefoon: telefoon.value,
       heeftRijbewijs: heeftRijbewijs.value,
       heeftAuto: heeftAuto.value,
-      profielfoto: profielfoto.value,
+      profielfoto: profielfoto.value, 
       profieltekst: profieltekst.value,
       gekozenKleur: gekozenKleur.value,
       werkervaringen: werkervaringen.value
     })
-    console.log("Gegevens opgeslagen, inclusief grotere foto en strakke checkboxes!")
+    console.log("Gegevens opgeslagen, inclusief foto en vervoer!")
   },
   { deep: true } 
 )
@@ -118,7 +118,7 @@ watch(
         <div class="form-groep">
             <div class="foto-upload-container">
                 <div class="foto-preview" :style="{ backgroundImage: profielfoto ? `url(${profielfoto})` : '' }">
-                    <svg v-if="!profielfoto" viewBox="0 0 24 24" fill="#cbd5e0" width="60" height="60">
+                    <svg v-if="!profielfoto" viewBox="0 0 24 24" fill="#cbd5e0" width="100" height="100">
                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                     </svg>
                 </div>
@@ -220,41 +220,37 @@ watch(
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 
+/* GLOBALE FIX: * { text-align: center; } verwijderd! Dit loste het CV probleem op. */
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
 body { background-color: #f5f7fb; color: #333; }
 .container { display: flex; height: 100vh; }
+
+/* INVOER - Linker kolom */
 .linkerkolom { width: 50%; padding: 40px; background-color: #ffffff; overflow-y: auto; border-right: 1px solid #e2e8f0; }
-.rechterkolom { width: 50%; padding: 40px; background-color: #DBEAFE; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; }
-.cv-papier { width: 100%; max-width: 210mm; height: 297mm; background-color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 0; overflow: hidden; display: flex; flex-shrink: 0; }
-.cv-zijbalk { width: 35%; color: white; padding: 40px 25px; transition: background-color 0.3s ease; }
-.cv-hoofdkolom { width: 65%; background-color: white; padding: 40px 35px; }
 
-.cv-profielfoto { width: 130px; height: 130px; background-color: #e2e8f0; border-radius: 50%; margin: 0 auto 30px auto; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-
-.cv-sectie-titel-zijbalk { font-size: 13px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255, 255, 255, 0.3); padding-bottom: 5px; }
-.cv-sectie-titel-hoofd { font-size: 14px; font-weight: 700; margin-bottom: 10px; margin-top: 25px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #edf2f7; padding-bottom: 5px; transition: color 0.3s ease; }
-.cv-tekst-zijbalk { font-size: 12px; margin-bottom: 12px; line-height: 1.4; }
-.cv-naam { font-size: 32px; font-weight: 700; color: #333; text-transform: uppercase; letter-spacing: 1px; }
 .hoofdtitel { font-size: 18px; font-weight: 700; color: #4a5568; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 30px; margin-bottom: 15px; }
 .sectie-titel { color: #718096; font-size: 14px; font-weight: 600; margin-top: 25px; margin-bottom: 15px; text-transform: uppercase; border-bottom: 2px solid #edf2f7; padding-bottom: 5px; }
+
 .varianten-grid { display: flex; gap: 15px; margin-bottom: 20px; }
 .variant-kaart { flex: 1; border: 2px solid #edf2f7; border-radius: 6px; padding: 15px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600; color: #a0aec0; background-color: #fafbfe; }
 .variant-kaart.actief { border-color: #4A90E2; color: #4A90E2; background-color: #ffffff; }
-.kleur-kiezer { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+
+.kleur-kiezer { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; text-align: center; }
 .kleur-rondje { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.1s ease; }
 .kleur-rondje:hover { transform: scale(1.1); }
 .kleur-rondje.actief { border-color: #333; }
+
 .onderdelen-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #edf2f7; padding-bottom: 25px; }
 .onderdeel-knop { background-color: #4A90E2; color: white; border: none; padding: 10px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
 .onderdeel-knop:hover { background-color: #357ABD; }
 
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
 .volledige-breedte { grid-column: span 2; }
-.form-groep label { display: block; margin-bottom: 8px; color: #4a5568; font-size: 13px; font-weight: 600; }
+.form-groep label { display: block; margin-bottom: 8px; color: #4a5568; font-size: 13px; font-weight: 600; text-align: left; }
 .form-groep input[type="text"], .form-groep input[type="email"], .form-groep input[type="tel"], .form-groep textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background-color: #f8fafc; transition: border-color 0.2s, background-color 0.2s; }
 .form-groep input:focus, .form-groep textarea:focus { outline: none; border-color: #4A90E2; background-color: #ffffff; }
 
-/* CHECKBOXES - Strak uitgelijnd via flexbox */
+/* FIX: Checkbox en Tekst perfect uitgelijnd via flexbox */
 .checkbox-label {
     display: flex; align-items: center; gap: 10px; font-size: 14px; color: #4a5568; font-weight: 400; cursor: pointer;
 }
@@ -262,7 +258,7 @@ body { background-color: #f5f7fb; color: #333; }
     width: 18px; height: 18px; cursor: pointer; accent-color: #4A90E2; margin: 0; padding: 0;
 }
 
-/* FOTO UPLOAD - Avatar groter gemaakt (110px) */
+/* FOTO UPLOAD - Avatar groter gemaakt (110px circle, 100px SVG) */
 .foto-upload-container { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
 .foto-preview {
     width: 110px; height: 110px; border-radius: 50%; background-color: #f8fafc;
@@ -280,6 +276,24 @@ body { background-color: #f5f7fb; color: #333; }
 .verwijder-knop { background-color: transparent; color: #e53e3e; border: none; font-size: 12px; font-weight: 600; cursor: pointer; }
 .verwijder-knop:hover { text-decoration: underline; }
 
+
+/* CV - Rechter kolom */
+.rechterkolom { width: 50%; padding: 40px; background-color: #DBEAFE; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; }
+
+.cv-papier { width: 100%; max-width: 210mm; height: 297mm; background-color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 0; overflow: hidden; display: flex; flex-shrink: 0; }
+.cv-zijbalk { width: 35%; color: white; padding: 40px 25px; transition: background-color 0.3s ease; text-align: left; }
+.cv-hoofdkolom { width: 65%; background-color: white; padding: 40px 35px; text-align: left; }
+
+.cv-profielfoto { width: 130px; height: 130px; background-color: #e2e8f0; border-radius: 50%; margin: 0 auto 30px auto; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
+.cv-sectie-titel-zijbalk { font-size: 13px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255, 255, 255, 0.3); padding-bottom: 5px; }
+.cv-sectie-titel-hoofd { font-size: 14px; font-weight: 700; margin-bottom: 10px; margin-top: 25px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #edf2f7; padding-bottom: 5px; transition: color 0.3s ease; }
+.cv-tekst-zijbalk { font-size: 12px; margin-bottom: 12px; line-height: 1.4; }
+/* CV Naam: Specifiek gecentreerd */
+.cv-naam { font-size: 32px; font-weight: 700; color: #333; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
+
+
+/* RESPONSIVE DESIGN */
 @media (max-width: 1024px) {
     .container { flex-direction: column; height: auto; }
     .linkerkolom, .rechterkolom { width: 100%; padding: 20px; }
@@ -287,7 +301,10 @@ body { background-color: #f5f7fb; color: #333; }
 }
 @media (max-width: 600px) {
     .cv-papier { flex-direction: column; height: auto; }
-    .cv-zijbalk, .cv-hoofdkolom { width: 100%; padding: 20px; }
+    /* FIX: In mobile view, center sidebar elements, but main column remains left-aligned */
+    .cv-zijbalk { width: 100%; padding: 20px; text-align: center; }
+    .cv-hoofdkolom { width: 100%; padding: 20px; text-align: left; }
+    
     .form-grid { grid-template-columns: 1fr; } 
     .volledige-breedte { grid-column: span 1; }
 }
