@@ -22,7 +22,7 @@ function verwerkFoto(event) {
   if (file) {
     const reader = new FileReader()
     reader.onload = (e) => {
-      profielfoto.value = e.target.result // Slaat de foto op als een bruikbare link
+      profielfoto.value = e.target.result
     }
     reader.readAsDataURL(file)
   }
@@ -70,7 +70,7 @@ watch(
       gekozenKleur: gekozenKleur.value,
       werkervaringen: werkervaringen.value
     })
-    console.log("Gegevens opgeslagen, inclusief foto en vervoer!")
+    console.log("Gegevens opgeslagen, inclusief grotere foto en strakke checkboxes!")
   },
   { deep: true } 
 )
@@ -118,7 +118,7 @@ watch(
         <div class="form-groep">
             <div class="foto-upload-container">
                 <div class="foto-preview" :style="{ backgroundImage: profielfoto ? `url(${profielfoto})` : '' }">
-                    <svg v-if="!profielfoto" viewBox="0 0 24 24" fill="#cbd5e0" width="45" height="45">
+                    <svg v-if="!profielfoto" viewBox="0 0 24 24" fill="#cbd5e0" width="60" height="60">
                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                     </svg>
                 </div>
@@ -132,12 +132,14 @@ watch(
 
         <div class="form-groep">
             <label>Vervoer</label>
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 5px;">
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 5px;">
                 <label class="checkbox-label">
-                    <input type="checkbox" v-model="heeftRijbewijs"> Ik heb een rijbewijs
+                    <input type="checkbox" v-model="heeftRijbewijs">
+                    <span>Ik heb een rijbewijs</span>
                 </label>
                 <label class="checkbox-label">
-                    <input type="checkbox" v-model="heeftAuto"> Ik heb een eigen auto
+                    <input type="checkbox" v-model="heeftAuto">
+                    <span>Ik heb een eigen auto</span>
                 </label>
             </div>
         </div>
@@ -252,23 +254,23 @@ body { background-color: #f5f7fb; color: #333; }
 .form-groep input[type="text"], .form-groep input[type="email"], .form-groep input[type="tel"], .form-groep textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background-color: #f8fafc; transition: border-color 0.2s, background-color 0.2s; }
 .form-groep input:focus, .form-groep textarea:focus { outline: none; border-color: #4A90E2; background-color: #ffffff; }
 
-/* AANGEPAST: Uitlijning checkboxes */
+/* CHECKBOXES - Strak uitgelijnd via flexbox */
 .checkbox-label {
-    display: flex; align-items: center; gap: 8px; font-size: 14px; color: #4a5568; font-weight: 400; cursor: pointer; line-height: 1;
+    display: flex; align-items: center; gap: 10px; font-size: 14px; color: #4a5568; font-weight: 400; cursor: pointer;
 }
 .checkbox-label input[type="checkbox"] {
-    width: 18px; height: 18px; cursor: pointer; accent-color: #4A90E2; margin: 0; /* Zorgt dat de browser geen rare marges toevoegt */
+    width: 18px; height: 18px; cursor: pointer; accent-color: #4A90E2; margin: 0; padding: 0;
 }
 
-/* AANGEPAST: Opmaak voor Foto Upload incl SVG avatar in het midden */
+/* FOTO UPLOAD - Avatar groter gemaakt (110px) */
 .foto-upload-container { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
 .foto-preview {
-    width: 80px; height: 80px; border-radius: 50%; background-color: #f8fafc;
+    width: 110px; height: 110px; border-radius: 50%; background-color: #f8fafc;
     border: 2px dashed #cbd5e0; background-size: cover; background-position: center;
     display: flex; justify-content: center; align-items: center; overflow: hidden;
 }
 .foto-upload-knop {
-    color: #4A90E2; font-size: 13px; font-weight: 600; cursor: pointer; transition: color 0.2s;
+    color: #4A90E2; font-size: 13px; font-weight: 600; cursor: pointer; transition: color 0.2s; margin-top: 5px;
 }
 .foto-upload-knop:hover { color: #2b6cb0; text-decoration: underline; }
 
