@@ -150,8 +150,13 @@ body {
 }
 
 .rechterkolom {
-    width: 50%; padding: 40px; background-color: #4A90E2; 
-    display: flex; justify-content: center; align-items: flex-start; overflow-y: auto;
+    width: 50%; 
+    padding: 40px; 
+    background-color: #DBEAFE; /* Een zachte, lichte ijsblauwe tint voor beter contrast */
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start; 
+    overflow-y: auto;
 }
 
 .cv-papier {
