@@ -1,73 +1,177 @@
 /* style.css */
 
-/* Basis reset voor een strakke weergave zonder ongewenste marges */
+/* We importeren een prachtig, modern SaaS-lettertype genaamd 'Inter' */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif; /* Prettiger en moderner lettertype */
 }
 
-/* De hoofdcontainer die het hele scherm vult en in tweeën deelt */
+body {
+    background-color: #f5f7fb;
+    color: #333;
+}
+
 .container {
     display: flex;
-    height: 100vh; /* 100% van de schermhoogte */
+    height: 100vh;
 }
 
-/* De linkerkant voor de invoervelden en knoppen */
 .linkerkolom {
     width: 50%;
-    padding: 30px;
+    padding: 40px;
     background-color: #ffffff;
-    overflow-y: auto; /* Zorgt voor een scrollbalk als het formulier lang wordt */
+    overflow-y: auto;
+    border-right: 1px solid #e2e8f0;
 }
 
-/* De rechterkant voor de blauwe achtergrond en de cv-weergave */
 .rechterkolom {
     width: 50%;
     padding: 40px;
-    background-color: #4A90E2; /* De kenmerkende blauwe kleur van CVPortaal */
+    background-color: #4A90E2; /* De kenmerkende blauwe kleur */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* Het witte A4-tje (het cv zelf) in de rechterkolom */
 .cv-papier {
     width: 100%;
-    max-width: 210mm; /* Standaard A4 breedte */
-    height: 297mm; /* Standaard A4 hoogte */
+    max-width: 210mm;
+    height: 297mm;
     background-color: white;
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    padding: 40px;
-    overflow: hidden; /* Houdt de inhoud netjes binnen het papier */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    padding: 50px;
+    overflow: hidden;
 }
 
-/* Opmaak voor de formuliervelden uit de screenshots */
+/* Hoofdtitels conform screenshots */
+.hoofdtitel {
+    font-size: 18px;
+    font-weight: 700;
+    color: #4a5568;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+/* Systeemtitel voor kleine kopjes */
 .sectie-titel {
-    color: #888;
-    margin-top: 20px;
+    color: #718096;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 25px;
     margin-bottom: 15px;
     text-transform: uppercase;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 2px solid #edf2f7;
     padding-bottom: 5px;
 }
 
+/* Grid voor CV Varianten */
+.varianten-grid {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.variant-kaart {
+    flex: 1;
+    border: 2px solid #edf2f7;
+    border-radius: 6px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    color: #a0aec0;
+    background-color: #fafbfe;
+}
+
+.variant-kaart.actief {
+    border-color: #4A90E2;
+    color: #4A90E2;
+    background-color: #ffffff;
+}
+
+/* Kleurkiezer cirkels */
+.kleur-kiezer {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.kleur-rondje {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.1s ease;
+}
+
+.kleur-rondje:hover {
+    transform: scale(1.1);
+}
+
+.kleur-rondje.actief {
+    border-color: #333;
+}
+
+/* Onderdelen Knoppen */
+.onderdelen-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #edf2f7;
+    padding-bottom: 25px;
+}
+
+.onderdeel-knop {
+    background-color: #4A90E2;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.onderdeel-knop:hover {
+    background-color: #357ABD;
+}
+
+/* Formulier invoervelden */
 .form-groep {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .form-groep label {
     display: block;
-    margin-bottom: 5px;
-    color: #555;
-    font-size: 14px;
+    margin-bottom: 8px;
+    color: #4a5568;
+    font-size: 13px;
+    font-weight: 600;
 }
 
 .form-groep input, .form-groep textarea {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
     font-size: 14px;
+    background-color: #f8fafc;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.form-groep input:focus, .form-groep textarea:focus {
+    outline: none;
+    border-color: #4A90E2;
+    background-color: #ffffff;
 }
