@@ -82,24 +82,34 @@
 
         <div class="rechterkolom">
             <div class="cv-papier">
-                <h2><span id="weergave-voornaam">Ewout</span> <span id="weergave-achternaam"></span></h2>
-                <p style="margin-top: 5px;">
-                    <small style="color: #718096;">
-                        <span id="weergave-adres">Jouw adres</span> | 
-                        <span id="weergave-postcode">Postcode & Plaats</span> | 
-                        <span id="weergave-email">E-mailadres</span> | 
-                        <span id="weergave-telefoon">Telefoonnummer</span>
-                    </small>
-                </p>
-                <hr style="margin: 20px 0; border: none; border-top: 1px solid #e2e8f0;">
                 
-                <h4 style="color: #4A90E2; margin-bottom: 8px; font-size: 13px; letter-spacing: 0.5px;">PROFIEL</h4>
-                <p id="weergave-profieltekst" style="font-size: 14px; line-height: 1.6; color: #4a5568;">
-                    Hier verschijnt straks automatisch jouw profieltekst...
-                </p>
+                <div class="cv-zijbalk" id="cv-zijbalk-kleur">
+                    <div class="cv-profielfoto"></div>
+                    
+                    <div class="cv-sectie-titel-zijbalk">Mijn Gegevens</div>
+                    <div class="cv-tekst-zijbalk" id="weergave-adres">Jouw adres</div>
+                    <div class="cv-tekst-zijbalk" id="weergave-postcode">Postcode & Plaats</div>
+                    <div class="cv-tekst-zijbalk" id="weergave-email">E-mailadres</div>
+                    <div class="cv-tekst-zijbalk" id="weergave-telefoon">Telefoonnummer</div>
+                </div>
+
+                <div class="cv-hoofdkolom">
+                    <div class="cv-naam"><span id="weergave-voornaam">Ewout</span> <span id="weergave-achternaam"></span></div>
+                    
+                    <div class="cv-sectie-titel-hoofd" id="cv-titel-kleur-1">Dit ben ik</div>
+                    <p id="weergave-profieltekst" style="font-size: 13px; line-height: 1.6; color: #4a5568;">
+                        Hier verschijnt straks automatisch jouw profieltekst...
+                    </p>
+                    
+                    <div class="cv-sectie-titel-hoofd" id="cv-titel-kleur-2">Werkervaring</div>
+                    <p style="font-size: 13px; color: #a0aec0; font-style: italic; margin-bottom: 20px;">Nog geen werkervaring toegevoegd.</p>
+
+                    <div class="cv-sectie-titel-hoofd" id="cv-titel-kleur-3">Opleiding, cursus en certificaten</div>
+                    <p style="font-size: 13px; color: #a0aec0; font-style: italic;">Nog geen opleiding toegevoegd.</p>
+                </div>
+
             </div>
         </div>
-    </div>
 
     <script type="module">
         import { slaGegevensOp } from './databaseService.js';

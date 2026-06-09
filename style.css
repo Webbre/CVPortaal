@@ -37,14 +37,83 @@ body {
     align-items: center;
 }
 
+/* Het witte A4-tje (het cv zelf) in de rechterkolom */
 .cv-papier {
     width: 100%;
     max-width: 210mm;
     height: 297mm;
     background-color: white;
     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    padding: 50px;
+    /* We verwijderen de oude padding, omdat we dit nu per kolom regelen */
+    padding: 0; 
     overflow: hidden;
+    display: flex; /* Dit is de truc die het A4'tje in twee kolommen verdeelt */
+}
+
+/* De linker zijbalk van het cv */
+.cv-zijbalk {
+    width: 35%;
+    background-color: #546E7A; /* De standaard grijsblauwe kleur uit je screenshot */
+    color: white;
+    padding: 40px 25px;
+}
+
+/* De rechter hoofdkolom van het cv */
+.cv-hoofdkolom {
+    width: 65%;
+    background-color: white;
+    padding: 40px 35px;
+}
+
+/* Opmaak voor de profielfoto cirkel */
+.cv-profielfoto {
+    width: 130px;
+    height: 130px;
+    background-color: #e2e8f0;
+    border-radius: 50%;
+    margin: 0 auto 30px auto;
+    border: 4px solid white;
+}
+
+/* Opmaak voor de kopjes in de zijbalk (bijv. MIJN GEGEVENS) */
+.cv-sectie-titel-zijbalk {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 5px;
+}
+
+/* Opmaak voor de kopjes in de hoofdkolom (bijv. DIT BEN IK) */
+.cv-sectie-titel-hoofd {
+    font-size: 14px;
+    font-weight: 700;
+    color: #546E7A; /* Neemt dezelfde kleur aan als de zijbalk */
+    margin-bottom: 10px;
+    margin-top: 25px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #edf2f7;
+    padding-bottom: 5px;
+}
+
+/* Tekst opmaak voor de zijbalk */
+.cv-tekst-zijbalk {
+    font-size: 12px;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+/* De grote naam bovenaan het cv */
+.cv-naam {
+    font-size: 32px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 /* Hoofdtitels conform screenshots */
