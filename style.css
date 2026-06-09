@@ -28,13 +28,15 @@ body {
     border-right: 1px solid #e2e8f0;
 }
 
+/* De rechterkant voor de blauwe achtergrond en de cv-weergave */
 .rechterkolom {
     width: 50%;
     padding: 40px;
-    background-color: #4A90E2; /* De kenmerkende blauwe kleur */
+    background-color: #4A90E2; 
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Zorgt dat het papier netjes bovenaan begint in plaats van gecentreerd */
+    overflow-y: auto; /* Voegt een scrollbalk toe als het papier hoger is dan het scherm */
 }
 
 /* Het witte A4-tje (het cv zelf) in de rechterkolom */
@@ -44,12 +46,11 @@ body {
     height: 297mm;
     background-color: white;
     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    /* We verwijderen de oude padding, omdat we dit nu per kolom regelen */
     padding: 0; 
     overflow: hidden;
-    display: flex; /* Dit is de truc die het A4'tje in twee kolommen verdeelt */
+    display: flex; 
+    flex-shrink: 0; /* BELANGRIJK: Voorkomt dat de flexbox het papier in elkaar probeert te drukken */
 }
-
 /* De linker zijbalk van het cv */
 .cv-zijbalk {
     width: 35%;
