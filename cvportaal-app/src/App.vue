@@ -319,13 +319,23 @@ body { background-color: #f5f7fb; color: #333; }
 
 /* RESPONSIVE DESIGN & WYSIWYG CV SCHALING */
 
+/* Voeg de transition (animatie) toe aan het cv-papier */
+.cv-papier { 
+    width: 210mm; min-width: 210mm; height: 297mm; 
+    background-color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+    padding: 0; overflow: hidden; display: flex; flex-shrink: 0; 
+    transition: transform 0.4s ease-in-out, margin-bottom 0.4s ease-in-out; /* Zorgt voor de vloeiende overgang! */
+}
+
+/* RESPONSIVE DESIGN & WYSIWYG CV SCHALING */
+
 /* 1. Laptops en kleinere desktops: schaal het CV subtiel terug */
 @media (max-width: 1700px) and (min-width: 1367px) {
     .rechterkolom { overflow-x: hidden; }
     .cv-papier { 
         transform: scale(0.85); 
         transform-origin: top center; 
-        margin-bottom: -170px; /* Berekende compensatie voor de krimp */
+        margin-bottom: -170px; 
     }
 }
 @media (max-width: 1366px) and (min-width: 1025px) {
@@ -337,11 +347,11 @@ body { background-color: #f5f7fb; color: #333; }
     }
 }
 
-/* 2. Tablets: Zet kolommen onder elkaar */
+/* 2. Tablets: Zet kolommen onder elkaar, behoud de blauwe padding rondom! */
 @media (max-width: 1024px) {
     .container { flex-direction: column; height: auto; }
     .linkerkolom { width: 100%; padding: 20px; }
-    .rechterkolom { width: 100%; padding: 20px 0; overflow: hidden; } 
+    .rechterkolom { width: 100%; padding: 20px; overflow: hidden; } 
     .cv-papier { 
         transform: scale(0.85); 
         transform-origin: top center; 
@@ -349,10 +359,11 @@ body { background-color: #f5f7fb; color: #333; }
     }
 }
 
-/* 3. Mobiel: Maak velden vol-breed en krimp CV naar mini-A4 */
+/* 3. Mobiel: Maak velden vol-breed en krimp CV naar mini-A4, met een klein blauw randje */
 @media (max-width: 600px) {
     .form-grid { grid-template-columns: 1fr; } 
     .volledige-breedte { grid-column: span 1; }
+    .rechterkolom { padding: 10px; } /* Zorgt dat het blauw altijd iets zichtbaar blijft */
     .cv-papier { 
         transform: scale(0.44); 
         transform-origin: top center;
