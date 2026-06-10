@@ -15,6 +15,7 @@ const profieltekst = ref('')
 const heeftRijbewijs = ref(false)
 const heeftAuto = ref(false)
 const profielfoto = ref(null)
+const toonFotoOpCv = ref(true) // NIEUW: Optie om foto wel/niet te tonen
 
 // Functie om de gekozen foto in te laden
 function verwerkFoto(event) {
@@ -22,10 +23,15 @@ function verwerkFoto(event) {
   if (file) {
     const reader = new FileReader()
     reader.onload = (e) => {
-      profielfoto.value = e.target.result // Slaat de foto tijdelijk op als een bruikbare link
+      profielfoto.value = e.target.result 
     }
     reader.readAsDataURL(file)
   }
+}
+
+// NIEUW: Functie om foto te verwijderen
+function verwijderFoto() {
+  profielfoto.value = null
 }
 
 // 2. Kleurenkiezer
@@ -52,9 +58,9 @@ function verwijderWerkervaring(index) {
   werkervaringen.value.splice(index, 1)
 }
 
-// 4. Database koppeling 
+// 4. Database koppeling (Nu inclusief toonFotoOpCv)
 watch(
-  [voornaam, achternaam, adres, postcode, email, telefoon, profieltekst, gekozenKleur, werkervaringen, heeftRijbewijs, heeftAuto, profielfoto],
+  [voornaam, achternaam, adres, postcode, email, telefoon, profieltekst, gekozenKleur, werkervaringen, heeftRijbewijs, heeftAuto, profielfoto, toonFotoOpCv],
   () => {
     slaGegevensOp({
       voornaam: voornaam.value,
@@ -66,11 +72,12 @@ watch(
       heeftRijbewijs: heeftRijbewijs.value,
       heeftAuto: heeftAuto.value,
       profielfoto: profielfoto.value, 
+      toonFotoOpCv: toonFotoOpCv.value,
       profieltekst: profieltekst.value,
       gekozenKleur: gekozenKleur.value,
       werkervaringen: werkervaringen.value
     })
-    console.log("Gegevens opgeslagen, inclusief moderne toggles!")
+    console.log("Gegevens inclusief foto-instellingen gesynchroniseerd!")
   },
   { deep: true } 
 )
@@ -116,24 +123,35 @@ watch(
         <div class="form-groep"><label>Telefoon</label><input type="tel" v-model="telefoon" placeholder="06 - 12345678"></div>
         
         <div class="form-groep">
-            <div class="foto-upload-container">
-                <div class="foto-preview" :style="{ backgroundImage: profielfoto ? `url(${profielfoto})` : '' }">
-                    <svg v-if="!profielfoto" viewBox="0 0 24 24" fill="#cbd5e0" width="100" height="100">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                    </svg>
+            <div class="foto-upload-sectie">
+                <div class="foto-preview-container">
+                    <div class="foto-preview" :style="{ backgroundImage: profielfoto ? `url(${profielfoto})` : '' }">
+                        <svg v-if="!profielfoto" viewBox="0 0 24 24" fill="#cbd5e0" width="100" height="100">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                    <div class="foto-acties">
+                        <label class="foto-upload-knop">
+                            {{ profielfoto ? 'Foto wijzigen' : 'Foto uploaden' }}
+                            <input type="file" accept="image/*" @change="verwerkFoto" style="display: none;">
+                        </label>
+                        <button v-if="profielfoto" class="foto-verwijder-knop" @click="verwijderFoto">Verwijder foto</button>
+                    </div>
                 </div>
-                
-                <label class="foto-upload-knop">
-                    + Foto uploaden
-                    <input type="file" accept="image/*" @change="verwerkFoto" style="display: none;">
-                </label>
+
+                <div class="toggle-container" v-if="profielfoto" style="margin-top: 15px;">
+                    <span class="toggle-label">Foto op cv tonen</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" v-model="toonFotoOpCv">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
             </div>
         </div>
 
         <div class="form-groep">
             <label>Vervoer</label>
             <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
-                
                 <div class="toggle-container">
                     <span class="toggle-label">Ik heb een rijbewijs</span>
                     <label class="toggle-switch">
@@ -141,7 +159,6 @@ watch(
                         <span class="toggle-slider"></span>
                     </label>
                 </div>
-
                 <div class="toggle-container">
                     <span class="toggle-label">Ik heb een eigen auto</span>
                     <label class="toggle-switch">
@@ -149,7 +166,6 @@ watch(
                         <span class="toggle-slider"></span>
                     </label>
                 </div>
-
             </div>
         </div>
 
@@ -183,8 +199,11 @@ watch(
         <div class="cv-papier">
             
             <div class="cv-zijbalk" :style="{ backgroundColor: gekozenKleur }">
-                <div class="cv-profielfoto" :style="{ backgroundImage: profielfoto ? `url(${profielfoto})` : '', backgroundSize: 'cover', backgroundPosition: 'center' }"></div>
                 
+                <div v-if="profielfoto && toonFotoOpCv" class="cv-profielfoto" :style="{ backgroundImage: `url(${profielfoto})`, backgroundSize: 'cover', backgroundPosition: 'center' }"></div>
+                
+                <div v-else style="height: 40px;"></div>
+
                 <div class="cv-sectie-titel-zijbalk">Mijn Gegevens</div>
                 <div class="cv-tekst-zijbalk">{{ adres || 'Jouw adres' }}</div>
                 <div class="cv-tekst-zijbalk">{{ postcode || 'Postcode & Plaats' }}</div>
@@ -257,66 +276,29 @@ body { background-color: #f5f7fb; color: #333; }
 .form-groep input[type="text"], .form-groep input[type="email"], .form-groep input[type="tel"], .form-groep textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background-color: #f8fafc; transition: border-color 0.2s, background-color 0.2s; }
 .form-groep input:focus, .form-groep textarea:focus { outline: none; border-color: #4A90E2; background-color: #ffffff; }
 
-/* NIEUW: MODERNE TOGGLES (Schuifjes) */
-.toggle-container {
-    display: flex;
-    justify-content: space-between; /* Tekst links, schuifje rechts */
-    align-items: center;
-    padding: 6px 0;
-}
-.toggle-label {
-    font-size: 14px;
-    color: #4a5568;
-}
-.toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 44px;
-    height: 24px;
-}
-.toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-.toggle-slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #cbd5e0;
-    transition: .3s;
-    border-radius: 24px; /* Maakt de achtergrond mooi rond */
-}
-.toggle-slider:before {
-    position: absolute;
-    content: "";
-    height: 18px;
-    width: 18px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: .3s;
-    border-radius: 50%; /* Maakt het schuif-bolletje perfect rond */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-.toggle-switch input:checked + .toggle-slider {
-    background-color: #4A90E2; /* Kleurt mooi blauw als hij aan staat */
-}
-.toggle-switch input:checked + .toggle-slider:before {
-    transform: translateX(20px); /* Schuift het bolletje naar rechts */
-}
+/* MODERNE TOGGLES (Schuifjes) */
+.toggle-container { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+.toggle-label { font-size: 14px; color: #4a5568; }
+.toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e0; transition: .3s; border-radius: 24px; }
+.toggle-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+.toggle-switch input:checked + .toggle-slider { background-color: #4A90E2; }
+.toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
 
-/* FOTO UPLOAD */
-.foto-upload-container { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+/* FOTO UPLOAD - Vernieuwd */
+.foto-upload-sectie { display: flex; flex-direction: column; gap: 10px; }
+.foto-preview-container { display: flex; align-items: center; gap: 20px; }
 .foto-preview {
     width: 110px; height: 110px; border-radius: 50%; background-color: #f8fafc;
     border: 2px dashed #cbd5e0; background-size: cover; background-position: center;
     display: flex; justify-content: center; align-items: center; overflow: hidden;
 }
-.foto-upload-knop {
-    color: #4A90E2; font-size: 13px; font-weight: 600; cursor: pointer; transition: color 0.2s; margin-top: 5px;
-}
+.foto-acties { display: flex; flex-direction: column; gap: 5px; }
+.foto-upload-knop { color: #4A90E2; font-size: 13px; font-weight: 600; cursor: pointer; transition: color 0.2s; }
 .foto-upload-knop:hover { color: #2b6cb0; text-decoration: underline; }
+.foto-verwijder-knop { background: none; border: none; color: #e53e3e; font-size: 13px; font-weight: 600; cursor: pointer; text-align: left; padding: 0; }
+.foto-verwijder-knop:hover { text-decoration: underline; }
 
 .dynamisch-blok { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
 .toevoeg-knop { background-color: transparent; color: #4A90E2; border: 2px dashed #4A90E2; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 30px; transition: all 0.2s; }
@@ -324,23 +306,17 @@ body { background-color: #f5f7fb; color: #333; }
 .verwijder-knop { background-color: transparent; color: #e53e3e; border: none; font-size: 12px; font-weight: 600; cursor: pointer; }
 .verwijder-knop:hover { text-decoration: underline; }
 
-
 /* CV - Rechter kolom */
 .rechterkolom { width: 50%; padding: 40px; background-color: #DBEAFE; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; }
-
 .cv-papier { width: 100%; max-width: 210mm; height: 297mm; background-color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 0; overflow: hidden; display: flex; flex-shrink: 0; }
 .cv-zijbalk { width: 35%; color: white; padding: 40px 25px; transition: background-color 0.3s ease; text-align: left; }
 .cv-hoofdkolom { width: 65%; background-color: white; padding: 40px 35px; text-align: left; }
-
 .cv-profielfoto { width: 130px; height: 130px; background-color: #e2e8f0; border-radius: 50%; margin: 0 auto 30px auto; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-
 .cv-sectie-titel-zijbalk { font-size: 13px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255, 255, 255, 0.3); padding-bottom: 5px; }
 .cv-sectie-titel-hoofd { font-size: 14px; font-weight: 700; margin-bottom: 10px; margin-top: 25px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #edf2f7; padding-bottom: 5px; transition: color 0.3s ease; }
 .cv-tekst-zijbalk { font-size: 12px; margin-bottom: 12px; line-height: 1.4; }
 .cv-naam { font-size: 32px; font-weight: 700; color: #333; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
 
-
-/* RESPONSIVE DESIGN */
 @media (max-width: 1024px) {
     .container { flex-direction: column; height: auto; }
     .linkerkolom, .rechterkolom { width: 100%; padding: 20px; }
@@ -350,7 +326,6 @@ body { background-color: #f5f7fb; color: #333; }
     .cv-papier { flex-direction: column; height: auto; }
     .cv-zijbalk { width: 100%; padding: 20px; text-align: center; }
     .cv-hoofdkolom { width: 100%; padding: 20px; text-align: left; }
-    
     .form-grid { grid-template-columns: 1fr; } 
     .volledige-breedte { grid-column: span 1; }
 }
