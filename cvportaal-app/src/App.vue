@@ -70,7 +70,7 @@ watch(
       gekozenKleur: gekozenKleur.value,
       werkervaringen: werkervaringen.value
     })
-    console.log("Gegevens opgeslagen, inclusief visueel gecorrigeerde checkboxes!")
+    console.log("Gegevens opgeslagen, inclusief moderne toggles!")
   },
   { deep: true } 
 )
@@ -132,15 +132,24 @@ watch(
 
         <div class="form-groep">
             <label>Vervoer</label>
-            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 5px;">
-                <label class="checkbox-label">
-                    <input type="checkbox" v-model="heeftRijbewijs">
-                    <span>Ik heb een rijbewijs</span>
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" v-model="heeftAuto">
-                    <span>Ik heb een eigen auto</span>
-                </label>
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+                
+                <div class="toggle-container">
+                    <span class="toggle-label">Ik heb een rijbewijs</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" v-model="heeftRijbewijs">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-container">
+                    <span class="toggle-label">Ik heb een eigen auto</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" v-model="heeftAuto">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
             </div>
         </div>
 
@@ -248,30 +257,56 @@ body { background-color: #f5f7fb; color: #333; }
 .form-groep input[type="text"], .form-groep input[type="email"], .form-groep input[type="tel"], .form-groep textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background-color: #f8fafc; transition: border-color 0.2s, background-color 0.2s; }
 .form-groep input:focus, .form-groep textarea:focus { outline: none; border-color: #4A90E2; background-color: #ffffff; }
 
-/* FIX: Klassieke, bulletproof checkbox uitlijning zonder flexbox fratsen */
-.checkbox-label {
-    display: block; 
-    font-size: 14px; 
-    color: #4a5568; 
-    font-weight: 400; 
-    cursor: pointer; 
-    line-height: 18px; /* Geforceerd op dezelfde hoogte als het vinkje */
+/* NIEUW: MODERNE TOGGLES (Schuifjes) */
+.toggle-container {
+    display: flex;
+    justify-content: space-between; /* Tekst links, schuifje rechts */
+    align-items: center;
+    padding: 6px 0;
 }
-.checkbox-label input[type="checkbox"] {
-    width: 18px; 
-    height: 18px; 
-    cursor: pointer; 
-    accent-color: #4A90E2; 
-    margin: 0 10px 0 0; /* Alleen ruimte aan de rechterkant */
-    padding: 0; 
-    vertical-align: middle; 
-    position: relative; 
-    top: -2px; /* De optische pixel-correctie voor het 'Inter' lettertype */
+.toggle-label {
+    font-size: 14px;
+    color: #4a5568;
 }
-.checkbox-label span {
-    vertical-align: middle;
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e0;
+    transition: .3s;
+    border-radius: 24px; /* Maakt de achtergrond mooi rond */
+}
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%; /* Maakt het schuif-bolletje perfect rond */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.toggle-switch input:checked + .toggle-slider {
+    background-color: #4A90E2; /* Kleurt mooi blauw als hij aan staat */
+}
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(20px); /* Schuift het bolletje naar rechts */
 }
 
+/* FOTO UPLOAD */
 .foto-upload-container { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
 .foto-preview {
     width: 110px; height: 110px; border-radius: 50%; background-color: #f8fafc;
