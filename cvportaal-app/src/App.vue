@@ -308,7 +308,7 @@ body { background-color: #f5f7fb; color: #333; }
 
 /* CV - Rechter kolom */
 .rechterkolom { width: 50%; padding: 40px; background-color: #DBEAFE; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; }
-.cv-papier { width: 100%; max-width: 210mm; height: 297mm; background-color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 0; overflow: hidden; display: flex; flex-shrink: 0; }
+.cv-papier { width: 210mm; min-width: 210mm; height: 297mm; background-color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 0; overflow: hidden; display: flex; flex-shrink: 0; }
 .cv-zijbalk { width: 35%; color: white; padding: 40px 25px; transition: background-color 0.3s ease; text-align: left; }
 .cv-hoofdkolom { width: 65%; background-color: white; padding: 40px 35px; text-align: left; }
 .cv-profielfoto { width: 130px; height: 130px; background-color: #e2e8f0; border-radius: 50%; margin: 0 auto 30px auto; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -317,14 +317,16 @@ body { background-color: #f5f7fb; color: #333; }
 .cv-tekst-zijbalk { font-size: 12px; margin-bottom: 12px; line-height: 1.4; }
 .cv-naam { font-size: 32px; font-weight: 700; color: #333; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
 
+/* RESPONSIVE DESIGN & WYSIWYG CV SCHALING */
 @media (max-width: 1024px) {
     .container { flex-direction: column; height: auto; }
-    .linkerkolom, .rechterkolom { width: 100%; padding: 20px; }
-    .rechterkolom { overflow: hidden; }
+    .linkerkolom { width: 100%; padding: 20px; }
+    /* Padding links/rechts weggehaald zodat hij strak uitlijnt */
+    .rechterkolom { width: 100%; padding: 20px 0; overflow: hidden; } 
     .cv-papier { 
         transform: scale(0.85); 
         transform-origin: top center; 
-        margin-bottom: -15%; 
+        margin-bottom: -170px; /* Exacte compensatie voor het krimpen */
     }
 }
 
@@ -332,9 +334,9 @@ body { background-color: #f5f7fb; color: #333; }
     .form-grid { grid-template-columns: 1fr; } 
     .volledige-breedte { grid-column: span 1; }
     .cv-papier { 
-        transform: scale(0.45); 
+        transform: scale(0.44); /* Past perfect de breedte van een telefoon */
         transform-origin: top center;
-        margin-bottom: -75%; 
+        margin-bottom: -630px; /* Exact berekend om de lege ruimte onderaan weg te halen! */
     }
 }
 </style>
