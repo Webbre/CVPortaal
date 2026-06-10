@@ -318,25 +318,45 @@ body { background-color: #f5f7fb; color: #333; }
 .cv-naam { font-size: 32px; font-weight: 700; color: #333; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
 
 /* RESPONSIVE DESIGN & WYSIWYG CV SCHALING */
+
+/* 1. Laptops en kleinere desktops: schaal het CV subtiel terug */
+@media (max-width: 1700px) and (min-width: 1367px) {
+    .rechterkolom { overflow-x: hidden; }
+    .cv-papier { 
+        transform: scale(0.85); 
+        transform-origin: top center; 
+        margin-bottom: -170px; /* Berekende compensatie voor de krimp */
+    }
+}
+@media (max-width: 1366px) and (min-width: 1025px) {
+    .rechterkolom { overflow-x: hidden; }
+    .cv-papier { 
+        transform: scale(0.70); 
+        transform-origin: top center; 
+        margin-bottom: -340px; 
+    }
+}
+
+/* 2. Tablets: Zet kolommen onder elkaar */
 @media (max-width: 1024px) {
     .container { flex-direction: column; height: auto; }
     .linkerkolom { width: 100%; padding: 20px; }
-    /* Padding links/rechts weggehaald zodat hij strak uitlijnt */
     .rechterkolom { width: 100%; padding: 20px 0; overflow: hidden; } 
     .cv-papier { 
         transform: scale(0.85); 
         transform-origin: top center; 
-        margin-bottom: -170px; /* Exacte compensatie voor het krimpen */
+        margin-bottom: -170px; 
     }
 }
 
+/* 3. Mobiel: Maak velden vol-breed en krimp CV naar mini-A4 */
 @media (max-width: 600px) {
     .form-grid { grid-template-columns: 1fr; } 
     .volledige-breedte { grid-column: span 1; }
     .cv-papier { 
-        transform: scale(0.44); /* Past perfect de breedte van een telefoon */
+        transform: scale(0.44); 
         transform-origin: top center;
-        margin-bottom: -630px; /* Exact berekend om de lege ruimte onderaan weg te halen! */
+        margin-bottom: -630px; 
     }
 }
 </style>
