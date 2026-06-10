@@ -112,7 +112,7 @@ watch(
           <button class="onderdeel-knop">Meer over mij</button>
       </div>
 
-      <h2 class="sectie-titel">Mijn Gegevens</h2>
+      <h2 class="hoofdtitel">Mijn Gegevens</h2>
       
       <div class="form-grid">
         <div class="form-groep"><label>Voornaam</label><input type="text" v-model="voornaam" placeholder="Bijv. Elin"></div>
@@ -171,13 +171,13 @@ watch(
 
       </div>
 
-      <h2 class="sectie-titel">Dit ben ik</h2>
+      <h2 class="hoofdtitel">Dit ben ik</h2>
       <div class="form-groep" style="margin-bottom: 20px;">
           <label>Vertel iets over jezelf</label>
           <textarea v-model="profieltekst" rows="5" placeholder="Ik ben een enthousiaste werknemer..."></textarea>
       </div>
 
-      <h3 class="sectie-titel">Werkervaring</h3>
+      <h2 class="hoofdtitel">Werkervaring</h2>
       <div v-for="(werk, index) in werkervaringen" :key="index" class="dynamisch-blok">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <strong style="font-size: 14px; color: #4A90E2;">Ervaring {{ index + 1 }}</strong>
