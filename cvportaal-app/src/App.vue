@@ -217,7 +217,7 @@ watch(
             </div>
 
             <div class="cv-hoofdkolom">
-                <div class="cv-naam" style="margin-bottom: 25px;">{{ voornaam || 'Ewout' }} {{ achternaam }}</div>
+                <div class="cv-naam" style="margin-bottom: 25px;">{{ voornaam || 'Jouw' }} {{ achternaam || 'Naam' }}</div>
                 
                 <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Dit ben ik</div>
                 <p style="font-size: 13px; line-height: 1.6; color: #4a5568;">
@@ -320,13 +320,21 @@ body { background-color: #f5f7fb; color: #333; }
 @media (max-width: 1024px) {
     .container { flex-direction: column; height: auto; }
     .linkerkolom, .rechterkolom { width: 100%; padding: 20px; }
-    .rechterkolom { overflow-y: visible; }
+    .rechterkolom { overflow: hidden; }
+    .cv-papier { 
+        transform: scale(0.85); 
+        transform-origin: top center; 
+        margin-bottom: -15%; 
+    }
 }
+
 @media (max-width: 600px) {
-    .cv-papier { flex-direction: column; height: auto; }
-    .cv-zijbalk { width: 100%; padding: 20px; text-align: center; }
-    .cv-hoofdkolom { width: 100%; padding: 20px; text-align: left; }
     .form-grid { grid-template-columns: 1fr; } 
     .volledige-breedte { grid-column: span 1; }
+    .cv-papier { 
+        transform: scale(0.45); 
+        transform-origin: top center;
+        margin-bottom: -75%; 
+    }
 }
 </style>
