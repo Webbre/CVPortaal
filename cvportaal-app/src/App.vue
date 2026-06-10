@@ -112,7 +112,7 @@ watch(
           <button class="onderdeel-knop">Meer over mij</button>
       </div>
 
-      <h3 class="sectie-titel">Mijn Gegevens</h3>
+      <h2 class="sectie-titel">Mijn Gegevens</h2>
       
       <div class="form-grid">
         <div class="form-groep"><label>Voornaam</label><input type="text" v-model="voornaam" placeholder="Bijv. Elin"></div>
@@ -171,7 +171,7 @@ watch(
 
       </div>
 
-      <h3 class="sectie-titel">Dit ben ik</h3>
+      <h2 class="sectie-titel">Dit ben ik</h2>
       <div class="form-groep" style="margin-bottom: 20px;">
           <label>Vertel iets over jezelf</label>
           <textarea v-model="profieltekst" rows="5" placeholder="Ik ben een enthousiaste werknemer..."></textarea>
