@@ -1,8 +1,19 @@
 <script setup>
-import { ref, watch } from 'vue'
-import { slaGegevensOp } from './databaseService.js'
+import { ref, watch, onMounted } from 'vue'
+import { 
+  slaGegevensOp, haalGegevensOp, 
+  stuurInlogLink, voltooiInloggen, 
+  logUit, luisterNaarInlogStatus 
+} from './databaseService.js'
 
-// 1. Basisgegevens
+// --- AUTHENTICATIE & STATUS VARIABELEN ---
+const gebruiker = ref(null)
+const isLaden = ref(true)
+const loginEmail = ref('')
+const linkVerstuurd = ref(false)
+const toonMenu = ref(false)
+
+// --- CV DATA VARIABELEN ---
 const voornaam = ref('')
 const achternaam = ref('')
 const adres = ref('')
@@ -10,82 +21,170 @@ const postcode = ref('')
 const email = ref('')
 const telefoon = ref('')
 const profieltekst = ref('')
-
-// Vervoer en Profielfoto
 const heeftRijbewijs = ref(false)
 const heeftAuto = ref(false)
 const profielfoto = ref(null)
-const toonFotoOpCv = ref(true) // NIEUW: Optie om foto wel/niet te tonen
-
-// Functie om de gekozen foto in te laden
-function verwerkFoto(event) {
-  const file = event.target.files[0]
-  if (file) {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      profielfoto.value = e.target.result 
-    }
-    reader.readAsDataURL(file)
-  }
-}
-
-// NIEUW: Functie om foto te verwijderen
-function verwijderFoto() {
-  profielfoto.value = null
-}
-
-// 2. Kleurenkiezer
+const toonFotoOpCv = ref(true)
 const gekozenKleur = ref('#4A90E2')
+const werkervaringen = ref([])
+
 const kleuren = [
   '#4A90E2', '#E24A4A', '#2ECC71', '#9B59B6', '#F1C40F',
   '#E67E22', '#FF85A2', '#1ABC9C', '#34495E'
 ]
 
-function veranderKleur(kleur) {
-  gekozenKleur.value = kleur
+// --- LIFECYCLE & INLOG LOGICA ---
+onMounted(async () => {
+  // 1. Check direct of iemand via een magische link de app opent
+  await voltooiInloggen();
+
+  // 2. Luister constant of we ingelogd zijn of niet
+  luisterNaarInlogStatus(async (user) => {
+    if (user) {
+      gebruiker.value = user;
+      
+      // Haal bewaarde gegevens op uit de kluis
+      const data = await haalGegevensOp();
+      if (data) {
+        voornaam.value = data.voornaam || '';
+        achternaam.value = data.achternaam || '';
+        adres.value = data.adres || '';
+        postcode.value = data.postcode || '';
+        email.value = data.email || '';
+        telefoon.value = data.telefoon || '';
+        profieltekst.value = data.profieltekst || '';
+        heeftRijbewijs.value = data.heeftRijbewijs || false;
+        heeftAuto.value = data.heeftAuto || false;
+        profielfoto.value = data.profielfoto || null;
+        toonFotoOpCv.value = data.toonFotoOpCv !== undefined ? data.toonFotoOpCv : true;
+        gekozenKleur.value = data.gekozenKleur || '#4A90E2';
+        werkervaringen.value = data.werkervaringen || [];
+      }
+    } else {
+      gebruiker.value = null;
+      maakCvLeeg(false); // Maak lokaal leeg zonder database te overschrijven
+    }
+    isLaden.value = false; // Haal laadscherm weg
+  });
+})
+
+// Actie: Verstuur inloglink
+async function loginMetLink() {
+  if (!loginEmail.value) return;
+  isLaden.value = true;
+  await stuurInlogLink(loginEmail.value);
+  linkVerstuurd.value = true;
+  isLaden.value = false;
 }
 
-// 3. Dynamische Werkervaring
-const werkervaringen = ref([])
-
-function voegWerkervaringToe() {
-  werkervaringen.value.push({
-    functie: '', bedrijf: '', periode: '', omschrijving: ''
-  })
+// Actie: Uitloggen
+async function logMijUit() {
+  toonMenu.value = false;
+  isLaden.value = true;
+  await logUit();
 }
 
-function verwijderWerkervaring(index) {
-  werkervaringen.value.splice(index, 1)
+// Actie: Reset CV (Maakt alles leeg na waarschuwing)
+function resetMijnCV() {
+  toonMenu.value = false;
+  if (confirm("Weet je zeker dat je helemaal opnieuw wilt beginnen? Al je ingevulde gegevens worden permanent gewist!")) {
+    maakCvLeeg(true);
+  }
 }
 
-// 4. Database koppeling (Nu inclusief toonFotoOpCv)
+// Hulpfunctie om variabelen lokaal leeg te maken
+function maakCvLeeg(forceerDatabaseOpslag = false) {
+  voornaam.value = ''; achternaam.value = ''; adres.value = ''; postcode.value = '';
+  email.value = ''; telefoon.value = ''; profieltekst.value = '';
+  heeftRijbewijs.value = false; heeftAuto.value = false; profielfoto.value = null;
+  gekozenKleur.value = '#4A90E2'; werkervaringen.value = [];
+  
+  if (forceerDatabaseOpslag) triggerOpslaan();
+}
+
+// --- FUNCTIES VOOR DE CV BOUWER ---
+function verwerkFoto(event) {
+  const file = event.target.files[0]
+  if (file) {
+    const reader = new FileReader()
+    reader.onload = (e) => { profielfoto.value = e.target.result }
+    reader.readAsDataURL(file)
+  }
+}
+
+function verwijderFoto() { profielfoto.value = null }
+function veranderKleur(kleur) { gekozenKleur.value = kleur }
+function voegWerkervaringToe() { werkervaringen.value.push({ functie: '', bedrijf: '', periode: '', omschrijving: '' }) }
+function verwijderWerkervaring(index) { werkervaringen.value.splice(index, 1) }
+
+// Database trigger
+function triggerOpslaan() {
+  if (!gebruiker.value || isLaden.value) return; // Sla niet op tijdens het inladen
+  slaGegevensOp({
+    voornaam: voornaam.value, achternaam: achternaam.value, adres: adres.value,
+    postcode: postcode.value, email: email.value, telefoon: telefoon.value,
+    heeftRijbewijs: heeftRijbewijs.value, heeftAuto: heeftAuto.value,
+    profielfoto: profielfoto.value, toonFotoOpCv: toonFotoOpCv.value,
+    profieltekst: profieltekst.value, gekozenKleur: gekozenKleur.value,
+    werkervaringen: werkervaringen.value
+  });
+}
+
+// Houd alle wijzigingen in de gaten om realtime op te slaan
 watch(
   [voornaam, achternaam, adres, postcode, email, telefoon, profieltekst, gekozenKleur, werkervaringen, heeftRijbewijs, heeftAuto, profielfoto, toonFotoOpCv],
-  () => {
-    slaGegevensOp({
-      voornaam: voornaam.value,
-      achternaam: achternaam.value,
-      adres: adres.value,
-      postcode: postcode.value,
-      email: email.value,
-      telefoon: telefoon.value,
-      heeftRijbewijs: heeftRijbewijs.value,
-      heeftAuto: heeftAuto.value,
-      profielfoto: profielfoto.value, 
-      toonFotoOpCv: toonFotoOpCv.value,
-      profieltekst: profieltekst.value,
-      gekozenKleur: gekozenKleur.value,
-      werkervaringen: werkervaringen.value
-    })
-    console.log("Gegevens inclusief foto-instellingen gesynchroniseerd!")
-  },
+  () => { triggerOpslaan(); },
   { deep: true } 
 )
 </script>
 
 <template>
-  <div class="container">
+  <div v-if="isLaden" class="volledig-scherm center-inhoud">
+    <div class="loader"></div>
+    <p style="margin-top: 15px; color: #4a5568; font-weight: 600;">Even geduld...</p>
+  </div>
+
+  <div v-else-if="!gebruiker" class="volledig-scherm center-inhoud inlog-achtergrond">
+    <div class="inlog-box">
+      <h1 style="color: #333; margin-bottom: 10px; font-size: 24px;">CVPortaal</h1>
+      
+      <div v-if="!linkVerstuurd">
+        <p style="color: #718096; font-size: 14px; margin-bottom: 25px; line-height: 1.5;">
+          Log in of maak een account aan met een magische link. Geen wachtwoord nodig!
+        </p>
+        <div class="form-groep" style="text-align: left;">
+          <label>E-mailadres</label>
+          <input type="email" v-model="loginEmail" placeholder="jouw@email.nl" @keyup.enter="loginMetLink">
+        </div>
+        <button class="hoofd-knop" style="width: 100%; margin-top: 15px;" @click="loginMetLink">Stuur inloglink</button>
+      </div>
+
+      <div v-else>
+        <div style="font-size: 40px; margin-bottom: 15px;">✉️</div>
+        <h2 style="color: #4A90E2; margin-bottom: 10px; font-size: 18px;">Check je mailbox!</h2>
+        <p style="color: #718096; font-size: 14px; line-height: 1.5;">
+          We hebben een magische link gestuurd naar <strong>{{ loginEmail }}</strong>.<br>Klik op de link in de mail om in te loggen.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div v-else class="container relative">
     
+    <div class="menu-container">
+        <button class="tandwiel-knop" @click="toonMenu = !toonMenu" title="Instellingen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+        </button>
+        <div v-if="toonMenu" class="dropdown-menu">
+            <p class="dropdown-header">Ingelogd als<br><strong>{{ gebruiker.email }}</strong></p>
+            <button class="dropdown-item" @click="resetMijnCV">⚠️ CV Leegmaken</button>
+            <button class="dropdown-item" @click="logMijUit">Uitloggen</button>
+        </div>
+    </div>
+
     <div class="linkerkolom">
       
       <h2 class="hoofdtitel">Kies je cv variant</h2>
@@ -113,7 +212,6 @@ watch(
       </div>
 
       <h2 class="hoofdtitel">Mijn Gegevens</h2>
-      
       <div class="form-grid">
         <div class="form-groep"><label>Voornaam</label><input type="text" v-model="voornaam" placeholder="Bijv. Elin"></div>
         <div class="form-groep"><label>Achternaam</label><input type="text" v-model="achternaam" placeholder="Bijv. Baanzicht"></div>
@@ -168,7 +266,6 @@ watch(
                 </div>
             </div>
         </div>
-
       </div>
 
       <h2 class="hoofdtitel">Dit ben ik</h2>
@@ -201,7 +298,6 @@ watch(
             <div class="cv-zijbalk" :style="{ backgroundColor: gekozenKleur }">
                 
                 <div v-if="profielfoto && toonFotoOpCv" class="cv-profielfoto" :style="{ backgroundImage: `url(${profielfoto})`, backgroundSize: 'cover', backgroundPosition: 'center' }"></div>
-                
                 <div v-else style="height: 40px;"></div>
 
                 <div class="cv-sectie-titel-zijbalk">Mijn Gegevens</div>
@@ -249,13 +345,37 @@ watch(
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
-body { background-color: #f5f7fb; color: #333; }
+body { background-color: #f5f7fb; color: #333; overflow-x: hidden; }
+
+/* NIEUW: LAYOUT STRUCTUUR */
+.volledig-scherm { height: 100vh; width: 100vw; display: flex; flex-direction: column; }
+.center-inhoud { justify-content: center; align-items: center; text-align: center; }
+.relative { position: relative; }
 .container { display: flex; height: 100vh; }
 
-.linkerkolom { width: 50%; padding: 40px; background-color: #ffffff; overflow-y: auto; border-right: 1px solid #e2e8f0; }
+/* NIEUW: INLOG SCHERM STYLING */
+.inlog-achtergrond { background-color: #DBEAFE; }
+.inlog-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 400px; }
+.hoofd-knop { background-color: #4A90E2; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+.hoofd-knop:hover { background-color: #357ABD; }
 
+/* NIEUW: TANDWIEL MENU */
+.menu-container { position: absolute; top: 20px; right: 20px; z-index: 100; }
+.tandwiel-knop { background: white; border: 1px solid #e2e8f0; border-radius: 50%; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.3s; color: #4a5568; }
+.tandwiel-knop:hover { transform: rotate(45deg); color: #4A90E2; }
+.dropdown-menu { position: absolute; top: 55px; right: 0; background: white; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 220px; overflow: hidden; border: 1px solid #e2e8f0; text-align: left; }
+.dropdown-header { padding: 15px; background: #f8fafc; font-size: 12px; color: #718096; border-bottom: 1px solid #e2e8f0; word-break: break-all; }
+.dropdown-item { width: 100%; text-align: left; background: none; border: none; padding: 12px 15px; font-size: 13px; font-weight: 600; color: #4a5568; cursor: pointer; transition: background 0.2s; }
+.dropdown-item:hover { background: #edf2f7; color: #1a202c; }
+
+/* NIEUW: LAAD SPINNER */
+.loader { border: 4px solid #f3f3f3; border-top: 4px solid #4A90E2; border-radius: 50%; width: 40px; height: 40px; animation: draai 1s linear infinite; }
+@keyframes draai { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+
+/* BESTAANDE CSS (Invoer kolommen en CV weergave) */
+.linkerkolom { width: 50%; padding: 40px; background-color: #ffffff; overflow-y: auto; border-right: 1px solid #e2e8f0; }
 .hoofdtitel { font-size: 18px; font-weight: 700; color: #4a5568; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 30px; margin-bottom: 15px; }
-.sectie-titel { color: #718096; font-size: 14px; font-weight: 600; margin-top: 25px; margin-bottom: 15px; text-transform: uppercase; border-bottom: 2px solid #edf2f7; padding-bottom: 5px; }
 
 .varianten-grid { display: flex; gap: 15px; margin-bottom: 20px; }
 .variant-kaart { flex: 1; border: 2px solid #edf2f7; border-radius: 6px; padding: 15px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600; color: #a0aec0; background-color: #fafbfe; }
@@ -286,14 +406,10 @@ body { background-color: #f5f7fb; color: #333; }
 .toggle-switch input:checked + .toggle-slider { background-color: #4A90E2; }
 .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
 
-/* FOTO UPLOAD - Vernieuwd */
+/* FOTO UPLOAD */
 .foto-upload-sectie { display: flex; flex-direction: column; gap: 10px; }
 .foto-preview-container { display: flex; align-items: center; gap: 20px; }
-.foto-preview {
-    width: 110px; height: 110px; border-radius: 50%; background-color: #f8fafc;
-    border: 2px dashed #cbd5e0; background-size: cover; background-position: center;
-    display: flex; justify-content: center; align-items: center; overflow: hidden;
-}
+.foto-preview { width: 110px; height: 110px; border-radius: 50%; background-color: #f8fafc; border: 2px dashed #cbd5e0; background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; overflow: hidden; }
 .foto-acties { display: flex; flex-direction: column; gap: 5px; }
 .foto-upload-knop { color: #4A90E2; font-size: 13px; font-weight: 600; cursor: pointer; transition: color 0.2s; }
 .foto-upload-knop:hover { color: #2b6cb0; text-decoration: underline; }
@@ -306,9 +422,9 @@ body { background-color: #f5f7fb; color: #333; }
 .verwijder-knop { background-color: transparent; color: #e53e3e; border: none; font-size: 12px; font-weight: 600; cursor: pointer; }
 .verwijder-knop:hover { text-decoration: underline; }
 
-/* CV - Rechter kolom */
+/* CV RECHTERKOLOM */
 .rechterkolom { width: 50%; padding: 40px; background-color: #DBEAFE; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; }
-.cv-papier { width: 210mm; min-width: 210mm; height: 297mm; background-color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 0; overflow: hidden; display: flex; flex-shrink: 0; }
+.cv-papier { width: 210mm; min-width: 210mm; height: 297mm; background-color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 0; overflow: hidden; display: flex; flex-shrink: 0; transition: transform 0.4s ease-in-out, margin-bottom 0.4s ease-in-out; }
 .cv-zijbalk { width: 35%; color: white; padding: 40px 25px; transition: background-color 0.3s ease; text-align: left; }
 .cv-hoofdkolom { width: 65%; background-color: white; padding: 40px 35px; text-align: left; }
 .cv-profielfoto { width: 130px; height: 130px; background-color: #e2e8f0; border-radius: 50%; margin: 0 auto 30px auto; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -318,56 +434,25 @@ body { background-color: #f5f7fb; color: #333; }
 .cv-naam { font-size: 32px; font-weight: 700; color: #333; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
 
 /* RESPONSIVE DESIGN & WYSIWYG CV SCHALING */
-
-/* Voeg de transition (animatie) toe aan het cv-papier */
-.cv-papier { 
-    width: 210mm; min-width: 210mm; height: 297mm; 
-    background-color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
-    padding: 0; overflow: hidden; display: flex; flex-shrink: 0; 
-    transition: transform 0.4s ease-in-out, margin-bottom 0.4s ease-in-out; /* Zorgt voor de vloeiende overgang! */
-}
-
-/* RESPONSIVE DESIGN & WYSIWYG CV SCHALING */
-
-/* 1. Laptops en kleinere desktops: schaal het CV subtiel terug */
 @media (max-width: 1700px) and (min-width: 1367px) {
     .rechterkolom { overflow-x: hidden; }
-    .cv-papier { 
-        transform: scale(0.85); 
-        transform-origin: top center; 
-        margin-bottom: -170px; 
-    }
+    .cv-papier { transform: scale(0.85); transform-origin: top center; margin-bottom: -170px; }
 }
 @media (max-width: 1366px) and (min-width: 1025px) {
     .rechterkolom { overflow-x: hidden; }
-    .cv-papier { 
-        transform: scale(0.70); 
-        transform-origin: top center; 
-        margin-bottom: -340px; 
-    }
+    .cv-papier { transform: scale(0.70); transform-origin: top center; margin-bottom: -340px; }
 }
-
-/* 2. Tablets: Zet kolommen onder elkaar, behoud de blauwe padding rondom! */
 @media (max-width: 1024px) {
     .container { flex-direction: column; height: auto; }
     .linkerkolom { width: 100%; padding: 20px; }
     .rechterkolom { width: 100%; padding: 20px; overflow: hidden; } 
-    .cv-papier { 
-        transform: scale(0.85); 
-        transform-origin: top center; 
-        margin-bottom: -170px; 
-    }
+    .cv-papier { transform: scale(0.85); transform-origin: top center; margin-bottom: -170px; }
+    .menu-container { position: fixed; top: 15px; right: 15px; } /* Vast in hoekje op mobiel */
 }
-
-/* 3. Mobiel: Maak velden vol-breed en krimp CV naar mini-A4, met een klein blauw randje */
 @media (max-width: 600px) {
     .form-grid { grid-template-columns: 1fr; } 
     .volledige-breedte { grid-column: span 1; }
-    .rechterkolom { padding: 10px; } /* Zorgt dat het blauw altijd iets zichtbaar blijft */
-    .cv-papier { 
-        transform: scale(0.44); 
-        transform-origin: top center;
-        margin-bottom: -630px; 
-    }
+    .rechterkolom { padding: 10px; } 
+    .cv-papier { transform: scale(0.44); transform-origin: top center; margin-bottom: -630px; }
 }
 </style>
