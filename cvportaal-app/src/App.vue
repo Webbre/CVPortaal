@@ -35,36 +35,45 @@ const kleuren = [
 
 // --- LIFECYCLE & INLOG LOGICA ---
 onMounted(async () => {
-  // 1. Check direct of iemand via een magische link de app opent
-  await voltooiInloggen();
+  try {
+    // 1. Check direct of iemand via een magische link de app opent
+    await voltooiInloggen();
+  } catch (error) {
+    console.error("Fout bij voltooiInloggen:", error);
+  }
 
   // 2. Luister constant of we ingelogd zijn of niet
   luisterNaarInlogStatus(async (user) => {
-    if (user) {
-      gebruiker.value = user;
-      
-      // Haal bewaarde gegevens op uit de kluis
-      const data = await haalGegevensOp();
-      if (data) {
-        voornaam.value = data.voornaam || '';
-        achternaam.value = data.achternaam || '';
-        adres.value = data.adres || '';
-        postcode.value = data.postcode || '';
-        email.value = data.email || '';
-        telefoon.value = data.telefoon || '';
-        profieltekst.value = data.profieltekst || '';
-        heeftRijbewijs.value = data.heeftRijbewijs || false;
-        heeftAuto.value = data.heeftAuto || false;
-        profielfoto.value = data.profielfoto || null;
-        toonFotoOpCv.value = data.toonFotoOpCv !== undefined ? data.toonFotoOpCv : true;
-        gekozenKleur.value = data.gekozenKleur || '#4A90E2';
-        werkervaringen.value = data.werkervaringen || [];
+    try {
+      if (user) {
+        gebruiker.value = user;
+        
+        // Haal bewaarde gegevens op uit de kluis
+        const data = await haalGegevensOp();
+        if (data) {
+          voornaam.value = data.voornaam || '';
+          achternaam.value = data.achternaam || '';
+          adres.value = data.adres || '';
+          postcode.value = data.postcode || '';
+          email.value = data.email || '';
+          telefoon.value = data.telefoon || '';
+          profieltekst.value = data.profieltekst || '';
+          heeftRijbewijs.value = data.heeftRijbewijs || false;
+          heeftAuto.value = data.heeftAuto || false;
+          profielfoto.value = data.profielfoto || null;
+          toonFotoOpCv.value = data.toonFotoOpCv !== undefined ? data.toonFotoOpCv : true;
+          gekozenKleur.value = data.gekozenKleur || '#4A90E2';
+          werkervaringen.value = data.werkervaringen || [];
+        }
+      } else {
+        gebruiker.value = null;
+        maakCvLeeg(false);
       }
-    } else {
-      gebruiker.value = null;
-      maakCvLeeg(false); // Maak lokaal leeg zonder database te overschrijven
+    } catch (error) {
+      console.error("Fout bij het inladen van de CV-gegevens:", error);
+    } finally {
+      isLaden.value = false; // Schakel de preloader ALTIJD uit, ook bij een fout!
     }
-    isLaden.value = false; // Haal laadscherm weg
   });
 })
 
@@ -72,9 +81,15 @@ onMounted(async () => {
 async function loginMetLink() {
   if (!loginEmail.value) return;
   isLaden.value = true;
-  await stuurInlogLink(loginEmail.value);
-  linkVerstuurd.value = true;
-  isLaden.value = false;
+  try {
+    await stuurInlogLink(loginEmail.value);
+    linkVerstuurd.value = true;
+  } catch (error) {
+    console.error("Firebase Auth Fout:", error);
+    alert("Er ging iets mis: " + error.message);
+  } finally {
+    isLaden.value = false; // Schakel de preloader ALTIJD uit
+  }
 }
 
 // Actie: Uitloggen
