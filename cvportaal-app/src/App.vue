@@ -400,7 +400,7 @@ watch(
             </div>
             <div class="form-grid">
                 <div class="form-groep volledige-breedte">
-                    <label>Opleiding of Cursus</label>
+                    <label>Opleiding of cursus</label>
                     <input type="text" v-model="opl.studie" placeholder="Bijv. MBO Verkoopmedewerker">
                 </div>
                 <div class="form-groep volledige-breedte">
@@ -489,7 +489,7 @@ watch(
                 <div v-if="toonOpleidingen && opleidingen.length > 0">
                     <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Opleidingen</div>
                     <div v-for="o in opleidingen" :key="o.id" class="cv-item">
-                        <div class="cv-item-titel">{{ o.studie || 'Opleiding of Cursus' }}</div>
+                        <div class="cv-item-titel">{{ o.studie || 'Opleiding of cursus' }}</div>
                         <div class="cv-item-sub">
                             {{ o.instelling || 'School of Instituut' }} | 
                             <span v-if="o.vanMaand && o.vanJaar">{{ o.vanMaand.toString().padStart(2, '0') }}/{{ o.vanJaar }}</span>
