@@ -342,11 +342,11 @@ watch(
         <div class="form-grid">
             <div class="form-groep volledige-breedte">
                 <label>Functie</label>
-                <input type="text" v-model="werk.functie" placeholder="Bijv. automonteur">
+                <input type="text" v-model="werk.functie" placeholder="Bijv. Automonteur">
             </div>
             <div class="form-groep volledige-breedte">
                 <label>Organisatie</label>
-                <input type="text" v-model="werk.bedrijf" placeholder="Bijv. vakgarage Jansen">
+                <input type="text" v-model="werk.bedrijf" placeholder="Bijv. Vakgarage Jansen">
             </div>
             
             <div class="form-groep">
@@ -385,7 +385,7 @@ watch(
             </div>
 
             <div class="form-groep volledige-breedte">
-                <label>Korte Omschrijving</label>
+                <label>Korte omschrijving</label>
                 <textarea v-model="werk.omschrijving" rows="3" placeholder="Wat waren je taken?"></textarea>
             </div>
         </div>
