@@ -244,12 +244,12 @@ watch(
 
       <h2 class="hoofdtitel">Mijn gegevens</h2>
       <div class="form-grid">
-        <div class="form-groep"><label>Voornaam</label><input type="text" v-model="voornaam" placeholder="Bijv. Elin"></div>
-        <div class="form-groep"><label>Achternaam</label><input type="text" v-model="achternaam" placeholder="Bijv. Baanzicht"></div>
-        <div class="form-groep"><label>Adres</label><input type="text" v-model="adres" placeholder="Straat en huisnummer"></div>
-        <div class="form-groep"><label>Postcode en plaats</label><input type="text" v-model="postcode" placeholder="Bijv. 1234 AB Amsterdam"></div>
-        <div class="form-groep"><label>E-mail</label><input type="email" v-model="email" placeholder="jouwadres@mail.com"></div>
-        <div class="form-groep"><label>Telefoon</label><input type="tel" v-model="telefoon" placeholder="06 - 12345678"></div>
+        <div class="form-groep"><label>Voornaam</label><input type="text" v-model="voornaam" placeholder="Je voornaam"></div>
+        <div class="form-groep"><label>Achternaam</label><input type="text" v-model="achternaam" placeholder="Je achternaam"></div>
+        <div class="form-groep"><label>Adres</label><input type="text" v-model="adres" placeholder="Je straat en huisnummer"></div>
+        <div class="form-groep"><label>Postcode en plaats</label><input type="text" v-model="postcode" placeholder="Je postcode en plaats"></div>
+        <div class="form-groep"><label>E-mail</label><input type="email" v-model="email" placeholder="Je e-mailadres"></div>
+        <div class="form-groep"><label>Telefoon</label><input type="tel" v-model="telefoon" placeholder="Je telefoonnummer"></div>
         
         <div class="form-groep">
             <div class="foto-upload-sectie">
