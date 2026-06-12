@@ -203,7 +203,7 @@ watch(
                   <line x1="16" y1="17" x2="8" y2="17"></line>
                   <polyline points="10 9 9 9 8 9"></polyline>
               </svg>
-              <h1 class="app-titel">CVPortaal</h1>
+              <h1 class="app-titel">CVPortaal. Je cv simpel & snel.</h1>
           </div>
           <div class="menu-container-header relative">
               <button class="tandwiel-knop" @click="toonMenu = !toonMenu">
@@ -236,18 +236,18 @@ watch(
       <div class="onderdelen-grid">
           <button class="onderdeel-knop" :class="{ 'knop-uit': !toonSterkePunten }" @click="toonSterkePunten = !toonSterkePunten">Mijn sterke punten</button>
           <button class="onderdeel-knop">Waar heb ik gewerkt?</button>
-          <button class="onderdeel-knop" :class="{ 'knop-uit': !toonOpleidingen }" @click="toonOpleidingen = !toonOpleidingen">Welke opleidingen of cursus heb ik gedaan?</button>
+          <button class="onderdeel-knop" :class="{ 'knop-uit': !toonOpleidingen }" @click="toonOpleidingen = !toonOpleidingen">Welke opleiding of cursus heb ik gedaan?</button>
           <button class="onderdeel-knop">Talen die ik spreek</button>
           <button class="onderdeel-knop">Dit vind ik leuk</button>
           <button class="onderdeel-knop">Meer over mij</button>
       </div>
 
-      <h2 class="hoofdtitel">Mijn Gegevens</h2>
+      <h2 class="hoofdtitel">Mijn gegevens</h2>
       <div class="form-grid">
         <div class="form-groep"><label>Voornaam</label><input type="text" v-model="voornaam" placeholder="Bijv. Elin"></div>
         <div class="form-groep"><label>Achternaam</label><input type="text" v-model="achternaam" placeholder="Bijv. Baanzicht"></div>
         <div class="form-groep"><label>Adres</label><input type="text" v-model="adres" placeholder="Straat en huisnummer"></div>
-        <div class="form-groep"><label>Postcode en Plaats</label><input type="text" v-model="postcode" placeholder="Bijv. 1234 AB Amsterdam"></div>
+        <div class="form-groep"><label>Postcode en plaats</label><input type="text" v-model="postcode" placeholder="Bijv. 1234 AB Amsterdam"></div>
         <div class="form-groep"><label>E-mail</label><input type="email" v-model="email" placeholder="jouwadres@mail.com"></div>
         <div class="form-groep"><label>Telefoon</label><input type="tel" v-model="telefoon" placeholder="06 - 12345678"></div>
         
@@ -320,7 +320,7 @@ watch(
             <div class="cv-zijbalk" :style="{ backgroundColor: gekozenKleur }">
                 <div v-if="profielfoto && toonFotoOpCv" class="cv-profielfoto" :style="{ backgroundImage: `url(${profielfoto})`, backgroundSize: 'cover' }"></div>
                 <div v-else style="height: 40px;"></div>
-                <div class="cv-sectie-titel-zijbalk">Mijn Gegevens</div>
+                <div class="cv-sectie-titel-zijbalk">Mijn gegevens</div>
                 <div class="cv-tekst-zijbalk">{{ adres || 'Adres' }}<br>{{ postcode || 'Plaats' }}</div>
                 <div class="cv-tekst-zijbalk" style="margin-top: 12px;">{{ email || 'E-mail' }}<br>{{ telefoon || 'Telefoon' }}</div>
                 <div v-if="heeftRijbewijs || heeftAuto" style="margin-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.3); padding-top: 15px;">
