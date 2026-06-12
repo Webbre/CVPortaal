@@ -334,7 +334,7 @@ watch(
                         <option value="">Maand</option>
                         <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                     </select>
-                    <input type="text" v-model="werk.vanJaar" placeholder="Jaar (Bijv. 2020)" style="width: 50%;">
+                    <input type="text" v-model.lazy="werk.vanJaar" placeholder="Jaar (Bijv. 2020)" style="width: 50%;">
                 </div>
             </div>
 
