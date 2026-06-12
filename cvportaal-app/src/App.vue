@@ -363,65 +363,128 @@ watch(
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-body { background-color: #f5f7fb; overflow-x: hidden; }
+body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 
-/* LAYOUT */
+/* LAYOUT STRUCTUUR */
 .volledig-scherm { height: 100vh; width: 100vw; display: flex; flex-direction: column; }
-.center-inhoud { justify-content: center; align-items: center; }
+.center-inhoud { justify-content: center; align-items: center; text-align: center; }
 .container { display: flex; height: 100vh; }
+.relative { position: relative; }
 .inlog-achtergrond { background-color: #DBEAFE; }
-.inlog-box { background: white; padding: 40px; border-radius: 12px; width: 100%; max-width: 400px; text-align: center; }
+.inlog-box { background: white; padding: 40px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
 
-/* HEADER */
+/* HEADER & MENU */
 .app-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #edf2f7; padding-bottom: 20px; margin-bottom: 20px; }
 .app-logo-groep { display: flex; align-items: center; gap: 10px; }
-.app-titel { font-size: 20px; font-weight: 800; color: #1a202c; letter-spacing: -0.5px; }
+.app-titel { font-size: 20px; font-weight: 800; color: #1a202c; letter-spacing: -0.5px; margin: 0; }
+.menu-container-header { position: relative; }
+.tandwiel-knop { background: white; border: 1px solid #e2e8f0; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.3s, border-color 0.2s; color: #4a5568;}
+.tandwiel-knop:hover { transform: rotate(45deg); border-color: #4A90E2; color: #4A90E2; }
+.dropdown-menu-header { position: absolute; top: 50px; right: 0; background: white; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 220px; z-index: 100; border: 1px solid #e2e8f0; text-align: left; }
+.dropdown-header { padding: 15px; background: #f8fafc; font-size: 12px; color: #718096; border-bottom: 1px solid #e2e8f0; word-break: break-all; margin: 0;}
+.dropdown-item { width: 100%; text-align: left; background: none; border: none; padding: 12px 15px; font-size: 13px; font-weight: 600; cursor: pointer; color: #4a5568; transition: background 0.2s;}
+.dropdown-item:hover { background: #edf2f7; color: #1a202c;}
 
-/* MENU */
-.tandwiel-knop { background: white; border: 1px solid #e2e8f0; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.3s; }
-.tandwiel-knop:hover { transform: rotate(45deg); border-color: #4A90E2; }
-.dropdown-menu-header { position: absolute; top: 50px; right: 0; background: white; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 220px; z-index: 100; border: 1px solid #e2e8f0; }
-.dropdown-header { padding: 12px; background: #f8fafc; font-size: 11px; color: #718096; border-bottom: 1px solid #e2e8f0; }
-.dropdown-item { width: 100%; text-align: left; background: none; border: none; padding: 12px; font-size: 13px; font-weight: 600; cursor: pointer; }
-.dropdown-item:hover { background: #f1f5f9; }
-
-/* FORMULIER */
+/* FORMULIER & LINKERKOLOM */
 .linkerkolom { width: 50%; padding: 40px; background: white; overflow-y: auto; border-right: 1px solid #e2e8f0; }
-.hoofdtitel { font-size: 16px; font-weight: 700; color: #4a5568; text-transform: uppercase; margin-top: 30px; margin-bottom: 15px; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.volledige-breedte { grid-column: span 2; }
-.form-groep label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: #4a5568; }
-.form-groep input, .form-groep textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background: #f8fafc; }
-.form-groep input:focus { border-color: #4A90E2; outline: none; background: white; }
+.hoofdtitel { font-size: 16px; font-weight: 700; color: #4a5568; text-transform: uppercase; margin-top: 30px; margin-bottom: 15px; letter-spacing: 0.5px; }
 
-/* KNOPPEN */
-.hoofd-knop { background: #4A90E2; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }
-.toevoeg-knop { background: white; color: #4A90E2; border: 2px dashed #4A90E2; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; }
+/* HERSTELD: VARIANTEN EN KLEUREN */
+.varianten-grid { display: flex; gap: 15px; margin-bottom: 20px; }
+.variant-kaart { flex: 1; border: 2px solid #edf2f7; border-radius: 6px; padding: 15px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600; color: #a0aec0; background-color: #fafbfe; }
+.variant-kaart.actief { border-color: #4A90E2; color: #4A90E2; background-color: #ffffff; }
+.variant-kaart.inactief { opacity: 0.5; cursor: not-allowed; background-color: #f8fafc; border-color: #e2e8f0; color: #cbd5e0; }
+
+.kleur-kiezer { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; text-align: center; }
+.kleur-rondje { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.1s ease; }
+.kleur-rondje:hover { transform: scale(1.1); }
+.kleur-rondje.actief { border-color: #333; }
+
+/* ONDERDELEN KNOPPEN */
+.onderdelen-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #edf2f7; padding-bottom: 25px; }
+.onderdeel-knop { background: #4A90E2; color: white; border: none; padding: 10px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+.onderdeel-knop:hover { background-color: #357ABD; }
+.knop-uit { background: #e2e8f0; color: #a0aec0; }
+.knop-uit:hover { background: #cbd5e0; }
+
+/* GRID & INPUTS */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;}
+.volledige-breedte { grid-column: span 2; }
+.form-groep label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #4a5568; text-align: left;}
+.form-groep input, .form-groep textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background: #f8fafc; transition: all 0.2s;}
+.form-groep input:focus, .form-groep textarea:focus { border-color: #4A90E2; outline: none; background: white; }
+
+/* TOGGLES (SCHUIFJES) */
+.toggle-container { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+.toggle-label { font-size: 14px; color: #4a5568; }
+.toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e0; transition: .3s; border-radius: 24px; }
+.toggle-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+.toggle-switch input:checked + .toggle-slider { background-color: #4A90E2; }
+.toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
+
+/* FOTO UPLOAD */
+.foto-upload-sectie { display: flex; flex-direction: column; gap: 10px; }
+.foto-preview-container { display: flex; align-items: center; gap: 20px; }
+.foto-preview { width: 110px; height: 110px; border-radius: 50%; background-color: #f8fafc; border: 2px dashed #cbd5e0; background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+.foto-acties { display: flex; flex-direction: column; gap: 5px; }
+.foto-upload-knop { color: #4A90E2; font-size: 13px; font-weight: 600; cursor: pointer; transition: color 0.2s; }
+.foto-upload-knop:hover { color: #2b6cb0; text-decoration: underline; }
+.foto-verwijder-knop { background: none; border: none; color: #e53e3e; font-size: 13px; font-weight: 600; cursor: pointer; text-align: left; padding: 0; }
+.foto-verwijder-knop:hover { text-decoration: underline; }
+
+/* DYNAMISCHE BLOKKEN EN ALGEMENE KNOPPEN */
+.dynamisch-blok { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+.hoofd-knop { background: #4A90E2; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.toevoeg-knop { background: white; color: #4A90E2; border: 2px dashed #4A90E2; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s;}
+.toevoeg-knop:hover { background: #eff6ff;}
 .toevoeg-knop-sec { background: transparent; color: #4A90E2; border: none; font-size: 13px; font-weight: 600; cursor: pointer; }
 .verwijder-knop { background: none; border: none; color: #e53e3e; font-size: 12px; font-weight: 600; cursor: pointer; }
-.verwijder-knop-klein { background: #fee2e2; border: none; color: #e53e3e; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; }
-.onderdeel-knop { background: #4A90E2; color: white; border: none; padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-.knop-uit { background: #e2e8f0; color: #a0aec0; }
+.verwijder-knop:hover { text-decoration: underline; }
+.verwijder-knop-klein { background: #fee2e2; border: none; color: #e53e3e; width: 42px; height: 44px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px;}
 
-/* CV PAPIER */
-.rechterkolom { width: 50%; padding: 40px; background: #DBEAFE; display: flex; justify-content: center; overflow-y: auto; }
-.cv-papier { width: 210mm; height: 297mm; background: white; display: flex; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-.cv-zijbalk { width: 33%; color: white; padding: 30px 20px; }
-.cv-hoofdkolom { width: 67%; padding: 40px 30px; }
-.cv-naam { font-size: 28px; font-weight: 700; text-transform: uppercase; text-align: center; margin-bottom: 30px; color: #1a202c; }
-.cv-sectie-titel-hoofd { font-size: 14px; font-weight: 700; text-transform: uppercase; border-bottom: 2px solid #edf2f7; padding-bottom: 5px; margin-top: 25px; margin-bottom: 10px; }
-.cv-item { margin-bottom: 15px; }
-.cv-item-titel { font-size: 14px; font-weight: 700; color: #2d3748; }
-.cv-item-sub { font-size: 12px; font-weight: 600; color: #718096; }
+/* CV PAPIER RECHTERKOLOM */
+.rechterkolom { width: 50%; padding: 40px; background: #DBEAFE; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; }
+.cv-papier { width: 210mm; min-width: 210mm; height: 297mm; background: white; display: flex; box-shadow: 0 10px 30px rgba(0,0,0,0.15); flex-shrink: 0; transition: transform 0.4s ease-in-out, margin-bottom 0.4s ease-in-out;}
+.cv-zijbalk { width: 35%; color: white; padding: 40px 25px; transition: background-color 0.3s ease; text-align: left; }
+.cv-hoofdkolom { width: 65%; padding: 40px 35px; text-align: left; }
+.cv-profielfoto { width: 130px; height: 130px; background-color: #e2e8f0; border-radius: 50%; margin: 0 auto 30px auto; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.cv-sectie-titel-zijbalk { font-size: 13px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255, 255, 255, 0.3); padding-bottom: 5px; }
+.cv-tekst-zijbalk { font-size: 12px; margin-bottom: 12px; line-height: 1.4; }
+.cv-naam { font-size: 32px; font-weight: 700; text-transform: uppercase; text-align: center; margin-bottom: 25px; color: #333; letter-spacing: 1px;}
+.cv-sectie-titel-hoofd { font-size: 14px; font-weight: 700; text-transform: uppercase; border-bottom: 2px solid #edf2f7; padding-bottom: 5px; margin-top: 25px; margin-bottom: 10px; letter-spacing: 1px; transition: color 0.3s ease;}
+.cv-item { margin-bottom: 20px; }
+.cv-item-titel { font-size: 14px; font-weight: 700; color: #333; }
+.cv-item-sub { font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 4px; }
 .cv-p { font-size: 13px; line-height: 1.5; color: #4a5568; }
-.cv-p-italic { font-size: 12px; color: #a0aec0; font-style: italic; }
-.cv-lijst { padding-left: 18px; font-size: 13px; color: #4a5568; }
+.cv-p-italic { font-size: 13px; color: #a0aec0; font-style: italic; margin-bottom: 20px;}
+.cv-lijst { padding-left: 20px; margin-bottom: 25px; font-size: 13px; color: #4a5568; line-height: 1.6; }
 
-/* SCHALING */
-@media (max-width: 1400px) { .cv-papier { transform: scale(0.75); transform-origin: top center; } }
-@media (max-width: 600px) { .container { flex-direction: column; } .linkerkolom, .rechterkolom { width: 100%; } .cv-papier { transform: scale(0.45); } }
+/* WYSIWYG SCHALING */
+@media (max-width: 1700px) and (min-width: 1367px) {
+    .rechterkolom { overflow-x: hidden; }
+    .cv-papier { transform: scale(0.85); transform-origin: top center; margin-bottom: -170px; }
+}
+@media (max-width: 1366px) and (min-width: 1025px) {
+    .rechterkolom { overflow-x: hidden; }
+    .cv-papier { transform: scale(0.70); transform-origin: top center; margin-bottom: -340px; }
+}
+@media (max-width: 1024px) {
+    .container { flex-direction: column; height: auto; }
+    .linkerkolom { width: 100%; padding: 20px; }
+    .rechterkolom { width: 100%; padding: 20px; overflow: hidden; } 
+    .cv-papier { transform: scale(0.85); transform-origin: top center; margin-bottom: -170px; }
+    .menu-container-header { position: absolute; right: 20px; top: 20px; } 
+}
+@media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; } 
+    .volledige-breedte { grid-column: span 1; }
+    .rechterkolom { padding: 10px; } 
+    .cv-papier { transform: scale(0.44); transform-origin: top center; margin-bottom: -630px; }
+}
 
 /* LOADER */
-.loader { border: 4px solid #f3f3f3; border-top: 4px solid #4A90E2; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+.loader { border: 4px solid #f3f3f3; border-top: 4px solid #4A90E2; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 </style>
