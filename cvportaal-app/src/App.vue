@@ -135,8 +135,18 @@ function verwijderFoto() { profielfoto.value = null }
 function veranderKleur(kleur) { gekozenKleur.value = kleur }
 
 // Functies voor dynamische lijsten
-function voegWerkervaringToe() { werkervaringen.value.push({ functie: '', bedrijf: '', periode: '', omschrijving: '' }) }
-function verwijderWerkervaring(index) { werkervaringen.value.splice(index, 1) }
+function voegWerkervaringToe() { 
+  werkervaringen.value.push({ 
+    functie: '', 
+    bedrijf: '', 
+    vanMaand: '', 
+    vanJaar: '', 
+    totMaand: '', 
+    totJaar: '', 
+    isHuidigeBaan: false, 
+    omschrijving: '' 
+  }) 
+}function verwijderWerkervaring(index) { werkervaringen.value.splice(index, 1) }
 
 function voegSterkPuntToe() { sterkePunten.value.push({ tekst: '' }) }
 function verwijderSterkPunt(index) { sterkePunten.value.splice(index, 1) }
@@ -158,10 +168,24 @@ function triggerOpslaan() {
     toonOpleidingen: toonOpleidingen.value, opleidingen: opleidingen.value
   });
 }
-
+// PLAK HET HIER (Regel 71)
+function sorteerErvaringen() {
+  werkervaringen.value.sort((a, b) => {
+    if (a.isHuidigeBaan && !b.isHuidigeBaan) return -1;
+    if (!a.isHuidigeBaan && b.isHuidigeBaan) return 1;
+    
+    const jaarA = parseInt(a.vanJaar) || 0;
+    const jaarB = parseInt(b.vanJaar) || 0;
+    if (jaarB !== jaarA) return jaarB - jaarA;
+    
+    const maandA = parseInt(a.vanMaand) || 0;
+    const maandB = parseInt(b.vanMaand) || 0;
+    return maandB - maandA;
+  });
+}
 watch(
   [voornaam, achternaam, adres, postcode, email, telefoon, profieltekst, gekozenKleur, werkervaringen, sterkePunten, toonSterkePunten, opleidingen, toonOpleidingen, heeftRijbewijs, heeftAuto, profielfoto, toonFotoOpCv],
-  () => { triggerOpslaan(); },
+  () => { sorteerErvaringen(); triggerOpslaan(); },
   { deep: true } 
 )
 </script>
@@ -288,14 +312,60 @@ watch(
           <button class="toevoeg-knop-sec" @click="voegSterkPuntToe">+ Voeg sterk punt toe</button>
       </div>
 
-      <h2 class="hoofdtitel">Werkervaring</h2>
+<h2 class="hoofdtitel">Werkervaring</h2>
       <div v-for="(werk, index) in werkervaringen" :key="index" class="dynamisch-blok">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;"><strong style="font-size: 14px; color: #4A90E2;">Ervaring {{ index + 1 }}</strong><button class="verwijder-knop" @click="verwijderWerkervaring(index)">Verwijderen</button></div>
+        <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
+            <button class="verwijder-knop" @click="verwijderWerkervaring(index)">Verwijderen</button>
+        </div>
         <div class="form-grid">
-            <div class="form-groep volledige-breedte"><label>Functie</label><input type="text" v-model="werk.functie"></div>
-            <div class="form-groep"><label>Bedrijf</label><input type="text" v-model="werk.bedrijf"></div>
-            <div class="form-groep"><label>Periode</label><input type="text" v-model="werk.periode"></div>
-            <div class="form-groep volledige-breedte"><label>Omschrijving</label><textarea v-model="werk.omschrijving" rows="3"></textarea></div>
+            <div class="form-groep volledige-breedte">
+                <label>Functie</label>
+                <input type="text" v-model="werk.functie" placeholder="Bijv. automonteur">
+            </div>
+            <div class="form-groep volledige-breedte">
+                <label>Organisatie</label>
+                <input type="text" v-model="werk.bedrijf" placeholder="Bijv. vakgarage Jansen">
+            </div>
+            
+            <div class="form-groep">
+                <label>Van</label>
+                <div style="display: flex; gap: 8px;">
+                    <select v-model="werk.vanMaand" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                        <option value="">Maand</option>
+                        <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
+                    </select>
+                    <input type="text" v-model="werk.vanJaar" placeholder="Jaar (Bijv. 2020)" style="width: 50%;">
+                </div>
+            </div>
+
+            <div class="form-groep">
+                <label>Tot</label>
+                <div style="display: flex; gap: 8px;" v-if="!werk.isHuidigeBaan">
+                    <select v-model="werk.totMaand" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                        <option value="">Maand</option>
+                        <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
+                    </select>
+                    <input type="text" v-model="werk.totJaar" placeholder="Jaar (Bijv. 2023)" style="width: 50%;">
+                </div>
+                <div v-else style="display: flex; align-items: center; height: 46px; color: #718096; font-size: 14px; font-weight: 600;">
+                    Heden
+                </div>
+            </div>
+
+            <div class="form-groep volledige-breedte">
+                <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
+                    <label class="toggle-switch">
+                        <input type="checkbox" v-model="werk.isHuidigeBaan">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label" style="font-weight: 600;">Ik werk hier nu nog</span>
+                </div>
+            </div>
+
+            <div class="form-groep volledige-breedte">
+                <label>Korte Omschrijving</label>
+                <textarea v-model="werk.omschrijving" rows="3" placeholder="Wat waren je taken?"></textarea>
+            </div>
         </div>
       </div>
       <button class="toevoeg-knop" @click="voegWerkervaringToe">+ Voeg werkervaring toe</button>
@@ -343,7 +413,14 @@ watch(
                 <div v-if="werkervaringen.length === 0"><p class="cv-p-italic">Nog geen werkervaring toegevoegd.</p></div>
                 <div v-for="w in werkervaringen" class="cv-item">
                     <div class="cv-item-titel">{{ w.functie || 'Functie' }}</div>
-                    <div class="cv-item-sub">{{ w.bedrijf }} | {{ w.periode }}</div>
+                    <div class="cv-item-sub">
+    {{ w.bedrijf }} | 
+    <span v-if="w.vanMaand && w.vanJaar">
+        {{ w.vanMaand.toString().padStart(2, '0') }}/{{ w.vanJaar }}
+    </span>
+    <span v-if="w.isHuidigeBaan"> - Heden</span>
+    <span v-else-if="w.totMaand && w.totJaar"> - {{ w.totMaand.toString().padStart(2, '0') }}/{{ w.totJaar }}</span>
+</div>
                     <p class="cv-p">{{ w.omschrijving }}</p>
                 </div>
 
