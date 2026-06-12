@@ -194,27 +194,40 @@ watch(
 
   <div v-else class="container relative">
     
-    <div class="menu-container">
-        <button class="tandwiel-knop" @click="toonMenu = !toonMenu" title="Instellingen">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-            </svg>
-        </button>
-        <div v-if="toonMenu" class="dropdown-menu">
-            <p class="dropdown-header">Ingelogd als<br><strong>{{ gebruiker.email }}</strong></p>
-            <button class="dropdown-item" @click="resetMijnCV">⚠️ CV Leegmaken</button>
-            <button class="dropdown-item" @click="logMijUit">Uitloggen</button>
-        </div>
-    </div>
-
     <div class="linkerkolom">
       
-      <h2 class="hoofdtitel">Kies je cv variant</h2>
+      <div class="app-header">
+          <div class="app-logo-groep">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#4A90E2" stroke-width="2" width="28" height="28">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <h1 class="app-titel">CVPortaal</h1>
+          </div>
+          
+          <div class="menu-container-header relative">
+              <button class="tandwiel-knop" @click="toonMenu = !toonMenu" title="Instellingen">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                      <circle cx="12" cy="12" r="3"></circle>
+                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                  </svg>
+              </button>
+              <div v-if="toonMenu" class="dropdown-menu-header">
+                  <p class="dropdown-header">Ingelogd als<br><strong>{{ gebruiker.email }}</strong></p>
+                  <button class="dropdown-item" @click="resetMijnCV">⚠️ CV Leegmaken</button>
+                  <button class="dropdown-item" @click="logMijUit">Uitloggen</button>
+              </div>
+          </div>
+      </div>
+      
+      <h2 class="hoofdtitel" style="margin-top: 10px;">Kies je cv variant</h2>
       <div class="varianten-grid">
-          <div class="variant-kaart actief">Elin Baanzicht<br>(Basis)</div>
-          <div class="variant-kaart">Klassiek<br>(Zonder Balk)</div>
-          <div class="variant-kaart">Modern<br>(Gekleurd)</div>
+          <div class="variant-kaart actief">Basis</div>
+          <div class="variant-kaart inactief" title="Binnenkort beschikbaar">Klassiek</div>
+          <div class="variant-kaart inactief" title="Binnenkort beschikbaar">Modern</div>
       </div>
 
       <p style="font-size: 13px; font-weight:600; color:#718096; margin-bottom:8px;">Kies je kleur</p>
@@ -316,7 +329,7 @@ watch(
             <div class="form-groep volledige-breedte"><label>Functie</label><input type="text" v-model="werk.functie" placeholder="Bijv. Verkoopmedewerker"></div>
             <div class="form-groep"><label>Bedrijf of Organisatie</label><input type="text" v-model="werk.bedrijf" placeholder="Bijv. Supermarkt De Boer"></div>
             <div class="form-groep"><label>Periode</label><input type="text" v-model="werk.periode" placeholder="Bijv. 2020 - Heden"></div>
-            <div class="form-groep volledige-breedte"><label>Korte Omschrijving</label><textarea v-model="werk.omschrijving" rows="3" placeholder="Wat waren je taken?"></textarea></div>
+            <div class="form-groep volledige-breedte"><label>Korte Omschrijving</label><textarea v-model="werk.omschrijving" rows="3" placeholder="Wat waren je tasks?"></textarea></div>
         </div>
       </div>
 
@@ -329,7 +342,7 @@ watch(
             
             <div class="cv-zijbalk" :style="{ backgroundColor: gekozenKleur }">
                 
-                <div v-if="profielfoto && toonFotoOpCv" class="cv-profielfoto" :style="{ backgroundImage: `url(${profielfoto})`, backgroundSize: 'cover', backgroundPosition: 'center' }"></div>
+                <div v-if="profielfoto && toonFotoOpCv" class="cv-profielfoto" :style="{ backgroundImage: `url(${profifielfoto || profielfoto})`, backgroundSize: 'cover', backgroundPosition: 'center' }"></div>
                 <div v-else style="height: 40px;"></div>
 
                 <div class="cv-sectie-titel-zijbalk">Mijn Gegevens</div>
@@ -388,38 +401,42 @@ watch(
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
 body { background-color: #f5f7fb; color: #333; overflow-x: hidden; }
 
-/* NIEUW: LAYOUT STRUCTUUR */
+/* LAYOUT STRUCTUUR */
 .volledig-scherm { height: 100vh; width: 100vw; display: flex; flex-direction: column; }
 .center-inhoud { justify-content: center; align-items: center; text-align: center; }
 .relative { position: relative; }
 .container { display: flex; height: 100vh; }
 
-/* NIEUW: INLOG SCHERM STYLING */
+/* INLOG SCHERM STYLING */
 .inlog-achtergrond { background-color: #DBEAFE; }
 .inlog-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 400px; }
 .hoofd-knop { background-color: #4A90E2; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
 .hoofd-knop:hover { background-color: #357ABD; }
 
-/* NIEUW: TANDWIEL MENU */
-.menu-container { position: absolute; top: 20px; right: 20px; z-index: 100; }
-.tandwiel-knop { background: white; border: 1px solid #e2e8f0; border-radius: 50%; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.3s; color: #4a5568; }
-.tandwiel-knop:hover { transform: rotate(45deg); color: #4A90E2; }
-.dropdown-menu { position: absolute; top: 55px; right: 0; background: white; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 220px; overflow: hidden; border: 1px solid #e2e8f0; text-align: left; }
+/* APP HEADER & VAST MENU STYLING */
+.app-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #edf2f7; padding-bottom: 20px; margin-bottom: 20px; }
+.app-logo-groep { display: flex; align-items: center; gap: 10px; }
+.app-titel { font-size: 20px; font-weight: 800; color: #1a202c; letter-spacing: -0.5px; margin: 0; }
+.menu-container-header { position: relative; }
+.tandwiel-knop { background: white; border: 1px solid #e2e8f0; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.3s, border-color 0.2s; color: #4a5568; }
+.tandwiel-knop:hover { transform: rotate(45deg); color: #4A90E2; border-color: #4A90E2; }
+.dropdown-menu-header { position: absolute; top: 50px; right: 0; background: white; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 220px; z-index: 100; overflow: hidden; border: 1px solid #e2e8f0; text-align: left; }
 .dropdown-header { padding: 15px; background: #f8fafc; font-size: 12px; color: #718096; border-bottom: 1px solid #e2e8f0; word-break: break-all; }
 .dropdown-item { width: 100%; text-align: left; background: none; border: none; padding: 12px 15px; font-size: 13px; font-weight: 600; color: #4a5568; cursor: pointer; transition: background 0.2s; }
 .dropdown-item:hover { background: #edf2f7; color: #1a202c; }
 
-/* NIEUW: LAAD SPINNER */
+/* LAAD SPINNER */
 .loader { border: 4px solid #f3f3f3; border-top: 4px solid #4A90E2; border-radius: 50%; width: 40px; height: 40px; animation: draai 1s linear infinite; }
 @keyframes draai { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* BESTAANDE CSS (Invoer kolommen en CV weergave) */
+/* INVOER KOLOMMEN EN VARIANTEN */
 .linkerkolom { width: 50%; padding: 40px; background-color: #ffffff; overflow-y: auto; border-right: 1px solid #e2e8f0; }
 .hoofdtitel { font-size: 18px; font-weight: 700; color: #4a5568; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 30px; margin-bottom: 15px; }
 
 .varianten-grid { display: flex; gap: 15px; margin-bottom: 20px; }
 .variant-kaart { flex: 1; border: 2px solid #edf2f7; border-radius: 6px; padding: 15px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600; color: #a0aec0; background-color: #fafbfe; }
 .variant-kaart.actief { border-color: #4A90E2; color: #4A90E2; background-color: #ffffff; }
+.variant-kaart.inactief { opacity: 0.5; cursor: not-allowed; background-color: #f8fafc; border-color: #e2e8f0; color: #cbd5e0; }
 
 .kleur-kiezer { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; text-align: center; }
 .kleur-rondje { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.1s ease; }
@@ -436,7 +453,7 @@ body { background-color: #f5f7fb; color: #333; overflow-x: hidden; }
 .form-groep input[type="text"], .form-groep input[type="email"], .form-groep input[type="tel"], .form-groep textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background-color: #f8fafc; transition: border-color 0.2s, background-color 0.2s; }
 .form-groep input:focus, .form-groep textarea:focus { outline: none; border-color: #4A90E2; background-color: #ffffff; }
 
-/* MODERNE TOGGLES (Schuifjes) */
+/* MODERNE TOGGLES */
 .toggle-container { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
 .toggle-label { font-size: 14px; color: #4a5568; }
 .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
@@ -462,7 +479,7 @@ body { background-color: #f5f7fb; color: #333; overflow-x: hidden; }
 .verwijder-knop { background-color: transparent; color: #e53e3e; border: none; font-size: 12px; font-weight: 600; cursor: pointer; }
 .verwijder-knop:hover { text-decoration: underline; }
 
-/* CV RECHTERKOLOM */
+/* CV RECHTERKOLOM EN PRINT MODEL */
 .rechterkolom { width: 50%; padding: 40px; background-color: #DBEAFE; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; }
 .cv-papier { width: 210mm; min-width: 210mm; height: 297mm; background-color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 0; overflow: hidden; display: flex; flex-shrink: 0; transition: transform 0.4s ease-in-out, margin-bottom 0.4s ease-in-out; }
 .cv-zijbalk { width: 35%; color: white; padding: 40px 25px; transition: background-color 0.3s ease; text-align: left; }
@@ -487,7 +504,7 @@ body { background-color: #f5f7fb; color: #333; overflow-x: hidden; }
     .linkerkolom { width: 100%; padding: 20px; }
     .rechterkolom { width: 100%; padding: 20px; overflow: hidden; } 
     .cv-papier { transform: scale(0.85); transform-origin: top center; margin-bottom: -170px; }
-    .menu-container { position: fixed; top: 15px; right: 15px; } /* Vast in hoekje op mobiel */
+    .menu-container-header { position: relative; }
 }
 @media (max-width: 600px) {
     .form-grid { grid-template-columns: 1fr; } 
