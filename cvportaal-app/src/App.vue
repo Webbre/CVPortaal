@@ -27,6 +27,8 @@ const profielfoto = ref(null)
 const toonFotoOpCv = ref(true)
 const gekozenKleur = ref('#4A90E2')
 const werkervaringen = ref([])
+const toonSterkePunten = ref(true)
+const sterkePunten = ref([])
 
 const kleuren = [
   '#4A90E2', '#E24A4A', '#2ECC71', '#9B59B6', '#F1C40F',
@@ -64,6 +66,8 @@ onMounted(async () => {
           toonFotoOpCv.value = data.toonFotoOpCv !== undefined ? data.toonFotoOpCv : true;
           gekozenKleur.value = data.gekozenKleur || '#4A90E2';
           werkervaringen.value = data.werkervaringen || [];
+          toonSterkePunten.value = data.toonSterkePunten !== undefined ? data.toonSterkePunten : true;
+          sterkePunten.value = data.sterkePunten || [];
         }
       } else {
         gebruiker.value = null;
@@ -113,6 +117,7 @@ function maakCvLeeg(forceerDatabaseOpslag = false) {
   email.value = ''; telefoon.value = ''; profieltekst.value = '';
   heeftRijbewijs.value = false; heeftAuto.value = false; profielfoto.value = null;
   gekozenKleur.value = '#4A90E2'; werkervaringen.value = [];
+  toonSterkePunten.value = true; sterkePunten.value = [];
   
   if (forceerDatabaseOpslag) triggerOpslaan();
 }
@@ -131,6 +136,8 @@ function verwijderFoto() { profielfoto.value = null }
 function veranderKleur(kleur) { gekozenKleur.value = kleur }
 function voegWerkervaringToe() { werkervaringen.value.push({ functie: '', bedrijf: '', periode: '', omschrijving: '' }) }
 function verwijderWerkervaring(index) { werkervaringen.value.splice(index, 1) }
+function voegSterkPuntToe() { sterkePunten.value.push({ tekst: '' }) }
+function verwijderSterkPunt(index) { sterkePunten.value.splice(index, 1) }
 
 // Database trigger
 function triggerOpslaan() {
@@ -141,13 +148,14 @@ function triggerOpslaan() {
     heeftRijbewijs: heeftRijbewijs.value, heeftAuto: heeftAuto.value,
     profielfoto: profielfoto.value, toonFotoOpCv: toonFotoOpCv.value,
     profieltekst: profieltekst.value, gekozenKleur: gekozenKleur.value,
-    werkervaringen: werkervaringen.value
+    werkervaringen: werkervaringen.value, toonSterkePunten: toonSterkePunten.value,
+    sterkePunten: sterkePunten.value
   });
 }
 
 // Houd alle wijzigingen in de gaten om realtime op te slaan
 watch(
-  [voornaam, achternaam, adres, postcode, email, telefoon, profieltekst, gekozenKleur, werkervaringen, heeftRijbewijs, heeftAuto, profielfoto, toonFotoOpCv],
+  [voornaam, achternaam, adres, postcode, email, telefoon, profieltekst, gekozenKleur, werkervaringen, heeftRijbewijs, heeftAuto, profielfoto, toonFotoOpCv, toonSterkePunten, sterkePunten],
   () => { triggerOpslaan(); },
   { deep: true } 
 )
@@ -218,7 +226,7 @@ watch(
 
       <h2 class="hoofdtitel">Kies je cv onderdelen</h2>
       <div class="onderdelen-grid">
-          <button class="onderdeel-knop">Mijn sterke punten</button>
+          <button class="onderdeel-knop" :style="toonSterkePunten ? {} : { backgroundColor: '#e2e8f0', color: '#a0aec0' }" @click="toonSterkePunten = !toonSterkePunten">Mijn sterke punten</button>
           <button class="onderdeel-knop">Waar heb ik gewerkt?</button>
           <button class="onderdeel-knop">Welke opleidingen of cursus heb ik gedaan?</button>
           <button class="onderdeel-knop">Talen die ik spreek</button>
@@ -289,6 +297,15 @@ watch(
           <textarea v-model="profieltekst" rows="5" placeholder="Ik ben een enthousiaste werknemer..."></textarea>
       </div>
 
+      <div v-if="toonSterkePunten">
+          <h2 class="hoofdtitel">Mijn sterke punten</h2>
+          <div v-for="(punt, index) in sterkePunten" :key="index" style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center;">
+              <input type="text" v-model="punt.tekst" placeholder="Bijv. Klantvriendelijk of Flexibel" style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px;">
+              <button class="verwijder-knop" @click="verwijderSterkPunt(index)" style="background: #fee2e2; width: 42px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; height: 44px;">✕</button>
+          </div>
+          <button class="toevoeg-knop" style="margin-bottom: 20px;" @click="voegSterkPuntToe">+ Voeg sterk punt toe</button>
+      </div>
+
       <h2 class="hoofdtitel">Werkervaring</h2>
       <div v-for="(werk, index) in werkervaringen" :key="index" class="dynamisch-blok">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -334,6 +351,15 @@ watch(
                 <p style="font-size: 13px; line-height: 1.6; color: #4a5568;">
                     {{ profieltekst || 'Hier verschijnt straks automatisch jouw profieltekst...' }}
                 </p>
+                
+                <div v-if="toonSterkePunten && sterkePunten.length > 0">
+                    <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Mijn sterke punten</div>
+                    <ul style="padding-left: 20px; margin-bottom: 25px; font-size: 13px; color: #4a5568; line-height: 1.6;">
+                        <li v-for="(punt, index) in sterkePunten" :key="index" v-show="punt.tekst">
+                            {{ punt.tekst }}
+                        </li>
+                    </ul>
+                </div>
                 
                 <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Werkervaring</div>
                 <div v-if="werkervaringen.length === 0">
@@ -386,7 +412,6 @@ body { background-color: #f5f7fb; color: #333; overflow-x: hidden; }
 /* NIEUW: LAAD SPINNER */
 .loader { border: 4px solid #f3f3f3; border-top: 4px solid #4A90E2; border-radius: 50%; width: 40px; height: 40px; animation: draai 1s linear infinite; }
 @keyframes draai { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
 
 /* BESTAANDE CSS (Invoer kolommen en CV weergave) */
 .linkerkolom { width: 50%; padding: 40px; background-color: #ffffff; overflow-y: auto; border-right: 1px solid #e2e8f0; }
