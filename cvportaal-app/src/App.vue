@@ -65,11 +65,14 @@ onMounted(async () => {
           profielfoto.value = data.profielfoto || null;
           toonFotoOpCv.value = data.toonFotoOpCv !== undefined ? data.toonFotoOpCv : true;
           gekozenKleur.value = data.gekozenKleur || '#4A90E2';
-          werkervaringen.value = data.werkervaringen || [];
+          
+          // Data inladen én oude data voorzien van een uniek ID als ze dat nog niet hadden
+          werkervaringen.value = (data.werkervaringen || []).map(w => ({ id: w.id || Date.now() + Math.random(), ...w }));
+          opleidingen.value = (data.opleidingen || []).map(o => ({ id: o.id || Date.now() + Math.random(), ...o }));
+          
           toonSterkePunten.value = data.toonSterkePunten !== undefined ? data.toonSterkePunten : true;
           sterkePunten.value = data.sterkePunten || [];
           toonOpleidingen.value = data.toonOpleidingen !== undefined ? data.toonOpleidingen : true;
-          opleidingen.value = data.opleidingen || [];
         }
       } else {
         gebruiker.value = null;
@@ -137,22 +140,55 @@ function veranderKleur(kleur) { gekozenKleur.value = kleur }
 // Functies voor dynamische lijsten
 function voegWerkervaringToe() { 
   werkervaringen.value.push({ 
-    functie: '', 
-    bedrijf: '', 
-    vanMaand: '', 
-    vanJaar: '', 
-    totMaand: '', 
-    totJaar: '', 
-    isHuidigeBaan: false, 
-    omschrijving: '' 
+    id: Date.now(),
+    functie: '', bedrijf: '', 
+    vanMaand: '', vanJaar: '', 
+    totMaand: '', totJaar: '', 
+    isHuidigeBaan: false, omschrijving: '' 
   }) 
-}function verwijderWerkervaring(index) { werkervaringen.value.splice(index, 1) }
+}
+function verwijderWerkervaring(index) { werkervaringen.value.splice(index, 1) }
 
 function voegSterkPuntToe() { sterkePunten.value.push({ tekst: '' }) }
 function verwijderSterkPunt(index) { sterkePunten.value.splice(index, 1) }
 
-function voegOpleidingToe() { opleidingen.value.push({ studie: '', instelling: '', periode: '', omschrijving: '' }) }
+function voegOpleidingToe() { 
+  opleidingen.value.push({ 
+    id: Date.now(),
+    studie: '', instelling: '', 
+    vanMaand: '', vanJaar: '', 
+    totMaand: '', totJaar: '', 
+    isHuidigeOpleiding: false, omschrijving: '' 
+  }) 
+}
 function verwijderOpleiding(index) { opleidingen.value.splice(index, 1) }
+
+// --- SORTEER FUNCTIES ---
+function sorteerErvaringen() {
+  werkervaringen.value.sort((a, b) => {
+    if (a.isHuidigeBaan && !b.isHuidigeBaan) return -1;
+    if (!a.isHuidigeBaan && b.isHuidigeBaan) return 1;
+    const jaarA = parseInt(a.vanJaar) || 0;
+    const jaarB = parseInt(b.vanJaar) || 0;
+    if (jaarB !== jaarA) return jaarB - jaarA;
+    const maandA = parseInt(a.vanMaand) || 0;
+    const maandB = parseInt(b.vanMaand) || 0;
+    return maandB - maandA;
+  });
+}
+
+function sorteerOpleidingen() {
+  opleidingen.value.sort((a, b) => {
+    if (a.isHuidigeOpleiding && !b.isHuidigeOpleiding) return -1;
+    if (!a.isHuidigeOpleiding && b.isHuidigeOpleiding) return 1;
+    const jaarA = parseInt(a.vanJaar) || 0;
+    const jaarB = parseInt(b.vanJaar) || 0;
+    if (jaarB !== jaarA) return jaarB - jaarA;
+    const maandA = parseInt(a.vanMaand) || 0;
+    const maandB = parseInt(b.vanMaand) || 0;
+    return maandB - maandA;
+  });
+}
 
 // Database trigger
 function triggerOpslaan() {
@@ -168,24 +204,10 @@ function triggerOpslaan() {
     toonOpleidingen: toonOpleidingen.value, opleidingen: opleidingen.value
   });
 }
-// PLAK HET HIER (Regel 71)
-function sorteerErvaringen() {
-  werkervaringen.value.sort((a, b) => {
-    if (a.isHuidigeBaan && !b.isHuidigeBaan) return -1;
-    if (!a.isHuidigeBaan && b.isHuidigeBaan) return 1;
-    
-    const jaarA = parseInt(a.vanJaar) || 0;
-    const jaarB = parseInt(b.vanJaar) || 0;
-    if (jaarB !== jaarA) return jaarB - jaarA;
-    
-    const maandA = parseInt(a.vanMaand) || 0;
-    const maandB = parseInt(b.vanMaand) || 0;
-    return maandB - maandA;
-  });
-}
+
 watch(
   [voornaam, achternaam, adres, postcode, email, telefoon, profieltekst, gekozenKleur, werkervaringen, sterkePunten, toonSterkePunten, opleidingen, toonOpleidingen, heeftRijbewijs, heeftAuto, profielfoto, toonFotoOpCv],
-  () => { sorteerErvaringen(); triggerOpslaan(); },
+  () => { triggerOpslaan(); },
   { deep: true } 
 )
 </script>
@@ -312,8 +334,8 @@ watch(
           <button class="toevoeg-knop-sec" @click="voegSterkPuntToe">+ Voeg sterk punt toe</button>
       </div>
 
-<h2 class="hoofdtitel">Werkervaring</h2>
-      <div v-for="(werk, index) in werkervaringen" :key="index" class="dynamisch-blok">
+      <h2 class="hoofdtitel">Werkervaring</h2>
+      <div v-for="(werk, index) in werkervaringen" :key="werk.id" class="dynamisch-blok">
         <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
             <button class="verwijder-knop" @click="verwijderWerkervaring(index)">Verwijderen</button>
         </div>
@@ -330,22 +352,22 @@ watch(
             <div class="form-groep">
                 <label>Van</label>
                 <div style="display: flex; gap: 8px;">
-                    <select v-model="werk.vanMaand" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                    <select v-model="werk.vanMaand" @change="sorteerErvaringen" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
                         <option value="">Maand</option>
                         <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                     </select>
-                    <input type="text" v-model.lazy="werk.vanJaar" placeholder="Jaar (Bijv. 2020)" style="width: 50%;">
+                    <input type="text" v-model.lazy="werk.vanJaar" @change="sorteerErvaringen" placeholder="Jaar (Bijv. 2020)" style="width: 50%;">
                 </div>
             </div>
 
             <div class="form-groep">
                 <label>Tot</label>
                 <div style="display: flex; gap: 8px;" v-if="!werk.isHuidigeBaan">
-                    <select v-model="werk.totMaand" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                    <select v-model="werk.totMaand" @change="sorteerErvaringen" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
                         <option value="">Maand</option>
                         <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                     </select>
-                    <input type="text" v-model.lazy="werk.totJaar" placeholder="Jaar (Bijv. 2023)" style="width: 50%;">
+                    <input type="text" v-model.lazy="werk.totJaar" @change="sorteerErvaringen" placeholder="Jaar (Bijv. 2023)" style="width: 50%;">
                 </div>
                 <div v-else style="display: flex; align-items: center; height: 46px; color: #718096; font-size: 14px; font-weight: 600;">
                     Heden
@@ -355,7 +377,7 @@ watch(
             <div class="form-groep volledige-breedte">
                 <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
                     <label class="toggle-switch">
-                        <input type="checkbox" v-model="werk.isHuidigeBaan">
+                        <input type="checkbox" v-model="werk.isHuidigeBaan" @change="sorteerErvaringen">
                         <span class="toggle-slider"></span>
                     </label>
                     <span class="toggle-label" style="font-weight: 600;">Ik werk hier nu nog</span>
@@ -372,12 +394,54 @@ watch(
 
       <div v-if="toonOpleidingen">
           <h2 class="hoofdtitel">Opleidingen en cursussen</h2>
-          <div v-for="(opl, index) in opleidingen" :key="index" class="dynamisch-blok">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;"><strong style="font-size: 14px; color: #4A90E2;">Opleiding {{ index + 1 }}</strong><button class="verwijder-knop" @click="verwijderOpleiding(index)">Verwijderen</button></div>
+          <div v-for="(opl, index) in opleidingen" :key="opl.id" class="dynamisch-blok">
+            <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
+                <button class="verwijder-knop" @click="verwijderOpleiding(index)">Verwijderen</button>
+            </div>
             <div class="form-grid">
-                <div class="form-groep volledige-breedte"><label>Opleiding of Cursus</label><input type="text" v-model="opl.studie" placeholder="Bijv. MBO Verkoopmedewerker"></div>
-                <div class="form-groep"><label>School of Instituut</label><input type="text" v-model="opl.instelling"></div>
-                <div class="form-groep"><label>Periode</label><input type="text" v-model="opl.periode" placeholder="Bijv. 2018 - 2020"></div>
+                <div class="form-groep volledige-breedte">
+                    <label>Opleiding of Cursus</label>
+                    <input type="text" v-model="opl.studie" placeholder="Bijv. MBO Verkoopmedewerker">
+                </div>
+                <div class="form-groep volledige-breedte">
+                    <label>School of Instituut</label>
+                    <input type="text" v-model="opl.instelling" placeholder="Bijv. ROC Amsterdam">
+                </div>
+
+                <div class="form-groep">
+                    <label>Van</label>
+                    <div style="display: flex; gap: 8px;">
+                        <select v-model="opl.vanMaand" @change="sorteerOpleidingen" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                            <option value="">Maand</option>
+                            <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
+                        </select>
+                        <input type="text" v-model.lazy="opl.vanJaar" @change="sorteerOpleidingen" placeholder="Jaar (Bijv. 2018)" style="width: 50%;">
+                    </div>
+                </div>
+
+                <div class="form-groep">
+                    <label>Tot</label>
+                    <div style="display: flex; gap: 8px;" v-if="!opl.isHuidigeOpleiding">
+                        <select v-model="opl.totMaand" @change="sorteerOpleidingen" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                            <option value="">Maand</option>
+                            <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
+                        </select>
+                        <input type="text" v-model.lazy="opl.totJaar" @change="sorteerOpleidingen" placeholder="Jaar (Bijv. 2020)" style="width: 50%;">
+                    </div>
+                    <div v-else style="display: flex; align-items: center; height: 46px; color: #718096; font-size: 14px; font-weight: 600;">
+                        Heden
+                    </div>
+                </div>
+
+                <div class="form-groep volledige-breedte">
+                    <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
+                        <label class="toggle-switch">
+                            <input type="checkbox" v-model="opl.isHuidigeOpleiding" @change="sorteerOpleidingen">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="toggle-label" style="font-weight: 600;">Ik volg deze opleiding nu nog</span>
+                    </div>
+                </div>
             </div>
           </div>
           <button class="toevoeg-knop" @click="voegOpleidingToe" style="margin-bottom: 50px;">+ Voeg opleiding toe</button>
@@ -411,24 +475,27 @@ watch(
                 
                 <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Werkervaring</div>
                 <div v-if="werkervaringen.length === 0"><p class="cv-p-italic">Nog geen werkervaring toegevoegd.</p></div>
-                <div v-for="w in werkervaringen" class="cv-item">
+                <div v-for="w in werkervaringen" :key="w.id" class="cv-item">
                     <div class="cv-item-titel">{{ w.functie || 'Functie' }}</div>
                     <div class="cv-item-sub">
-    {{ w.bedrijf }} | 
-    <span v-if="w.vanMaand && w.vanJaar">
-        {{ w.vanMaand.toString().padStart(2, '0') }}/{{ w.vanJaar }}
-    </span>
-    <span v-if="w.isHuidigeBaan"> - Heden</span>
-    <span v-else-if="w.totMaand && w.totJaar"> - {{ w.totMaand.toString().padStart(2, '0') }}/{{ w.totJaar }}</span>
-</div>
+                        {{ w.bedrijf || 'Organisatie' }} | 
+                        <span v-if="w.vanMaand && w.vanJaar">{{ w.vanMaand.toString().padStart(2, '0') }}/{{ w.vanJaar }}</span>
+                        <span v-if="w.isHuidigeBaan"> - Heden</span>
+                        <span v-else-if="w.totMaand && w.totJaar"> - {{ w.totMaand.toString().padStart(2, '0') }}/{{ w.totJaar }}</span>
+                    </div>
                     <p class="cv-p">{{ w.omschrijving }}</p>
                 </div>
 
                 <div v-if="toonOpleidingen && opleidingen.length > 0">
                     <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Opleidingen</div>
-                    <div v-for="o in opleidingen" class="cv-item">
-                        <div class="cv-item-titel">{{ o.studie || 'Studie' }}</div>
-                        <div class="cv-item-sub">{{ o.instelling }} | {{ o.periode }}</div>
+                    <div v-for="o in opleidingen" :key="o.id" class="cv-item">
+                        <div class="cv-item-titel">{{ o.studie || 'Opleiding of Cursus' }}</div>
+                        <div class="cv-item-sub">
+                            {{ o.instelling || 'School of Instituut' }} | 
+                            <span v-if="o.vanMaand && o.vanJaar">{{ o.vanMaand.toString().padStart(2, '0') }}/{{ o.vanJaar }}</span>
+                            <span v-if="o.isHuidigeOpleiding"> - Heden</span>
+                            <span v-else-if="o.totMaand && o.totJaar"> - {{ o.totMaand.toString().padStart(2, '0') }}/{{ o.totJaar }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -466,7 +533,7 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 .linkerkolom { width: 50%; padding: 40px; background: white; overflow-y: auto; border-right: 1px solid #e2e8f0; }
 .hoofdtitel { font-size: 16px; font-weight: 700; color: #4a5568; text-transform: uppercase; margin-top: 30px; margin-bottom: 15px; letter-spacing: 0.5px; }
 
-/* HERSTELD: VARIANTEN EN KLEUREN */
+/* VARIANTEN EN KLEUREN */
 .varianten-grid { display: flex; gap: 15px; margin-bottom: 20px; }
 .variant-kaart { flex: 1; border: 2px solid #edf2f7; border-radius: 6px; padding: 15px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600; color: #a0aec0; background-color: #fafbfe; }
 .variant-kaart.actief { border-color: #4A90E2; color: #4A90E2; background-color: #ffffff; }
