@@ -345,7 +345,7 @@ watch(
                         <option value="">Maand</option>
                         <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                     </select>
-                    <input type="text" v-model="werk.totJaar" placeholder="Jaar (Bijv. 2023)" style="width: 50%;">
+                    <input type="text" v-model.lazy="werk.totJaar" placeholder="Jaar (Bijv. 2023)" style="width: 50%;">
                 </div>
                 <div v-else style="display: flex; align-items: center; height: 46px; color: #718096; font-size: 14px; font-weight: 600;">
                     Heden
