@@ -341,7 +341,7 @@ watch(
               <input type="text" v-model="punt.tekst" placeholder="Bijv. Klantvriendelijk" style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px;">
               <button class="verwijder-knop-klein" @click="verwijderSterkPunt(index)">✕</button>
           </div>
-          <button class="toevoeg-knop-sec" @click="voegSterkPuntToe">+ Voeg sterk punt toe</button>
+          <button class="toevoeg-knop" @click="voegSterkPuntToe">+ Voeg een sterk punt toe</button>
       </div>
 
       <h2 class="hoofdtitel">Werkervaring</h2>
@@ -400,7 +400,7 @@ watch(
             </div>
         </div>
       </div>
-      <button class="toevoeg-knop" @click="voegWerkervaringToe">+ Voeg werkervaring toe</button>
+      <button class="toevoeg-knop" @click="voegWerkervaringToe">+ Voeg een werkervaring toe</button>
 
       <div v-if="toonOpleidingen">
           <h2 class="hoofdtitel">Opleidingen en cursussen</h2>
@@ -454,7 +454,7 @@ watch(
                 </div>
             </div>
           </div>
-          <button class="toevoeg-knop" @click="voegOpleidingToe" style="margin-bottom: 50px;">+ Voeg opleiding toe</button>
+          <button class="toevoeg-knop" @click="voegOpleidingToe" style="margin-bottom: 50px;">+ Voeg een opleiding of cursus toe</button>
       </div>
 
       <div v-if="toonTalen">
@@ -479,7 +479,7 @@ watch(
                   </span>
               </div>
           </div>
-          <button class="toevoeg-knop-sec" @click="voegTaalToe" style="margin-bottom: 50px;">+ Voeg taal toe</button>
+          <button class="toevoeg-knop-sec" @click="voegTaalToe" style="margin-bottom: 50px;">+ Voeg een taal toe</button>
       </div>
 
     </div>
@@ -629,8 +629,7 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 /* DYNAMISCHE BLOKKEN EN ALGEMENE KNOPPEN */
 .dynamisch-blok { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
 .hoofd-knop { background: #4A90E2; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
-.toevoeg-knop { background: white; color: #4A90E2; border: 2px dashed #4A90E2; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s;}
-.toevoeg-knop:hover { background: #eff6ff;}
+.toevoeg-knop { background: white; color: #4A90E2; border: 2px dashed #4A90E2; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; margin-bottom: 30px; transition: 0.2s;}.toevoeg-knop:hover { background: #eff6ff;}
 .toevoeg-knop-sec { background: transparent; color: #4A90E2; border: none; font-size: 13px; font-weight: 600; cursor: pointer; }
 .verwijder-knop { background: none; border: none; color: #e53e3e; font-size: 12px; font-weight: 600; cursor: pointer; }
 .verwijder-knop:hover { text-decoration: underline; }
