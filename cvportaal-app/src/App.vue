@@ -306,47 +306,54 @@ watch(
           <button class="onderdeel-knop">Meer over mij</button>
       </div>
 
-      <h2 class="hoofdtitel">Mijn gegevens</h2>
-      <div class="form-grid">
-        <div class="form-groep"><label>Voornaam</label><input type="text" v-model="voornaam" placeholder="Je voornaam"></div>
-        <div class="form-groep"><label>Achternaam</label><input type="text" v-model="achternaam" placeholder="Je achternaam"></div>
-        <div class="form-groep"><label>Adres</label><input type="text" v-model="adres" placeholder="Je straat en huisnummer"></div>
-        <div class="form-groep"><label>Postcode en plaats</label><input type="text" v-model="postcode" placeholder="Je postcode en plaats"></div>
-        <div class="form-groep"><label>E-mail</label><input type="email" v-model="email" placeholder="Je e-mailadres"></div>
-        <div class="form-groep"><label>Telefoon</label><input type="tel" v-model="telefoon" placeholder="Je telefoonnummer"></div>
-        
-        <div class="form-groep">
-            <div class="foto-upload-sectie">
-                <div class="foto-preview-container">
-                    <div class="foto-preview" :style="{ backgroundImage: profielfoto ? `url(${profielfoto})` : '' }">
-                        <svg v-if="!profielfoto" viewBox="0 0 24 24" fill="#cbd5e0" width="100" height="100"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+<h2 class="hoofdtitel">Mijn gegevens</h2>
+      <div class="dynamisch-blok">
+          <div class="form-grid">
+            <div class="form-groep"><label>Voornaam</label><input type="text" v-model="voornaam" placeholder="Je voornaam"></div>
+            <div class="form-groep"><label>Achternaam</label><input type="text" v-model="achternaam" placeholder="Je achternaam"></div>
+            <div class="form-groep"><label>Adres</label><input type="text" v-model="adres" placeholder="Je straat en huisnummer"></div>
+            <div class="form-groep"><label>Postcode en plaats</label><input type="text" v-model="postcode" placeholder="Je postcode en plaats"></div>
+            <div class="form-groep"><label>E-mail</label><input type="email" v-model="email" placeholder="Je e-mailadres"></div>
+            <div class="form-groep"><label>Telefoon</label><input type="tel" v-model="telefoon" placeholder="Je telefoonnummer"></div>
+            
+            <div class="form-groep">
+                <div class="foto-upload-sectie">
+                    <div class="foto-preview-container">
+                        <div class="foto-preview" :style="{ backgroundImage: profielfoto ? `url(${profielfoto})` : '' }">
+                            <svg v-if="!profielfoto" viewBox="0 0 24 24" fill="#cbd5e0" width="100" height="100"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
+                        <div class="foto-acties">
+                            <label class="foto-upload-knop"> {{ profielfoto ? 'Foto wijzigen' : 'Foto uploaden' }} <input type="file" accept="image/*" @change="verwerkFoto" style="display: none;"> </label>
+                            <button v-if="profielfoto" class="foto-verwijder-knop" @click="verwijderFoto">Verwijder foto</button>
+                        </div>
                     </div>
-                    <div class="foto-acties">
-                        <label class="foto-upload-knop"> {{ profielfoto ? 'Foto wijzigen' : 'Foto uploaden' }} <input type="file" accept="image/*" @change="verwerkFoto" style="display: none;"> </label>
-                        <button v-if="profielfoto" class="foto-verwijder-knop" @click="verwijderFoto">Verwijder foto</button>
+                    <div class="toggle-container" v-if="profielfoto" style="margin-top: 15px;">
+                        <span class="toggle-label">Foto op cv tonen</span>
+                        <label class="toggle-switch"><input type="checkbox" v-model="toonFotoOpCv"><span class="toggle-slider"></span></label>
                     </div>
-                </div>
-                <div class="toggle-container" v-if="profielfoto" style="margin-top: 15px;">
-                    <span class="toggle-label">Foto op cv tonen</span>
-                    <label class="toggle-switch"><input type="checkbox" v-model="toonFotoOpCv"><span class="toggle-slider"></span></label>
                 </div>
             </div>
-        </div>
 
-        <div class="form-groep">
-            <label>Vervoer</label>
-            <div class="toggle-container"><span class="toggle-label">Ik heb een rijbewijs</span><label class="toggle-switch"><input type="checkbox" v-model="heeftRijbewijs"><span class="toggle-slider"></span></label></div>
-            <div class="toggle-container"><span class="toggle-label">Ik heb een eigen auto</span><label class="toggle-switch"><input type="checkbox" v-model="heeftAuto"><span class="toggle-slider"></span></label></div>
-        </div>
+            <div class="form-groep">
+                <label>Vervoer</label>
+                <div class="toggle-container"><span class="toggle-label">Ik heb een rijbewijs</span><label class="toggle-switch"><input type="checkbox" v-model="heeftRijbewijs"><span class="toggle-slider"></span></label></div>
+                <div class="toggle-container"><span class="toggle-label">Ik heb een eigen auto</span><label class="toggle-switch"><input type="checkbox" v-model="heeftAuto"><span class="toggle-slider"></span></label></div>
+            </div>
+          </div>
       </div>
 
       <h2 class="hoofdtitel">Dit ben ik</h2>
-      <div class="form-groep" style="margin-bottom: 20px;"><label>Vertel iets over jezelf</label><textarea v-model="profieltekst" rows="5" placeholder="Ik ben een enthousiaste werknemer..."></textarea></div>
+      <div class="dynamisch-blok">
+          <div class="form-groep" style="margin-bottom: 0;">
+              <label>Vertel iets over jezelf</label>
+              <textarea v-model="profieltekst" rows="5" placeholder="Ik ben een enthousiaste werknemer..."></textarea>
+          </div>
+      </div>
 
-      <div v-if="toonSterkePunten">
+<div v-if="toonSterkePunten">
           <h2 class="hoofdtitel">Mijn sterke punten</h2>
-          <div v-for="(punt, index) in sterkePunten" :key="index" style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center;">
-              <input type="text" v-model="punt.tekst" placeholder="Bijv. Klantvriendelijk" style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px;">
+          <div v-for="(punt, index) in sterkePunten" :key="index" style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
+              <input type="text" v-model="punt.tekst" placeholder="Bijv. Klantvriendelijk" style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #ffffff; font-size: 14px; outline: none; transition: all 0.2s;">
               <button class="verwijder-knop-klein" @click="verwijderSterkPunt(index)">✕</button>
           </div>
           <button class="toevoeg-knop" @click="voegSterkPuntToe">+ Voeg een sterk punt toe</button>
