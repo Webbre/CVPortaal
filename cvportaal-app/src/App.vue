@@ -41,7 +41,7 @@ const kleuren = [
   '#E67E22', '#FF85A2', '#1ABC9C', '#34495E'
 ]
 
-// --- NIEUW: JAARTALLEN LIJST GENEREREN ---
+// --- JAARTALLEN LIJST GENEREREN ---
 const jarenLijst = []
 for (let i = new Date().getFullYear() + 5; i >= 1980; i--) {
   jarenLijst.push(i)
@@ -370,11 +370,11 @@ watch(
             <div class="form-groep">
                 <label>Van</label>
                 <div style="display: flex; gap: 8px;">
-                    <select v-model="werk.vanMaand" @change="sorteerErvaringen" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                    <select v-model="werk.vanMaand" @change="sorteerErvaringen" style="width: 50%;">
                         <option value="">Maand</option>
                         <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                     </select>
-                    <select v-model="werk.vanJaar" @change="sorteerErvaringen" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                    <select v-model="werk.vanJaar" @change="sorteerErvaringen" style="width: 50%;">
                         <option value="">Jaar</option>
                         <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
                     </select>
@@ -384,11 +384,11 @@ watch(
             <div class="form-groep">
                 <label>Tot</label>
                 <div style="display: flex; gap: 8px;" v-if="!werk.isHuidigeBaan">
-                    <select v-model="werk.totMaand" @change="sorteerErvaringen" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                    <select v-model="werk.totMaand" @change="sorteerErvaringen" style="width: 50%;">
                         <option value="">Maand</option>
                         <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                     </select>
-                    <select v-model="werk.totJaar" @change="sorteerErvaringen" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                    <select v-model="werk.totJaar" @change="sorteerErvaringen" style="width: 50%;">
                         <option value="">Jaar</option>
                         <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
                     </select>
@@ -426,7 +426,7 @@ watch(
                 
                 <div class="form-groep volledige-breedte">
                     <label>Wat wil je toevoegen?</label>
-                    <select v-model="opl.type" @change="triggerOpslaan" style="width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc; font-weight: 600; font-size: 14px;">
+                    <select v-model="opl.type" @change="triggerOpslaan" style="font-weight: 600;">
                         <option value="Opleiding">Opleiding</option>
                         <option value="Cursus">Cursus of praktijkverklaring</option>
                     </select>
@@ -444,11 +444,11 @@ watch(
                 <div class="form-groep">
                     <label>Van</label>
                     <div style="display: flex; gap: 8px;">
-                        <select v-model="opl.vanMaand" @change="sorteerOpleidingen" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                        <select v-model="opl.vanMaand" @change="sorteerOpleidingen" style="width: 50%;">
                             <option value="">Maand</option>
                             <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                         </select>
-                        <select v-model="opl.vanJaar" @change="sorteerOpleidingen" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                        <select v-model="opl.vanJaar" @change="sorteerOpleidingen" style="width: 50%;">
                             <option value="">Jaar</option>
                             <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
                         </select>
@@ -458,11 +458,11 @@ watch(
                 <div class="form-groep">
                     <label>Tot</label>
                     <div style="display: flex; gap: 8px;" v-if="!opl.isHuidigeOpleiding">
-                        <select v-model="opl.totMaand" @change="sorteerOpleidingen" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                        <select v-model="opl.totMaand" @change="sorteerOpleidingen" style="width: 50%;">
                             <option value="">Maand</option>
                             <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                         </select>
-                        <select v-model="opl.totJaar" @change="sorteerOpleidingen" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                        <select v-model="opl.totJaar" @change="sorteerOpleidingen" style="width: 50%;">
                             <option value="">Jaar</option>
                             <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
                         </select>
@@ -648,7 +648,7 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;}
 .volledige-breedte { grid-column: span 2; }
 .form-groep label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #4a5568; text-align: left;}
-.form-groep input, .form-groep textarea, .form-groep select { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background: #f8fafc; transition: all 0.2s;}
+.form-groep input, .form-groep textarea, .form-groep select { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background: #ffffff; transition: all 0.2s;}
 .form-groep input:focus, .form-groep textarea:focus, .form-groep select:focus { border-color: #4A90E2; outline: none; background: white; }
 
 /* TOGGLES (SCHUIFJES) */
@@ -674,8 +674,7 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 /* DYNAMISCHE BLOKKEN EN ALGEMENE KNOPPEN */
 .dynamisch-blok { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
 .hoofd-knop { background: #4A90E2; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
-.toevoeg-knop { background: white; color: #4A90E2; border: 2px dashed #4A90E2; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; margin-bottom: 30px; transition: 0.2s;}
-.toevoeg-knop:hover { background: #eff6ff;}
+.toevoeg-knop { background: white; color: #4A90E2; border: 2px dashed #4A90E2; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; margin-bottom: 30px; transition: 0.2s;}.toevoeg-knop:hover { background: #eff6ff;}
 .toevoeg-knop-sec { background: transparent; color: #4A90E2; border: none; font-size: 13px; font-weight: 600; cursor: pointer; }
 .verwijder-knop { background: none; border: none; color: #e53e3e; font-size: 12px; font-weight: 600; cursor: pointer; }
 .verwijder-knop:hover { text-decoration: underline; }
