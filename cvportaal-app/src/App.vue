@@ -33,6 +33,8 @@ const toonSterkePunten = ref(true)
 const sterkePunten = ref([])
 const toonOpleidingen = ref(true)
 const opleidingen = ref([])
+const toonTalen = ref(true)
+const talen = ref([])
 
 const kleuren = [
   '#4A90E2', '#E24A4A', '#2ECC71', '#9B59B6', '#F1C40F',
@@ -65,6 +67,8 @@ onMounted(async () => {
           profielfoto.value = data.profielfoto || null;
           toonFotoOpCv.value = data.toonFotoOpCv !== undefined ? data.toonFotoOpCv : true;
           gekozenKleur.value = data.gekozenKleur || '#4A90E2';
+          toonTalen.value = data.toonTalen !== undefined ? data.toonTalen : true;
+          talen.value = (data.talen || []).map(t => ({ id: t.id || Date.now() + Math.random(), ...t }));
           
           // Data inladen én oude data voorzien van een uniek ID als ze dat nog niet hadden
           werkervaringen.value = (data.werkervaringen || []).map(w => ({ id: w.id || Date.now() + Math.random(), ...w }));
@@ -77,6 +81,7 @@ onMounted(async () => {
       } else {
         gebruiker.value = null;
         maakCvLeeg(false);
+        toonTalen.value = true; talen.value = [];
       }
     } catch (error) {
       console.error("Fout bij het inladen:", error);
@@ -162,6 +167,9 @@ function voegOpleidingToe() {
   }) 
 }
 function verwijderOpleiding(index) { opleidingen.value.splice(index, 1) }
+function voegTaalToe() { talen.value.push({ id: Date.now(), naam: '', niveau: 0 }) }
+function verwijderTaal(index) { talen.value.splice(index, 1) }
+function zetTaalNiveau(taal, niveau) { taal.niveau = niveau; triggerOpslaan(); }
 
 // --- SORTEER FUNCTIES ---
 function sorteerErvaringen() {
@@ -202,11 +210,12 @@ function triggerOpslaan() {
     werkervaringen: werkervaringen.value,
     toonSterkePunten: toonSterkePunten.value, sterkePunten: sterkePunten.value,
     toonOpleidingen: toonOpleidingen.value, opleidingen: opleidingen.value
+    toonTalen: toonTalen.value, talen: talen.value,
   });
 }
 
 watch(
-  [voornaam, achternaam, adres, postcode, email, telefoon, profieltekst, gekozenKleur, werkervaringen, sterkePunten, toonSterkePunten, opleidingen, toonOpleidingen, heeftRijbewijs, heeftAuto, profielfoto, toonFotoOpCv],
+  [voornaam, achternaam, adres, postcode, email, telefoon, profieltekst, gekozenKleur, werkervaringen, sterkePunten, toonSterkePunten, opleidingen, toonOpleidingen, heeftRijbewijs, heeftAuto, profielfoto, toonFotoOpCv, toonTalen, talen],
   () => { triggerOpslaan(); },
   { deep: true } 
 )
