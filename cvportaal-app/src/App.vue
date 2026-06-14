@@ -161,10 +161,13 @@ function verwijderSterkPunt(index) { sterkePunten.value.splice(index, 1) }
 function voegOpleidingToe() { 
   opleidingen.value.push({ 
     id: Date.now(),
+    type: 'Opleiding', 
     studie: '', instelling: '', 
     vanMaand: '', vanJaar: '', 
     totMaand: '', totJaar: '', 
-    isHuidigeOpleiding: false, omschrijving: '' 
+    isHuidigeOpleiding: false, 
+    isBehaald: false, 
+    omschrijving: '' 
   }) 
 }
 function verwijderOpleiding(index) { opleidingen.value.splice(index, 1) }
@@ -409,9 +412,18 @@ watch(
                 <button class="verwijder-knop" @click="verwijderOpleiding(index)">Verwijderen</button>
             </div>
             <div class="form-grid">
+                
                 <div class="form-groep volledige-breedte">
-                    <label>Opleiding of cursus</label>
-                    <input type="text" v-model="opl.studie" placeholder="Bijv. MBO Verkoopmedewerker">
+                    <label>Wat wil je toevoegen?</label>
+                    <select v-model="opl.type" @change="triggerOpslaan" style="width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc; font-weight: 600; font-size: 14px;">
+                        <option value="Opleiding">Opleiding</option>
+                        <option value="Cursus">Cursus of praktijkverklaring</option>
+                    </select>
+                </div>
+
+                <div class="form-groep volledige-breedte">
+                    <label>{{ opl.type === 'Cursus' ? 'Naam cursus of verklaring' : 'Naam opleiding' }}</label>
+                    <input type="text" v-model="opl.studie" :placeholder="opl.type === 'Cursus' ? 'Bijv. BHV of VCA' : 'Bijv. MBO Verkoopmedewerker'">
                 </div>
                 <div class="form-groep volledige-breedte">
                     <label>School of Instituut</label>
@@ -443,13 +455,25 @@ watch(
                     </div>
                 </div>
 
+                <div class="form-groep volledige-breedte" v-if="!opl.isHuidigeOpleiding">
+                    <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
+                        <label class="toggle-switch">
+                            <input type="checkbox" v-model="opl.isBehaald" @change="triggerOpslaan">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="toggle-label" style="font-weight: 600;">
+                            {{ opl.type === 'Cursus' ? 'Certificaat behaald' : 'Diploma behaald' }}
+                        </span>
+                    </div>
+                </div>
+
                 <div class="form-groep volledige-breedte">
                     <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
                         <label class="toggle-switch">
                             <input type="checkbox" v-model="opl.isHuidigeOpleiding" @change="sorteerOpleidingen">
                             <span class="toggle-slider"></span>
                         </label>
-                        <span class="toggle-label" style="font-weight: 600;">Ik volg deze opleiding nu nog</span>
+                        <span class="toggle-label" style="font-weight: 600;">Ik volg dit momenteel nog</span>
                     </div>
                 </div>
             </div>
@@ -526,16 +550,20 @@ watch(
                 <div v-for="w in werkervaringen" :key="w.id" class="cv-item">
                     <div class="cv-item-titel">{{ w.functie || 'Functie' }}</div>
                     <div class="cv-item-sub">
-                        {{ w.bedrijf || 'Organisatie' }} | 
-                        <span v-if="w.vanMaand && w.vanJaar">{{ w.vanMaand.toString().padStart(2, '0') }}/{{ w.vanJaar }}</span>
-                        <span v-if="w.isHuidigeBaan"> - Heden</span>
-                        <span v-else-if="w.totMaand && w.totJaar"> - {{ w.totMaand.toString().padStart(2, '0') }}/{{ w.totJaar }}</span>
-                    </div>
+                            {{ o.instelling || 'School of Instituut' }} | 
+                            <span v-if="o.vanMaand && o.vanJaar">{{ o.vanMaand.toString().padStart(2, '0') }}/{{ o.vanJaar }}</span>
+                            <span v-if="o.isHuidigeOpleiding"> - Heden</span>
+                            <span v-else-if="o.totMaand && o.totJaar"> - {{ o.totMaand.toString().padStart(2, '0') }}/{{ o.totJaar }}</span>
+                            
+                            <span v-if="!o.isHuidigeOpleiding && o.isBehaald" style="font-weight: 700; margin-left: 5px;">
+                                | <span :style="{ color: gekozenKleur }">✓</span> {{ o.type === 'Cursus' ? 'Certificaat' : 'Diploma' }}
+                            </span>
+                        </div>
                     <p class="cv-p">{{ w.omschrijving }}</p>
                 </div>
 
                 <div v-if="toonOpleidingen && opleidingen.length > 0">
-                    <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Opleidingen</div>
+                    <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Opleidingen en cursussen</div>
                     <div v-for="o in opleidingen" :key="o.id" class="cv-item">
                         <div class="cv-item-titel">{{ o.studie || 'Opleiding of cursus' }}</div>
                         <div class="cv-item-sub">
@@ -543,6 +571,10 @@ watch(
                             <span v-if="o.vanMaand && o.vanJaar">{{ o.vanMaand.toString().padStart(2, '0') }}/{{ o.vanJaar }}</span>
                             <span v-if="o.isHuidigeOpleiding"> - Heden</span>
                             <span v-else-if="o.totMaand && o.totJaar"> - {{ o.totMaand.toString().padStart(2, '0') }}/{{ o.totJaar }}</span>
+                            
+                            <span v-if="!o.isHuidigeOpleiding && o.isBehaald" style="font-weight: 700; margin-left: 5px;">
+                                | <span :style="{ color: gekozenKleur }">✓</span> {{ o.type === 'Cursus' ? 'Certificaat' : 'Diploma' }}
+                            </span>
                         </div>
                     </div>
                 </div>
