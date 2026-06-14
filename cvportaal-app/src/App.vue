@@ -475,7 +475,7 @@ watch(
                       </svg>
                   </div>
                   <span style="font-size: 12px; color: #718096; font-weight: 600; margin-left: 10px;">
-                      {{ taal.niveau === 5 ? 'Moedertaal' : taal.niveau === 4 ? 'Vloeiend' : taal.niveau === 3 ? 'Goed' : taal.niveau === 2 ? 'Basis' : taal.niveau === 1 ? 'Beperkt' : 'Kies je niveau' }}
+                      {{ taal.niveau === 5 ? 'Moedertaal' : taal.niveau === 4 ? 'Vloeiend' : taal.niveau === 3 ? 'Goed' : taal.niveau === 2 ? 'Basis' : taal.niveau === 1 ? 'Beginner' : 'Kies je niveau' }}
                   </span>
               </div>
           </div>
