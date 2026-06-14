@@ -454,7 +454,7 @@ watch(
                 </div>
             </div>
           </div>
-          <button class="toevoeg-knop" @click="voegOpleidingToe" style="margin-bottom: 50px;">+ Voeg een opleiding of cursus toe</button>
+          <button class="toevoeg-knop" @click="voegOpleidingToe">+ Voeg een opleiding of cursus toe</button>
       </div>
 
       <div v-if="toonTalen">
@@ -479,7 +479,7 @@ watch(
                   </span>
               </div>
           </div>
-          <button class="toevoeg-knop-sec" @click="voegTaalToe" style="margin-bottom: 50px;">+ Voeg een taal toe</button>
+          <button class="toevoeg-knop" @click="voegTaalToe">+ Voeg een taal toe</button>
       </div>
 
     </div>
