@@ -41,6 +41,12 @@ const kleuren = [
   '#E67E22', '#FF85A2', '#1ABC9C', '#34495E'
 ]
 
+// --- NIEUW: JAARTALLEN LIJST GENEREREN ---
+const jarenLijst = []
+for (let i = new Date().getFullYear() + 5; i >= 1980; i--) {
+  jarenLijst.push(i)
+}
+
 // --- LIFECYCLE & INLOG LOGICA ---
 onMounted(async () => {
   try {
@@ -70,7 +76,6 @@ onMounted(async () => {
           toonTalen.value = data.toonTalen !== undefined ? data.toonTalen : true;
           talen.value = (data.talen || []).map(t => ({ id: t.id || Date.now() + Math.random(), ...t }));
           
-          // Data inladen én oude data voorzien van een uniek ID als ze dat nog niet hadden
           werkervaringen.value = (data.werkervaringen || []).map(w => ({ id: w.id || Date.now() + Math.random(), ...w }));
           opleidingen.value = (data.opleidingen || []).map(o => ({ id: o.id || Date.now() + Math.random(), ...o }));
           
@@ -369,7 +374,10 @@ watch(
                         <option value="">Maand</option>
                         <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                     </select>
-                    <input type="text" v-model.lazy="werk.vanJaar" @change="sorteerErvaringen" placeholder="Jaar (Bijv. 2020)" style="width: 50%;">
+                    <select v-model="werk.vanJaar" @change="sorteerErvaringen" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                        <option value="">Jaar</option>
+                        <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
+                    </select>
                 </div>
             </div>
 
@@ -380,7 +388,10 @@ watch(
                         <option value="">Maand</option>
                         <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                     </select>
-                    <input type="text" v-model.lazy="werk.totJaar" @change="sorteerErvaringen" placeholder="Jaar (Bijv. 2023)" style="width: 50%;">
+                    <select v-model="werk.totJaar" @change="sorteerErvaringen" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                        <option value="">Jaar</option>
+                        <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
+                    </select>
                 </div>
                 <div v-else style="display: flex; align-items: center; height: 46px; color: #718096; font-size: 14px; font-weight: 600;">
                     Heden
@@ -437,7 +448,10 @@ watch(
                             <option value="">Maand</option>
                             <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                         </select>
-                        <input type="text" v-model.lazy="opl.vanJaar" @change="sorteerOpleidingen" placeholder="Jaar (Bijv. 2018)" style="width: 50%;">
+                        <select v-model="opl.vanJaar" @change="sorteerOpleidingen" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                            <option value="">Jaar</option>
+                            <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
+                        </select>
                     </div>
                 </div>
 
@@ -448,7 +462,10 @@ watch(
                             <option value="">Maand</option>
                             <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                         </select>
-                        <input type="text" v-model.lazy="opl.totJaar" @change="sorteerOpleidingen" placeholder="Jaar (Bijv. 2020)" style="width: 50%;">
+                        <select v-model="opl.totJaar" @change="sorteerOpleidingen" style="width: 50%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #f8fafc;">
+                            <option value="">Jaar</option>
+                            <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
+                        </select>
                     </div>
                     <div v-else style="display: flex; align-items: center; height: 46px; color: #718096; font-size: 14px; font-weight: 600;">
                         Heden
@@ -550,15 +567,11 @@ watch(
                 <div v-for="w in werkervaringen" :key="w.id" class="cv-item">
                     <div class="cv-item-titel">{{ w.functie || 'Functie' }}</div>
                     <div class="cv-item-sub">
-                            {{ o.instelling || 'School of Instituut' }} | 
-                            <span v-if="o.vanMaand && o.vanJaar">{{ o.vanMaand.toString().padStart(2, '0') }}/{{ o.vanJaar }}</span>
-                            <span v-if="o.isHuidigeOpleiding"> - Heden</span>
-                            <span v-else-if="o.totMaand && o.totJaar"> - {{ o.totMaand.toString().padStart(2, '0') }}/{{ o.totJaar }}</span>
-                            
-                            <span v-if="!o.isHuidigeOpleiding && o.isBehaald" style="font-weight: 700; margin-left: 5px;">
-                                | <span :style="{ color: gekozenKleur }">✓</span> {{ o.type === 'Cursus' ? 'Certificaat' : 'Diploma' }}
-                            </span>
-                        </div>
+                            {{ w.bedrijf || 'Organisatie' }} | 
+                            <span v-if="w.vanMaand && w.vanJaar">{{ w.vanMaand.toString().padStart(2, '0') }}/{{ w.vanJaar }}</span>
+                            <span v-if="w.isHuidigeBaan"> - Heden</span>
+                            <span v-else-if="w.totMaand && w.totJaar"> - {{ w.totMaand.toString().padStart(2, '0') }}/{{ w.totJaar }}</span>
+                    </div>
                     <p class="cv-p">{{ w.omschrijving }}</p>
                 </div>
 
@@ -635,8 +648,8 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;}
 .volledige-breedte { grid-column: span 2; }
 .form-groep label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #4a5568; text-align: left;}
-.form-groep input, .form-groep textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background: #f8fafc; transition: all 0.2s;}
-.form-groep input:focus, .form-groep textarea:focus { border-color: #4A90E2; outline: none; background: white; }
+.form-groep input, .form-groep textarea, .form-groep select { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background: #f8fafc; transition: all 0.2s;}
+.form-groep input:focus, .form-groep textarea:focus, .form-groep select:focus { border-color: #4A90E2; outline: none; background: white; }
 
 /* TOGGLES (SCHUIFJES) */
 .toggle-container { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
@@ -661,7 +674,8 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 /* DYNAMISCHE BLOKKEN EN ALGEMENE KNOPPEN */
 .dynamisch-blok { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
 .hoofd-knop { background: #4A90E2; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
-.toevoeg-knop { background: white; color: #4A90E2; border: 2px dashed #4A90E2; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; margin-bottom: 30px; transition: 0.2s;}.toevoeg-knop:hover { background: #eff6ff;}
+.toevoeg-knop { background: white; color: #4A90E2; border: 2px dashed #4A90E2; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; margin-bottom: 30px; transition: 0.2s;}
+.toevoeg-knop:hover { background: #eff6ff;}
 .toevoeg-knop-sec { background: transparent; color: #4A90E2; border: none; font-size: 13px; font-weight: 600; cursor: pointer; }
 .verwijder-knop { background: none; border: none; color: #e53e3e; font-size: 12px; font-weight: 600; cursor: pointer; }
 .verwijder-knop:hover { text-decoration: underline; }
