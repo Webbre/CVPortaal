@@ -403,7 +403,7 @@ watch(
       <button class="toevoeg-knop" @click="voegWerkervaringToe">+ Voeg een werkervaring toe</button>
 
       <div v-if="toonOpleidingen">
-          <h2 class="hoofdtitel">Opleidingen en cursussen</h2>
+          <h2 class="hoofdtitel">Opleidingen & cursussen</h2>
           <div v-for="(opl, index) in opleidingen" :key="opl.id" class="dynamisch-blok">
             <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
                 <button class="verwijder-knop" @click="verwijderOpleiding(index)">Verwijderen</button>
