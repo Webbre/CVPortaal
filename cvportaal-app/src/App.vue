@@ -125,6 +125,7 @@ function maakCvLeeg(forceerDatabaseOpslag = false) {
   gekozenKleur.value = '#4A90E2'; werkervaringen.value = [];
   toonSterkePunten.value = true; sterkePunten.value = [];
   toonOpleidingen.value = true; opleidingen.value = [];
+  toonTalen.value = true; talen.value = [];
   
   if (forceerDatabaseOpslag) triggerOpslaan();
 }
@@ -209,8 +210,8 @@ function triggerOpslaan() {
     profieltekst: profieltekst.value, gekozenKleur: gekozenKleur.value,
     werkervaringen: werkervaringen.value,
     toonSterkePunten: toonSterkePunten.value, sterkePunten: sterkePunten.value,
-    toonOpleidingen: toonOpleidingen.value, opleidingen: opleidingen.value
-    toonTalen: toonTalen.value, talen: talen.value,
+    toonOpleidingen: toonOpleidingen.value, opleidingen: opleidingen.value,
+    toonTalen: toonTalen.value, talen: talen.value
   });
 }
 
@@ -292,7 +293,7 @@ watch(
           <button class="onderdeel-knop" :class="{ 'knop-uit': !toonSterkePunten }" @click="toonSterkePunten = !toonSterkePunten">Mijn sterke punten</button>
           <button class="onderdeel-knop">Waar heb ik gewerkt?</button>
           <button class="onderdeel-knop" :class="{ 'knop-uit': !toonOpleidingen }" @click="toonOpleidingen = !toonOpleidingen">Welke opleiding of cursus heb ik gedaan?</button>
-          <button class="onderdeel-knop">Talen die ik spreek</button>
+          <button class="onderdeel-knop" :class="{ 'knop-uit': !toonTalen }" @click="toonTalen = !toonTalen">Talen die ik spreek</button>
           <button class="onderdeel-knop">Dit vind ik leuk</button>
           <button class="onderdeel-knop">Meer over mij</button>
       </div>
@@ -456,6 +457,31 @@ watch(
           <button class="toevoeg-knop" @click="voegOpleidingToe" style="margin-bottom: 50px;">+ Voeg opleiding toe</button>
       </div>
 
+      <div v-if="toonTalen">
+          <h2 class="hoofdtitel">Talen die ik spreek</h2>
+          <div v-for="(taal, index) in talen" :key="taal.id" style="margin-bottom: 15px; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+              <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                  <input type="text" v-model="taal.naam" placeholder="Bijv. Engels of Spaans" style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px;">
+                  <button class="verwijder-knop-klein" @click="verwijderTaal(index)">✕</button>
+              </div>
+              
+              <div style="display: flex; align-items: center; gap: 10px;">
+                  <span style="font-size: 13px; font-weight: 600; color: #4a5568; min-width: 50px;">Niveau:</span>
+                  <div style="display: flex; gap: 4px; cursor: pointer;">
+                      <svg v-for="ster in 5" :key="ster" @click="zetTaalNiveau(taal, ster)" 
+                           :fill="ster <= taal.niveau ? '#FFD700' : 'none'" 
+                           stroke="#FFD700" viewBox="0 0 24 24" stroke-width="2" width="28" height="28" style="transition: all 0.2s;">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                      </svg>
+                  </div>
+                  <span style="font-size: 12px; color: #718096; font-weight: 600; margin-left: 10px;">
+                      {{ taal.niveau === 5 ? 'Moedertaal' : taal.niveau === 4 ? 'Vloeiend' : taal.niveau === 3 ? 'Goed' : taal.niveau === 2 ? 'Basis' : taal.niveau === 1 ? 'Beperkt' : 'Kies je niveau' }}
+                  </span>
+              </div>
+          </div>
+          <button class="toevoeg-knop-sec" @click="voegTaalToe" style="margin-bottom: 50px;">+ Voeg taal toe</button>
+      </div>
+
     </div>
 
     <div class="rechterkolom">
@@ -470,6 +496,19 @@ watch(
                     <div class="cv-tekst-zijbalk" v-if="heeftRijbewijs">✓ Rijbewijs B</div>
                     <div class="cv-tekst-zijbalk" v-if="heeftAuto">✓ Eigen auto</div>
                 </div>
+
+                <div v-if="toonTalen && talen.length > 0" style="margin-top: 25px; border-top: 1px solid rgba(255, 255, 255, 0.3); padding-top: 20px;">
+                    <div class="cv-sectie-titel-zijbalk">Talen</div>
+                    <div v-for="taal in talen" :key="taal.id" v-show="taal.naam" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span class="cv-tekst-zijbalk" style="margin-bottom: 0; font-weight: 600;">{{ taal.naam }}</span>
+                        <div style="display: flex; gap: 3px;">
+                            <svg v-for="ster in 5" :key="ster" :fill="ster <= taal.niveau ? '#FFD700' : 'none'" stroke="#FFD700" viewBox="0 0 24 24" stroke-width="1.5" width="14" height="14">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             <div class="cv-hoofdkolom">
                 <div class="cv-naam">{{ voornaam || 'Jouw' }} {{ achternaam || 'Naam' }}</div>
