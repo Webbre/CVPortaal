@@ -564,9 +564,10 @@ watch(
                     <div class="cv-tekst-zijbalk" v-if="heeftAuto">✓ Eigen auto</div>
                 </div>
 
-                <div v-if="toonTalen && talen.length > 0" style="margin-top: 25px; border-top: 1px solid rgba(255, 255, 255, 0.3); padding-top: 20px;">
+                <div v-if="toonTalen" style="margin-top: 25px; border-top: 1px solid rgba(255, 255, 255, 0.3); padding-top: 20px;">
                     <div class="cv-sectie-titel-zijbalk">Talen</div>
-                    <div v-for="taal in talen" :key="taal.id" v-show="taal.naam" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div v-if="talen.length === 0"><div class="cv-tekst-zijbalk" style="font-style: italic; opacity: 0.7;">Nog geen talen toegevoegd.</div></div>
+                    <div v-else v-for="taal in talen" :key="taal.id" v-show="taal.naam" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <span class="cv-tekst-zijbalk" style="margin-bottom: 0; font-weight: 600;">{{ taal.naam }}</span>
                         <div style="display: flex; gap: 3px;">
                             <svg v-for="ster in 5" :key="ster" :fill="ster <= taal.niveau ? '#FFD700' : 'none'" stroke="#FFD700" viewBox="0 0 24 24" stroke-width="1.5" width="14" height="14">
@@ -583,15 +584,16 @@ watch(
                 <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Dit ben ik</div>
                 <p class="cv-p">{{ profieltekst || 'Jouw profieltekst...' }}</p>
                 
-                <div v-if="toonSterkePunten && sterkePunten.length > 0">
+                <div v-if="toonSterkePunten">
                     <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Mijn sterke punten</div>
-                    <ul class="cv-lijst"><li v-for="p in sterkePunten" v-show="p.tekst">{{ p.tekst }}</li></ul>
+                    <div v-if="sterkePunten.length === 0"><p class="cv-p-italic">Nog geen sterke punten toegevoegd.</p></div>
+                    <ul v-else class="cv-lijst"><li v-for="(p, index) in sterkePunten" :key="index" v-show="p.tekst">{{ p.tekst }}</li></ul>
                 </div>
                 
-<div v-if="toonWerkervaring">
+                <div v-if="toonWerkervaring">
                     <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Werkervaring</div>
                     <div v-if="werkervaringen.length === 0"><p class="cv-p-italic">Nog geen werkervaring toegevoegd.</p></div>
-                    <div v-for="w in werkervaringen" :key="w.id" class="cv-item">
+                    <div v-else v-for="w in werkervaringen" :key="w.id" class="cv-item">
                         <div class="cv-item-titel">{{ w.functie || 'Functie' }}</div>
                         <div class="cv-item-sub">
                                 {{ w.bedrijf || 'Organisatie' }} | 
@@ -603,9 +605,10 @@ watch(
                     </div>
                 </div>
 
-                <div v-if="toonOpleidingen && opleidingen.length > 0">
+                <div v-if="toonOpleidingen">
                     <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Opleidingen en cursussen</div>
-                    <div v-for="o in opleidingen" :key="o.id" class="cv-item">
+                    <div v-if="opleidingen.length === 0"><p class="cv-p-italic">Nog geen opleidingen of cursussen toegevoegd.</p></div>
+                    <div v-else v-for="o in opleidingen" :key="o.id" class="cv-item">
                         <div class="cv-item-titel">{{ o.studie || 'Opleiding of cursus' }}</div>
                         <div class="cv-item-sub">
                             {{ o.instelling || 'School of Instituut' }} | 
@@ -619,6 +622,7 @@ watch(
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
