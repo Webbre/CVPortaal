@@ -16,8 +16,7 @@ const toonMenu = ref(false)
 // --- CV DATA VARIABELEN ---
 const voornaam = ref('')
 const achternaam = ref('')
-const adres = ref('')
-const postcode = ref('')
+const woonplaats = ref('') // Vervangt adres & postcode
 const email = ref('')
 const telefoon = ref('')
 const profieltekst = ref('')
@@ -27,7 +26,7 @@ const profielfoto = ref(null)
 const toonFotoOpCv = ref(true)
 const gekozenKleur = ref('#4A90E2')
 
-// Dynamische blokken en hun weergave-status (Nu standaard false)
+// Dynamische blokken en hun weergave-status (Standaard false)
 const toonWerkervaring = ref(false)
 const werkervaringen = ref([])
 const toonSterkePunten = ref(false)
@@ -64,8 +63,7 @@ onMounted(async () => {
         if (data) {
           voornaam.value = data.voornaam || '';
           achternaam.value = data.achternaam || '';
-          adres.value = data.adres || '';
-          postcode.value = data.postcode || '';
+          woonplaats.value = data.woonplaats || '';
           email.value = data.email || '';
           telefoon.value = data.telefoon || '';
           profieltekst.value = data.profieltekst || '';
@@ -75,7 +73,7 @@ onMounted(async () => {
           toonFotoOpCv.value = data.toonFotoOpCv !== undefined ? data.toonFotoOpCv : true;
           gekozenKleur.value = data.gekozenKleur || '#4A90E2';
           
-toonWerkervaring.value = data.toonWerkervaring !== undefined ? data.toonWerkervaring : false;
+          toonWerkervaring.value = data.toonWerkervaring !== undefined ? data.toonWerkervaring : false;
           werkervaringen.value = (data.werkervaringen || []).map(w => ({ id: w.id || Date.now() + Math.random(), ...w }));
           
           toonSterkePunten.value = data.toonSterkePunten !== undefined ? data.toonSterkePunten : false;
@@ -127,7 +125,7 @@ function resetMijnCV() {
 }
 
 function maakCvLeeg(forceerDatabaseOpslag = false) {
-  voornaam.value = ''; achternaam.value = ''; adres.value = ''; postcode.value = '';
+  voornaam.value = ''; achternaam.value = ''; woonplaats.value = '';
   email.value = ''; telefoon.value = ''; profieltekst.value = '';
   heeftRijbewijs.value = false; heeftAuto.value = false; profielfoto.value = null;
   gekozenKleur.value = '#4A90E2'; 
@@ -215,8 +213,8 @@ function sorteerOpleidingen() {
 function triggerOpslaan() {
   if (!gebruiker.value || isLaden.value) return;
   slaGegevensOp({
-    voornaam: voornaam.value, achternaam: achternaam.value, adres: adres.value,
-    postcode: postcode.value, email: email.value, telefoon: telefoon.value,
+    voornaam: voornaam.value, achternaam: achternaam.value, woonplaats: woonplaats.value,
+    email: email.value, telefoon: telefoon.value,
     heeftRijbewijs: heeftRijbewijs.value, heeftAuto: heeftAuto.value,
     profielfoto: profielfoto.value, toonFotoOpCv: toonFotoOpCv.value,
     profieltekst: profieltekst.value, gekozenKleur: gekozenKleur.value,
@@ -228,7 +226,7 @@ function triggerOpslaan() {
 }
 
 watch(
-  [voornaam, achternaam, adres, postcode, email, telefoon, profieltekst, gekozenKleur, toonWerkervaring, werkervaringen, sterkePunten, toonSterkePunten, opleidingen, toonOpleidingen, heeftRijbewijs, heeftAuto, profielfoto, toonFotoOpCv, toonTalen, talen],
+  [voornaam, achternaam, woonplaats, email, telefoon, profieltekst, gekozenKleur, toonWerkervaring, werkervaringen, sterkePunten, toonSterkePunten, opleidingen, toonOpleidingen, heeftRijbewijs, heeftAuto, profielfoto, toonFotoOpCv, toonTalen, talen],
   () => { triggerOpslaan(); },
   { deep: true } 
 )
@@ -301,7 +299,7 @@ watch(
       </div>
 
       <h2 class="hoofdtitel">Kies je cv onderdelen</h2>
-<div class="onderdelen-grid">
+      <div class="onderdelen-grid">
           <button class="onderdeel-knop" :class="{ 'knop-uit': !toonSterkePunten }" @click="toonSterkePunten = !toonSterkePunten">Mijn sterke punten</button>
           <button class="onderdeel-knop" :class="{ 'knop-uit': !toonWerkervaring }" @click="toonWerkervaring = !toonWerkervaring">Waar heb ik gewerkt?</button>
           <button class="onderdeel-knop" :class="{ 'knop-uit': !toonOpleidingen }" @click="toonOpleidingen = !toonOpleidingen">Welke opleiding of cursus heb ik gedaan?</button>
@@ -310,13 +308,12 @@ watch(
           <button class="onderdeel-knop knop-uit">Meer over mij</button>
       </div>
 
-<h2 class="hoofdtitel">Mijn gegevens</h2>
+      <h2 class="hoofdtitel">Mijn gegevens</h2>
       <div class="dynamisch-blok">
           <div class="form-grid">
             <div class="form-groep"><label>Voornaam</label><input type="text" v-model="voornaam" placeholder="Je voornaam"></div>
             <div class="form-groep"><label>Achternaam</label><input type="text" v-model="achternaam" placeholder="Je achternaam"></div>
-            <div class="form-groep"><label>Adres</label><input type="text" v-model="adres" placeholder="Je straat en huisnummer"></div>
-            <div class="form-groep"><label>Postcode en plaats</label><input type="text" v-model="postcode" placeholder="Je postcode en plaats"></div>
+            <div class="form-groep volledige-breedte"><label>Woonplaats</label><input type="text" v-model="woonplaats" placeholder="Je woonplaats"></div>
             <div class="form-groep"><label>E-mail</label><input type="email" v-model="email" placeholder="Je e-mailadres"></div>
             <div class="form-groep"><label>Telefoon</label><input type="tel" v-model="telefoon" placeholder="Je telefoonnummer"></div>
             
@@ -354,78 +351,88 @@ watch(
           </div>
       </div>
 
-<div v-if="toonSterkePunten">
-                    <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Mijn sterke punten</div>
-                    <div v-if="sterkePunten.length === 0"><p class="cv-p-italic">Nog geen sterke punten toegevoegd.</p></div>
-                    <ul v-else class="cv-lijst">
-                        <li v-for="p in sterkePunten" v-show="p.tekst">{{ p.tekst }}</li>
-                    </ul>
-                </div>
-
-<div v-if="toonWerkervaring">
-          <h2 class="hoofdtitel">Werkervaring</h2>
-          <div v-for="(werk, index) in werkervaringen" :key="werk.id" class="dynamisch-blok">
-              <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
-                  <button class="verwijder-knop" @click="verwijderWerkervaring(index)">Verwijderen</button>
+      <div v-if="toonSterkePunten">
+          <h2 class="hoofdtitel">Mijn sterke punten</h2>
+          <div class="dynamisch-blok">
+              <div v-for="(punt, index) in sterkePunten" :key="index" style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
+                  <input type="text" v-model="punt.tekst" placeholder="Bijv. Klantvriendelijk" style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #ffffff; font-size: 14px; outline: none; transition: all 0.2s;">
+                  <button class="verwijder-knop-klein" @click="verwijderSterkPunt(index)">✕</button>
               </div>
-              <div class="form-grid">
-                  <div class="form-groep volledige-breedte">
-                      <label>Functie</label>
-                      <input type="text" v-model="werk.functie" placeholder="Bijv. Automonteur">
-                  </div>
-                  <div class="form-groep volledige-breedte">
-                      <label>Organisatie</label>
-                      <input type="text" v-model="werk.bedrijf" placeholder="Bijv. Vakgarage Jansen">
-                  </div>
-                  
-                  <div class="form-groep">
-                      <label>Van</label>
-                      <div style="display: flex; gap: 8px;">
-                          <select v-model="werk.vanMaand" @change="sorteerErvaringen" style="width: 50%;">
-                              <option value="">Maand</option>
-                              <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
-                          </select>
-                          <select v-model="werk.vanJaar" @change="sorteerErvaringen" style="width: 50%;">
-                              <option value="">Jaar</option>
-                              <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
-                          </select>
-                      </div>
-                  </div>
-
-                  <div class="form-groep">
-                      <label>Tot</label>
-                      <div style="display: flex; gap: 8px;" v-if="!werk.isHuidigeBaan">
-                          <select v-model="werk.totMaand" @change="sorteerErvaringen" style="width: 50%;">
-                              <option value="">Maand</option>
-                              <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
-                          </select>
-                          <select v-model="werk.totJaar" @change="sorteerErvaringen" style="width: 50%;">
-                              <option value="">Jaar</option>
-                              <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
-                          </select>
-                      </div>
-                      <div v-else style="display: flex; align-items: center; height: 46px; color: #718096; font-size: 14px; font-weight: 600;">
-                          Heden
-                      </div>
-                  </div>
-
-                  <div class="form-groep volledige-breedte">
-                      <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
-                          <label class="toggle-switch">
-                              <input type="checkbox" v-model="werk.isHuidigeBaan" @change="sorteerErvaringen">
-                              <span class="toggle-slider"></span>
-                          </label>
-                          <span class="toggle-label" style="font-weight: 600;">Ik werk hier nu nog</span>
-                      </div>
-                  </div>
-
-                  <div class="form-groep volledige-breedte">
-                      <label>Korte omschrijving</label>
-                      <textarea v-model="werk.omschrijving" rows="3" placeholder="Wat waren je taken?"></textarea>
-                  </div>
-              </div>
+              <button class="toevoeg-knop" @click="voegSterkPuntToe" style="margin-bottom: 0; margin-top: 0;">+ Voeg een sterk punt toe</button>
           </div>
-          <button class="toevoeg-knop" @click="voegWerkervaringToe">+ Voeg een werkervaring toe</button>
+      </div>
+
+      <div v-if="toonWerkervaring">
+          <h2 class="hoofdtitel">Werkervaring</h2>
+          <div class="dynamisch-blok">
+              <div v-for="(werk, index) in werkervaringen" :key="werk.id" 
+                   :style="{ 
+                       marginBottom: index < werkervaringen.length - 1 ? '25px' : '15px', 
+                       paddingBottom: index < werkervaringen.length - 1 ? '25px' : '0px', 
+                       borderBottom: index < werkervaringen.length - 1 ? '1px solid #e2e8f0' : 'none' 
+                   }">
+                  <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
+                      <button class="verwijder-knop" @click="verwijderWerkervaring(index)">Verwijderen</button>
+                  </div>
+                  <div class="form-grid">
+                      <div class="form-groep volledige-breedte">
+                          <label>Functie</label>
+                          <input type="text" v-model="werk.functie" placeholder="Bijv. Automonteur">
+                      </div>
+                      <div class="form-groep volledige-breedte">
+                          <label>Organisatie</label>
+                          <input type="text" v-model="werk.bedrijf" placeholder="Bijv. Vakgarage Jansen">
+                      </div>
+                      
+                      <div class="form-groep">
+                          <label>Van</label>
+                          <div style="display: flex; gap: 8px;">
+                              <select v-model="werk.vanMaand" @change="sorteerErvaringen" style="width: 50%;">
+                                  <option value="">Maand</option>
+                                  <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
+                              </select>
+                              <select v-model="werk.vanJaar" @change="sorteerErvaringen" style="width: 50%;">
+                                  <option value="">Jaar</option>
+                                  <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
+                              </select>
+                          </div>
+                      </div>
+
+                      <div class="form-groep">
+                          <label>Tot</label>
+                          <div style="display: flex; gap: 8px;" v-if="!werk.isHuidigeBaan">
+                              <select v-model="werk.totMaand" @change="sorteerErvaringen" style="width: 50%;">
+                                  <option value="">Maand</option>
+                                  <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
+                              </select>
+                              <select v-model="werk.totJaar" @change="sorteerErvaringen" style="width: 50%;">
+                                  <option value="">Jaar</option>
+                                  <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
+                              </select>
+                          </div>
+                          <div v-else style="display: flex; align-items: center; height: 46px; color: #718096; font-size: 14px; font-weight: 600;">
+                              Heden
+                          </div>
+                      </div>
+
+                      <div class="form-groep volledige-breedte">
+                          <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
+                              <label class="toggle-switch">
+                                  <input type="checkbox" v-model="werk.isHuidigeBaan" @change="sorteerErvaringen">
+                                  <span class="toggle-slider"></span>
+                              </label>
+                              <span class="toggle-label" style="font-weight: 600;">Ik werk hier nu nog</span>
+                          </div>
+                      </div>
+
+                      <div class="form-groep volledige-breedte">
+                          <label>Korte omschrijving</label>
+                          <textarea v-model="werk.omschrijving" rows="3" placeholder="Wat waren je taken?"></textarea>
+                      </div>
+                  </div>
+              </div>
+              <button class="toevoeg-knop" @click="voegWerkervaringToe" style="margin-bottom: 0; margin-top: 0;">+ Voeg een werkervaring toe</button>
+          </div>
       </div>
 
       <div v-if="toonOpleidingen">
@@ -556,12 +563,37 @@ watch(
             <div class="cv-zijbalk" :style="{ backgroundColor: gekozenKleur }">
                 <div v-if="profielfoto && toonFotoOpCv" class="cv-profielfoto" :style="{ backgroundImage: `url(${profielfoto})`, backgroundSize: 'cover' }"></div>
                 <div v-else style="height: 40px;"></div>
+                
                 <div class="cv-sectie-titel-zijbalk">Mijn gegevens</div>
-                <div class="cv-tekst-zijbalk">{{ adres || 'Adres' }}<br>{{ postcode || 'Plaats' }}</div>
-                <div class="cv-tekst-zijbalk" style="margin-top: 12px;">{{ email || 'E-mail' }}<br>{{ telefoon || 'Telefoon' }}</div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        <span class="cv-tekst-zijbalk" style="margin-bottom: 0;">{{ woonplaats || 'Woonplaats' }}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        <span class="cv-tekst-zijbalk" style="margin-bottom: 0;">{{ email || 'E-mail' }}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        <span class="cv-tekst-zijbalk" style="margin-bottom: 0;">{{ telefoon || 'Telefoon' }}</span>
+                    </div>
+                </div>
+
                 <div v-if="heeftRijbewijs || heeftAuto" style="margin-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.3); padding-top: 15px;">
                     <div class="cv-tekst-zijbalk" v-if="heeftRijbewijs">✓ Rijbewijs B</div>
                     <div class="cv-tekst-zijbalk" v-if="heeftAuto">✓ Eigen auto</div>
+                </div>
+
+                <div v-if="toonSterkePunten" style="margin-top: 25px; border-top: 1px solid rgba(255, 255, 255, 0.3); padding-top: 20px;">
+                    <div class="cv-sectie-titel-zijbalk">Sterke punten</div>
+                    <div v-if="sterkePunten.length === 0"><div class="cv-tekst-zijbalk" style="font-style: italic; opacity: 0.7;">Nog geen sterke punten toegevoegd.</div></div>
+                    <div v-else style="display: flex; flex-direction: column; gap: 8px;">
+                        <div v-for="(p, index) in sterkePunten" :key="index" v-show="p.tekst" style="display: flex; align-items: flex-start; gap: 8px;">
+                            <span style="font-size: 14px; line-height: 1.2;">•</span>
+                            <span class="cv-tekst-zijbalk" style="margin-bottom: 0;">{{ p.tekst }}</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div v-if="toonTalen" style="margin-top: 25px; border-top: 1px solid rgba(255, 255, 255, 0.3); padding-top: 20px;">
@@ -583,12 +615,6 @@ watch(
                 
                 <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Dit ben ik</div>
                 <p class="cv-p">{{ profieltekst || 'Jouw profieltekst...' }}</p>
-                
-                <div v-if="toonSterkePunten">
-                    <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Mijn sterke punten</div>
-                    <div v-if="sterkePunten.length === 0"><p class="cv-p-italic">Nog geen sterke punten toegevoegd.</p></div>
-                    <ul v-else class="cv-lijst"><li v-for="(p, index) in sterkePunten" :key="index" v-show="p.tekst">{{ p.tekst }}</li></ul>
-                </div>
                 
                 <div v-if="toonWerkervaring">
                     <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Werkervaring</div>
@@ -673,8 +699,6 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 .onderdelen-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #edf2f7; padding-bottom: 25px; }
 .onderdeel-knop { background: #4A90E2; color: white; border: 1px solid #4A90E2; padding: 10px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
 .onderdeel-knop:hover { background-color: #357ABD; border-color: #357ABD; }
-
-/* UIT-GEZETTE (Nog niet actieve) KNOPPEN */
 .knop-uit { background: #DBEAFE; color: #4A90E2; border-color: transparent; }
 .knop-uit:hover { background: #BFDBFE; }
 
@@ -708,7 +732,7 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 /* DYNAMISCHE BLOKKEN EN ALGEMENE KNOPPEN */
 .dynamisch-blok { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
 .hoofd-knop { background: #4A90E2; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
-.toevoeg-knop { background: white; color: #4A90E2; border: 2px dashed #4A90E2; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; margin-bottom: 30px; transition: 0.2s;}.toevoeg-knop:hover { background: #eff6ff;}
+.toevoeg-knop { background: white; color: #4A90E2; border: 2px dashed #4A90E2; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; margin-bottom: 30px; transition: 0.2s;}.toevoeg-knop:hover { background: #f8fafc;}
 .toevoeg-knop-sec { background: transparent; color: #4A90E2; border: none; font-size: 13px; font-weight: 600; cursor: pointer; }
 .verwijder-knop { background: none; border: none; color: #e53e3e; font-size: 12px; font-weight: 600; cursor: pointer; }
 .verwijder-knop:hover { text-decoration: underline; }
