@@ -355,13 +355,12 @@ watch(
       </div>
 
 <div v-if="toonSterkePunten">
-          <h2 class="hoofdtitel">Mijn sterke punten</h2>
-          <div v-for="(punt, index) in sterkePunten" :key="index" style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
-              <input type="text" v-model="punt.tekst" placeholder="Bijv. Klantvriendelijk" style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #ffffff; font-size: 14px; outline: none; transition: all 0.2s;">
-              <button class="verwijder-knop-klein" @click="verwijderSterkPunt(index)">✕</button>
-          </div>
-          <button class="toevoeg-knop" @click="voegSterkPuntToe">+ Voeg een sterk punt toe</button>
-      </div>
+                    <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Mijn sterke punten</div>
+                    <div v-if="sterkePunten.length === 0"><p class="cv-p-italic">Nog geen sterke punten toegevoegd.</p></div>
+                    <ul v-else class="cv-lijst">
+                        <li v-for="p in sterkePunten" v-show="p.tekst">{{ p.tekst }}</li>
+                    </ul>
+                </div>
 
 <div v-if="toonWerkervaring">
           <h2 class="hoofdtitel">Werkervaring</h2>
@@ -431,109 +430,123 @@ watch(
 
       <div v-if="toonOpleidingen">
           <h2 class="hoofdtitel">Opleidingen & cursussen</h2>
-          <div v-for="(opl, index) in opleidingen" :key="opl.id" class="dynamisch-blok">
-            <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
-                <button class="verwijder-knop" @click="verwijderOpleiding(index)">Verwijderen</button>
-            </div>
-            <div class="form-grid">
-                
-                <div class="form-groep volledige-breedte">
-                    <label>Wat wil je toevoegen?</label>
-                    <select v-model="opl.type" @change="triggerOpslaan" style="font-weight: 600;">
-                        <option value="Opleiding">Opleiding</option>
-                        <option value="Cursus">Cursus of praktijkverklaring</option>
-                    </select>
+          <div class="dynamisch-blok">
+              <div v-for="(opl, index) in opleidingen" :key="opl.id" 
+                   :style="{ 
+                       marginBottom: index < opleidingen.length - 1 ? '25px' : '15px', 
+                       paddingBottom: index < opleidingen.length - 1 ? '25px' : '0px', 
+                       borderBottom: index < opleidingen.length - 1 ? '1px solid #e2e8f0' : 'none' 
+                   }">
+                <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
+                    <button class="verwijder-knop" @click="verwijderOpleiding(index)">Verwijderen</button>
                 </div>
-
-                <div class="form-groep volledige-breedte">
-                    <label>{{ opl.type === 'Cursus' ? 'Naam cursus of verklaring' : 'Naam opleiding' }}</label>
-                    <input type="text" v-model="opl.studie" :placeholder="opl.type === 'Cursus' ? 'Bijv. BHV of VCA' : 'Bijv. MBO Verkoopmedewerker'">
-                </div>
-                <div class="form-groep volledige-breedte">
-                    <label>School of Instituut</label>
-                    <input type="text" v-model="opl.instelling" placeholder="Bijv. ROC Amsterdam">
-                </div>
-
-                <div class="form-groep">
-                    <label>Van</label>
-                    <div style="display: flex; gap: 8px;">
-                        <select v-model="opl.vanMaand" @change="sorteerOpleidingen" style="width: 50%;">
-                            <option value="">Maand</option>
-                            <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
-                        </select>
-                        <select v-model="opl.vanJaar" @change="sorteerOpleidingen" style="width: 50%;">
-                            <option value="">Jaar</option>
-                            <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
+                <div class="form-grid">
+                    
+                    <div class="form-groep volledige-breedte">
+                        <label>Wat wil je toevoegen?</label>
+                        <select v-model="opl.type" @change="triggerOpslaan" style="font-weight: 600;">
+                            <option value="Opleiding">Opleiding</option>
+                            <option value="Cursus">Cursus of praktijkverklaring</option>
                         </select>
                     </div>
-                </div>
 
-                <div class="form-groep">
-                    <label>Tot</label>
-                    <div style="display: flex; gap: 8px;" v-if="!opl.isHuidigeOpleiding">
-                        <select v-model="opl.totMaand" @change="sorteerOpleidingen" style="width: 50%;">
-                            <option value="">Maand</option>
-                            <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
-                        </select>
-                        <select v-model="opl.totJaar" @change="sorteerOpleidingen" style="width: 50%;">
-                            <option value="">Jaar</option>
-                            <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
-                        </select>
+                    <div class="form-groep volledige-breedte">
+                        <label>{{ opl.type === 'Cursus' ? 'Naam cursus of verklaring' : 'Naam opleiding' }}</label>
+                        <input type="text" v-model="opl.studie" :placeholder="opl.type === 'Cursus' ? 'Bijv. BHV of VCA' : 'Bijv. MBO Verkoopmedewerker'">
                     </div>
-                    <div v-else style="display: flex; align-items: center; height: 46px; color: #718096; font-size: 14px; font-weight: 600;">
-                        Heden
+                    <div class="form-groep volledige-breedte">
+                        <label>School of Instituut</label>
+                        <input type="text" v-model="opl.instelling" placeholder="Bijv. ROC Amsterdam">
                     </div>
-                </div>
 
-                <div class="form-groep volledige-breedte" v-if="!opl.isHuidigeOpleiding">
-                    <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
-                        <label class="toggle-switch">
-                            <input type="checkbox" v-model="opl.isBehaald" @change="triggerOpslaan">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <span class="toggle-label" style="font-weight: 600;">
-                            {{ opl.type === 'Cursus' ? 'Certificaat behaald' : 'Diploma behaald' }}
-                        </span>
+                    <div class="form-groep">
+                        <label>Van</label>
+                        <div style="display: flex; gap: 8px;">
+                            <select v-model="opl.vanMaand" @change="sorteerOpleidingen" style="width: 50%;">
+                                <option value="">Maand</option>
+                                <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
+                            </select>
+                            <select v-model="opl.vanJaar" @change="sorteerOpleidingen" style="width: 50%;">
+                                <option value="">Jaar</option>
+                                <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-groep volledige-breedte">
-                    <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
-                        <label class="toggle-switch">
-                            <input type="checkbox" v-model="opl.isHuidigeOpleiding" @change="sorteerOpleidingen">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <span class="toggle-label" style="font-weight: 600;">Ik volg dit momenteel nog</span>
+                    <div class="form-groep">
+                        <label>Tot</label>
+                        <div style="display: flex; gap: 8px;" v-if="!opl.isHuidigeOpleiding">
+                            <select v-model="opl.totMaand" @change="sorteerOpleidingen" style="width: 50%;">
+                                <option value="">Maand</option>
+                                <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
+                            </select>
+                            <select v-model="opl.totJaar" @change="sorteerOpleidingen" style="width: 50%;">
+                                <option value="">Jaar</option>
+                                <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
+                            </select>
+                        </div>
+                        <div v-else style="display: flex; align-items: center; height: 46px; color: #718096; font-size: 14px; font-weight: 600;">
+                            Heden
+                        </div>
+                    </div>
+
+                    <div class="form-groep volledige-breedte" v-if="!opl.isHuidigeOpleiding">
+                        <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
+                            <label class="toggle-switch">
+                                <input type="checkbox" v-model="opl.isBehaald" @change="triggerOpslaan">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="toggle-label" style="font-weight: 600;">
+                                {{ opl.type === 'Cursus' ? 'Certificaat behaald' : 'Diploma behaald' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="form-groep volledige-breedte">
+                        <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
+                            <label class="toggle-switch">
+                                <input type="checkbox" v-model="opl.isHuidigeOpleiding" @change="sorteerOpleidingen">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="toggle-label" style="font-weight: 600;">Ik volg dit momenteel nog</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+              </div>
+              <button class="toevoeg-knop" @click="voegOpleidingToe" style="margin-bottom: 0; margin-top: 0;">+ Voeg een opleiding of cursus toe</button>
           </div>
-          <button class="toevoeg-knop" @click="voegOpleidingToe">+ Voeg een opleiding of cursus toe</button>
       </div>
 
       <div v-if="toonTalen">
           <h2 class="hoofdtitel">Talen die ik spreek</h2>
-          <div v-for="(taal, index) in talen" :key="taal.id" style="margin-bottom: 15px; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
-              <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
-                  <input type="text" v-model="taal.naam" placeholder="Bijv. Engels of Spaans" style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px;">
-                  <button class="verwijder-knop-klein" @click="verwijderTaal(index)">✕</button>
-              </div>
-              
-              <div style="display: flex; align-items: center; gap: 10px;">
-                  <span style="font-size: 13px; font-weight: 600; color: #4a5568; min-width: 50px;">Niveau:</span>
-                  <div style="display: flex; gap: 4px; cursor: pointer;">
-                      <svg v-for="ster in 5" :key="ster" @click="zetTaalNiveau(taal, ster)" 
-                           :fill="ster <= taal.niveau ? '#FFD700' : 'none'" 
-                           stroke="#FFD700" viewBox="0 0 24 24" stroke-width="2" width="28" height="28" style="transition: all 0.2s;">
-                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                      </svg>
+          <div class="dynamisch-blok">
+              <div v-for="(taal, index) in talen" :key="taal.id" 
+                   :style="{ 
+                       marginBottom: index < talen.length - 1 ? '20px' : '15px', 
+                       paddingBottom: index < talen.length - 1 ? '20px' : '0px', 
+                       borderBottom: index < talen.length - 1 ? '1px solid #e2e8f0' : 'none' 
+                   }">
+                  <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                      <input type="text" v-model="taal.naam" placeholder="Bijv. Engels of Spaans" style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background: #ffffff;">
+                      <button class="verwijder-knop-klein" @click="verwijderTaal(index)">✕</button>
                   </div>
-                  <span style="font-size: 12px; color: #718096; font-weight: 600; margin-left: 10px;">
-                      {{ taal.niveau === 5 ? 'Moedertaal' : taal.niveau === 4 ? 'Vloeiend' : taal.niveau === 3 ? 'Goed' : taal.niveau === 2 ? 'Basis' : taal.niveau === 1 ? 'Beginner' : 'Kies je niveau' }}
-                  </span>
+                  
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                      <span style="font-size: 13px; font-weight: 600; color: #4a5568; min-width: 50px;">Niveau:</span>
+                      <div style="display: flex; gap: 4px; cursor: pointer;">
+                          <svg v-for="ster in 5" :key="ster" @click="zetTaalNiveau(taal, ster)" 
+                               :fill="ster <= taal.niveau ? '#FFD700' : 'none'" 
+                               stroke="#FFD700" viewBox="0 0 24 24" stroke-width="2" width="28" height="28" style="transition: all 0.2s;">
+                              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                          </svg>
+                      </div>
+                      <span style="font-size: 12px; color: #718096; font-weight: 600; margin-left: 10px;">
+                          {{ taal.niveau === 5 ? 'Moedertaal' : taal.niveau === 4 ? 'Vloeiend' : taal.niveau === 3 ? 'Goed' : taal.niveau === 2 ? 'Basis' : taal.niveau === 1 ? 'Beginner' : 'Kies je niveau' }}
+                      </span>
+                  </div>
               </div>
+              <button class="toevoeg-knop" @click="voegTaalToe" style="margin-bottom: 0; margin-top: 0;">+ Voeg een taal toe</button>
           </div>
-          <button class="toevoeg-knop" @click="voegTaalToe">+ Voeg een taal toe</button>
       </div>
 
     </div>
