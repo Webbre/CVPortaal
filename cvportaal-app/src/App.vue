@@ -77,7 +77,8 @@ onMounted(async () => {
           werkervaringen.value = (data.werkervaringen || []).map(w => ({ id: w.id || Date.now() + Math.random(), ...w }));
           
           toonSterkePunten.value = data.toonSterkePunten !== undefined ? data.toonSterkePunten : false;
-          sterkePunten.value = data.sterkePunten || [];
+          // OPTIMALISATIE: Voorzie sterke punten uit database van een ID
+          sterkePunten.value = (data.sterkePunten || []).map(p => ({ id: p.id || Date.now() + Math.random(), ...p }));
           
           toonOpleidingen.value = data.toonOpleidingen !== undefined ? data.toonOpleidingen : false;
           opleidingen.value = (data.opleidingen || []).map(o => ({ id: o.id || Date.now() + Math.random(), ...o }));
@@ -162,7 +163,8 @@ function voegWerkervaringToe() {
 }
 function verwijderWerkervaring(index) { werkervaringen.value.splice(index, 1) }
 
-function voegSterkPuntToe() { sterkePunten.value.push({ tekst: '' }) }
+// OPTIMALISATIE: Voeg ID toe aan sterke punten
+function voegSterkPuntToe() { sterkePunten.value.push({ id: Date.now(), tekst: '' }) }
 function verwijderSterkPunt(index) { sterkePunten.value.splice(index, 1) }
 
 function voegOpleidingToe() { 
@@ -209,20 +211,27 @@ function sorteerOpleidingen() {
   });
 }
 
-// Database trigger
+// OPTIMALISATIE: Debounce timer
+let opslaanTimer = null;
+
+// Database trigger met debounce
 function triggerOpslaan() {
   if (!gebruiker.value || isLaden.value) return;
-  slaGegevensOp({
-    voornaam: voornaam.value, achternaam: achternaam.value, woonplaats: woonplaats.value,
-    email: email.value, telefoon: telefoon.value,
-    heeftRijbewijs: heeftRijbewijs.value, heeftAuto: heeftAuto.value,
-    profielfoto: profielfoto.value, toonFotoOpCv: toonFotoOpCv.value,
-    profieltekst: profieltekst.value, gekozenKleur: gekozenKleur.value,
-    toonWerkervaring: toonWerkervaring.value, werkervaringen: werkervaringen.value,
-    toonSterkePunten: toonSterkePunten.value, sterkePunten: sterkePunten.value,
-    toonOpleidingen: toonOpleidingen.value, opleidingen: opleidingen.value,
-    toonTalen: toonTalen.value, talen: talen.value
-  });
+  
+  clearTimeout(opslaanTimer);
+  opslaanTimer = setTimeout(() => {
+    slaGegevensOp({
+      voornaam: voornaam.value, achternaam: achternaam.value, woonplaats: woonplaats.value,
+      email: email.value, telefoon: telefoon.value,
+      heeftRijbewijs: heeftRijbewijs.value, heeftAuto: heeftAuto.value,
+      profielfoto: profielfoto.value, toonFotoOpCv: toonFotoOpCv.value,
+      profieltekst: profieltekst.value, gekozenKleur: gekozenKleur.value,
+      toonWerkervaring: toonWerkervaring.value, werkervaringen: werkervaringen.value,
+      toonSterkePunten: toonSterkePunten.value, sterkePunten: sterkePunten.value,
+      toonOpleidingen: toonOpleidingen.value, opleidingen: opleidingen.value,
+      toonTalen: toonTalen.value, talen: talen.value
+    });
+  }, 1000); // Wacht 1 seconde met opslaan
 }
 
 watch(
@@ -250,7 +259,7 @@ watch(
         <button class="hoofd-knop" style="width: 100%; margin-top: 15px;" @click="loginMetLink">Stuur inloglink</button>
       </div>
       <div v-else>
-        <div style="font-size: 40px; margin-bottom: 15px;">✉️</div>
+        <div style="font-size: 40px; margin-bottom: 15px;" role="status">✉️</div>
         <h2 style="color: #4A90E2; margin-bottom: 10px; font-size: 18px;">Check je mailbox!</h2>
         <p style="color: #718096; font-size: 14px;">Link gestuurd naar <strong>{{ loginEmail }}</strong></p>
       </div>
@@ -262,7 +271,7 @@ watch(
       
       <div class="app-header">
           <div class="app-logo-groep">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#4A90E2" stroke-width="2" width="28" height="28">
+              <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="#4A90E2" stroke-width="2" width="28" height="28">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                   <polyline points="14 2 14 8 20 8"></polyline>
                   <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -272,8 +281,8 @@ watch(
               <h1 class="app-titel">CVPortaal. Je cv simpel & snel.</h1>
           </div>
           <div class="menu-container-header relative">
-              <button class="tandwiel-knop" @click="toonMenu = !toonMenu">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+              <button class="tandwiel-knop" @click="toonMenu = !toonMenu" aria-label="Menu openen">
+                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
                       <circle cx="12" cy="12" r="3"></circle>
                       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                   </svg>
@@ -295,7 +304,7 @@ watch(
 
       <p style="font-size: 13px; font-weight:600; color:#718096; margin-bottom:8px;">Kies je kleur</p>
       <div class="kleur-kiezer">
-          <div v-for="kleur in kleuren" :key="kleur" class="kleur-rondje" :class="{ actief: gekozenKleur === kleur }" :style="{ backgroundColor: kleur }" @click="veranderKleur(kleur)"></div>
+          <button v-for="kleur in kleuren" :key="kleur" class="kleur-rondje" :class="{ actief: gekozenKleur === kleur }" :style="{ backgroundColor: kleur }" @click="veranderKleur(kleur)" :aria-label="`Kies kleur ${kleur}`"></button>
       </div>
 
       <h2 class="hoofdtitel">Kies je cv onderdelen</h2>
@@ -321,7 +330,7 @@ watch(
                 <div class="foto-upload-sectie">
                     <div class="foto-preview-container">
                         <div class="foto-preview" :style="{ backgroundImage: profielfoto ? `url(${profielfoto})` : '' }">
-                            <svg v-if="!profielfoto" viewBox="0 0 24 24" fill="#cbd5e0" width="100" height="100"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                            <svg aria-hidden="true" focusable="false" v-if="!profielfoto" viewBox="0 0 24 24" fill="#cbd5e0" width="100" height="100"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                         </div>
                         <div class="foto-acties">
                             <label class="foto-upload-knop"> {{ profielfoto ? 'Foto wijzigen' : 'Foto uploaden' }} <input type="file" accept="image/*" @change="verwerkFoto" style="display: none;"> </label>
@@ -330,15 +339,15 @@ watch(
                     </div>
                     <div class="toggle-container" v-if="profielfoto" style="margin-top: 15px;">
                         <span class="toggle-label">Foto op cv tonen</span>
-                        <label class="toggle-switch"><input type="checkbox" v-model="toonFotoOpCv"><span class="toggle-slider"></span></label>
+                        <label class="toggle-switch"><input type="checkbox" v-model="toonFotoOpCv" aria-label="Toon foto op CV"><span class="toggle-slider"></span></label>
                     </div>
                 </div>
             </div>
 
             <div class="form-groep">
                 <label>Vervoer</label>
-                <div class="toggle-container"><span class="toggle-label">Ik heb een rijbewijs</span><label class="toggle-switch"><input type="checkbox" v-model="heeftRijbewijs"><span class="toggle-slider"></span></label></div>
-                <div class="toggle-container"><span class="toggle-label">Ik heb een eigen auto</span><label class="toggle-switch"><input type="checkbox" v-model="heeftAuto"><span class="toggle-slider"></span></label></div>
+                <div class="toggle-container"><span class="toggle-label">Ik heb een rijbewijs</span><label class="toggle-switch"><input type="checkbox" v-model="heeftRijbewijs" aria-label="Ik heb een rijbewijs"><span class="toggle-slider"></span></label></div>
+                <div class="toggle-container"><span class="toggle-label">Ik heb een eigen auto</span><label class="toggle-switch"><input type="checkbox" v-model="heeftAuto" aria-label="Ik heb een auto"><span class="toggle-slider"></span></label></div>
             </div>
           </div>
       </div>
@@ -354,9 +363,9 @@ watch(
       <div v-if="toonSterkePunten">
           <h2 class="hoofdtitel">Mijn sterke punten</h2>
           <div class="dynamisch-blok">
-              <div v-for="(punt, index) in sterkePunten" :key="index" style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
+              <div v-for="(punt, index) in sterkePunten" :key="punt.id" style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
                   <input type="text" v-model="punt.tekst" placeholder="Bijv. Klantvriendelijk" style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #ffffff; font-size: 14px; outline: none; transition: all 0.2s;">
-                  <button class="verwijder-knop-klein" @click="verwijderSterkPunt(index)">✕</button>
+                  <button class="verwijder-knop-klein" @click="verwijderSterkPunt(index)" aria-label="Verwijder dit sterk punt">✕</button>
               </div>
               <button class="toevoeg-knop" @click="voegSterkPuntToe" style="margin-bottom: 0; margin-top: 0;">+ Voeg een sterk punt toe</button>
           </div>
@@ -387,11 +396,11 @@ watch(
                       <div class="form-groep">
                           <label>Van</label>
                           <div style="display: flex; gap: 8px;">
-                              <select v-model="werk.vanMaand" @change="sorteerErvaringen" style="width: 50%;">
+                              <select v-model="werk.vanMaand" @change="sorteerErvaringen" style="width: 50%;" aria-label="Van maand">
                                   <option value="">Maand</option>
                                   <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                               </select>
-                              <select v-model="werk.vanJaar" @change="sorteerErvaringen" style="width: 50%;">
+                              <select v-model="werk.vanJaar" @change="sorteerErvaringen" style="width: 50%;" aria-label="Van jaar">
                                   <option value="">Jaar</option>
                                   <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
                               </select>
@@ -401,11 +410,11 @@ watch(
                       <div class="form-groep">
                           <label>Tot</label>
                           <div style="display: flex; gap: 8px;" v-if="!werk.isHuidigeBaan">
-                              <select v-model="werk.totMaand" @change="sorteerErvaringen" style="width: 50%;">
+                              <select v-model="werk.totMaand" @change="sorteerErvaringen" style="width: 50%;" aria-label="Tot maand">
                                   <option value="">Maand</option>
                                   <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                               </select>
-                              <select v-model="werk.totJaar" @change="sorteerErvaringen" style="width: 50%;">
+                              <select v-model="werk.totJaar" @change="sorteerErvaringen" style="width: 50%;" aria-label="Tot jaar">
                                   <option value="">Jaar</option>
                                   <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
                               </select>
@@ -418,7 +427,7 @@ watch(
                       <div class="form-groep volledige-breedte">
                           <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
                               <label class="toggle-switch">
-                                  <input type="checkbox" v-model="werk.isHuidigeBaan" @change="sorteerErvaringen">
+                                  <input type="checkbox" v-model="werk.isHuidigeBaan" @change="sorteerErvaringen" aria-label="Ik werk hier nu nog">
                                   <span class="toggle-slider"></span>
                               </label>
                               <span class="toggle-label" style="font-weight: 600;">Ik werk hier nu nog</span>
@@ -469,11 +478,11 @@ watch(
                     <div class="form-groep">
                         <label>Van</label>
                         <div style="display: flex; gap: 8px;">
-                            <select v-model="opl.vanMaand" @change="sorteerOpleidingen" style="width: 50%;">
+                            <select v-model="opl.vanMaand" @change="sorteerOpleidingen" style="width: 50%;" aria-label="Van maand">
                                 <option value="">Maand</option>
                                 <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                             </select>
-                            <select v-model="opl.vanJaar" @change="sorteerOpleidingen" style="width: 50%;">
+                            <select v-model="opl.vanJaar" @change="sorteerOpleidingen" style="width: 50%;" aria-label="Van jaar">
                                 <option value="">Jaar</option>
                                 <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
                             </select>
@@ -483,11 +492,11 @@ watch(
                     <div class="form-groep">
                         <label>Tot</label>
                         <div style="display: flex; gap: 8px;" v-if="!opl.isHuidigeOpleiding">
-                            <select v-model="opl.totMaand" @change="sorteerOpleidingen" style="width: 50%;">
+                            <select v-model="opl.totMaand" @change="sorteerOpleidingen" style="width: 50%;" aria-label="Tot maand">
                                 <option value="">Maand</option>
                                 <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                             </select>
-                            <select v-model="opl.totJaar" @change="sorteerOpleidingen" style="width: 50%;">
+                            <select v-model="opl.totJaar" @change="sorteerOpleidingen" style="width: 50%;" aria-label="Tot jaar">
                                 <option value="">Jaar</option>
                                 <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
                             </select>
@@ -500,7 +509,7 @@ watch(
                     <div class="form-groep volledige-breedte" v-if="!opl.isHuidigeOpleiding">
                         <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
                             <label class="toggle-switch">
-                                <input type="checkbox" v-model="opl.isBehaald" @change="triggerOpslaan">
+                                <input type="checkbox" v-model="opl.isBehaald" @change="triggerOpslaan" aria-label="Diploma behaald">
                                 <span class="toggle-slider"></span>
                             </label>
                             <span class="toggle-label" style="font-weight: 600;">
@@ -512,7 +521,7 @@ watch(
                     <div class="form-groep volledige-breedte">
                         <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
                             <label class="toggle-switch">
-                                <input type="checkbox" v-model="opl.isHuidigeOpleiding" @change="sorteerOpleidingen">
+                                <input type="checkbox" v-model="opl.isHuidigeOpleiding" @change="sorteerOpleidingen" aria-label="Ik volg dit momenteel nog">
                                 <span class="toggle-slider"></span>
                             </label>
                             <span class="toggle-label" style="font-weight: 600;">Ik volg dit momenteel nog</span>
@@ -535,15 +544,16 @@ watch(
                    }">
                   <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
                       <input type="text" v-model="taal.naam" placeholder="Bijv. Engels of Spaans" style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background: #ffffff;">
-                      <button class="verwijder-knop-klein" @click="verwijderTaal(index)">✕</button>
+                      <button class="verwijder-knop-klein" @click="verwijderTaal(index)" aria-label="Verwijder deze taal">✕</button>
                   </div>
                   
                   <div style="display: flex; align-items: center; gap: 10px;">
                       <span style="font-size: 13px; font-weight: 600; color: #4a5568; min-width: 50px;">Niveau:</span>
                       <div style="display: flex; gap: 4px; cursor: pointer;">
                           <svg v-for="ster in 5" :key="ster" @click="zetTaalNiveau(taal, ster)" 
+                               role="button" tabindex="0" :aria-label="`Niveau ${ster} van 5`" @keydown.enter="zetTaalNiveau(taal, ster)"
                                :fill="ster <= taal.niveau ? '#FFD700' : 'none'" 
-                               stroke="#FFD700" viewBox="0 0 24 24" stroke-width="2" width="28" height="28" style="transition: all 0.2s;">
+                               stroke="#FFD700" viewBox="0 0 24 24" stroke-width="2" width="28" height="28" style="transition: all 0.2s; outline: none;">
                               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                           </svg>
                       </div>
@@ -567,15 +577,15 @@ watch(
                 <div class="cv-sectie-titel-zijbalk">Mijn gegevens</div>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                         <span class="cv-tekst-zijbalk" style="margin-bottom: 0;">{{ woonplaats || 'Woonplaats' }}</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                         <span class="cv-tekst-zijbalk" style="margin-bottom: 0;">{{ email || 'E-mail' }}</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                         <span class="cv-tekst-zijbalk" style="margin-bottom: 0;">{{ telefoon || 'Telefoon' }}</span>
                     </div>
                 </div>
@@ -589,7 +599,7 @@ watch(
                     <div class="cv-sectie-titel-zijbalk">Sterke punten</div>
                     <div v-if="sterkePunten.length === 0"><div class="cv-tekst-zijbalk" style="font-style: italic; opacity: 0.7;">Nog geen sterke punten toegevoegd.</div></div>
                     <div v-else style="display: flex; flex-direction: column; gap: 8px;">
-                        <div v-for="(p, index) in sterkePunten" :key="index" v-show="p.tekst" style="display: flex; align-items: flex-start; gap: 8px;">
+                        <div v-for="p in sterkePunten" :key="p.id" v-show="p.tekst" style="display: flex; align-items: flex-start; gap: 8px;">
                             <span style="font-size: 14px; line-height: 1.2;">•</span>
                             <span class="cv-tekst-zijbalk" style="margin-bottom: 0;">{{ p.tekst }}</span>
                         </div>
@@ -602,7 +612,7 @@ watch(
                     <div v-else v-for="taal in talen" :key="taal.id" v-show="taal.naam" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <span class="cv-tekst-zijbalk" style="margin-bottom: 0; font-weight: 600;">{{ taal.naam }}</span>
                         <div style="display: flex; gap: 3px;">
-                            <svg v-for="ster in 5" :key="ster" :fill="ster <= taal.niveau ? '#FFD700' : 'none'" stroke="#FFD700" viewBox="0 0 24 24" stroke-width="1.5" width="14" height="14">
+                            <svg aria-hidden="true" focusable="false" v-for="ster in 5" :key="ster" :fill="ster <= taal.niveau ? '#FFD700' : 'none'" stroke="#FFD700" viewBox="0 0 24 24" stroke-width="1.5" width="14" height="14">
                                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                             </svg>
                         </div>
