@@ -647,7 +647,7 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 /* ONDERDELEN KNOPPEN */
 .onderdelen-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #edf2f7; padding-bottom: 25px; }
 .onderdeel-knop { background: #4A90E2; color: white; border: none; padding: 10px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
-.onderdeel-knop:hover { background-color: #357ABD; }
+.onderdeel-knop:hover { background-color: #f8fafc; color: #4A90E2; }
 .knop-uit { background: #e2e8f0; color: #a0aec0; }
 .knop-uit:hover { background: #cbd5e0; }
 
