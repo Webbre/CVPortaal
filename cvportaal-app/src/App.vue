@@ -365,75 +365,68 @@ watch(
 
 <div v-if="toonWerkervaring">
           <h2 class="hoofdtitel">Werkervaring</h2>
-          <div class="dynamisch-blok">
-              <div v-for="(werk, index) in werkervaringen" :key="werk.id" 
-                   :style="{ 
-                       marginBottom: index < werkervaringen.length - 1 ? '25px' : '15px', 
-                       paddingBottom: index < werkervaringen.length - 1 ? '25px' : '0px', 
-                       borderBottom: index < werkervaringen.length - 1 ? '1px solid #e2e8f0' : 'none' 
-                   }">
-                  <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
-                      <button class="verwijder-knop" @click="verwijderWerkervaring(index)">Verwijderen</button>
+          <div v-for="(werk, index) in werkervaringen" :key="werk.id" class="dynamisch-blok">
+              <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
+                  <button class="verwijder-knop" @click="verwijderWerkervaring(index)">Verwijderen</button>
+              </div>
+              <div class="form-grid">
+                  <div class="form-groep volledige-breedte">
+                      <label>Functie</label>
+                      <input type="text" v-model="werk.functie" placeholder="Bijv. Automonteur">
                   </div>
-                  <div class="form-grid">
-                      <div class="form-groep volledige-breedte">
-                          <label>Functie</label>
-                          <input type="text" v-model="werk.functie" placeholder="Bijv. Automonteur">
+                  <div class="form-groep volledige-breedte">
+                      <label>Organisatie</label>
+                      <input type="text" v-model="werk.bedrijf" placeholder="Bijv. Vakgarage Jansen">
+                  </div>
+                  
+                  <div class="form-groep">
+                      <label>Van</label>
+                      <div style="display: flex; gap: 8px;">
+                          <select v-model="werk.vanMaand" @change="sorteerErvaringen" style="width: 50%;">
+                              <option value="">Maand</option>
+                              <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
+                          </select>
+                          <select v-model="werk.vanJaar" @change="sorteerErvaringen" style="width: 50%;">
+                              <option value="">Jaar</option>
+                              <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
+                          </select>
                       </div>
-                      <div class="form-groep volledige-breedte">
-                          <label>Organisatie</label>
-                          <input type="text" v-model="werk.bedrijf" placeholder="Bijv. Vakgarage Jansen">
-                      </div>
-                      
-                      <div class="form-groep">
-                          <label>Van</label>
-                          <div style="display: flex; gap: 8px;">
-                              <select v-model="werk.vanMaand" @change="sorteerErvaringen" style="width: 50%;">
-                                  <option value="">Maand</option>
-                                  <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
-                              </select>
-                              <select v-model="werk.vanJaar" @change="sorteerErvaringen" style="width: 50%;">
-                                  <option value="">Jaar</option>
-                                  <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
-                              </select>
-                          </div>
-                      </div>
+                  </div>
 
-                      <div class="form-groep">
-                          <label>Tot</label>
-                          <div style="display: flex; gap: 8px;" v-if="!werk.isHuidigeBaan">
-                              <select v-model="werk.totMaand" @change="sorteerErvaringen" style="width: 50%;">
-                                  <option value="">Maand</option>
-                                  <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
-                              </select>
-                              <select v-model="werk.totJaar" @change="sorteerErvaringen" style="width: 50%;">
-                                  <option value="">Jaar</option>
-                                  <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
-                              </select>
-                          </div>
-                          <div v-else style="display: flex; align-items: center; height: 46px; color: #718096; font-size: 14px; font-weight: 600;">
-                              Heden
-                          </div>
+                  <div class="form-groep">
+                      <label>Tot</label>
+                      <div style="display: flex; gap: 8px;" v-if="!werk.isHuidigeBaan">
+                          <select v-model="werk.totMaand" @change="sorteerErvaringen" style="width: 50%;">
+                              <option value="">Maand</option>
+                              <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
+                          </select>
+                          <select v-model="werk.totJaar" @change="sorteerErvaringen" style="width: 50%;">
+                              <option value="">Jaar</option>
+                              <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
+                          </select>
                       </div>
+                      <div v-else style="display: flex; align-items: center; height: 46px; color: #718096; font-size: 14px; font-weight: 600;">
+                          Heden
+                      </div>
+                  </div>
 
-                      <div class="form-groep volledige-breedte">
-                          <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
-                              <label class="toggle-switch">
-                                  <input type="checkbox" v-model="werk.isHuidigeBaan" @change="sorteerErvaringen">
-                                  <span class="toggle-slider"></span>
-                              </label>
-                              <span class="toggle-label" style="font-weight: 600;">Ik werk hier nu nog</span>
-                          </div>
+                  <div class="form-groep volledige-breedte">
+                      <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
+                          <label class="toggle-switch">
+                              <input type="checkbox" v-model="werk.isHuidigeBaan" @change="sorteerErvaringen">
+                              <span class="toggle-slider"></span>
+                          </label>
+                          <span class="toggle-label" style="font-weight: 600;">Ik werk hier nu nog</span>
                       </div>
+                  </div>
 
-                      <div class="form-groep volledige-breedte">
-                          <label>Korte omschrijving</label>
-                          <textarea v-model="werk.omschrijving" rows="3" placeholder="Wat waren je taken?"></textarea>
-                      </div>
+                  <div class="form-groep volledige-breedte">
+                      <label>Korte omschrijving</label>
+                      <textarea v-model="werk.omschrijving" rows="3" placeholder="Wat waren je taken?"></textarea>
                   </div>
               </div>
-              <button class="toevoeg-knop" @click="voegWerkervaringToe" style="margin-bottom: 0; margin-top: 0;">+ Voeg een werkervaring toe</button>
           </div>
+          <button class="toevoeg-knop" @click="voegWerkervaringToe">+ Voeg een werkervaring toe</button>
       </div>
 
       <div v-if="toonOpleidingen">
@@ -582,17 +575,19 @@ watch(
                     <ul class="cv-lijst"><li v-for="p in sterkePunten" v-show="p.tekst">{{ p.tekst }}</li></ul>
                 </div>
                 
-                <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Werkervaring</div>
-                <div v-if="werkervaringen.length === 0"><p class="cv-p-italic">Nog geen werkervaring toegevoegd.</p></div>
-                <div v-for="w in werkervaringen" :key="w.id" class="cv-item">
-                    <div class="cv-item-titel">{{ w.functie || 'Functie' }}</div>
-                    <div class="cv-item-sub">
-                            {{ w.bedrijf || 'Organisatie' }} | 
-                            <span v-if="w.vanMaand && w.vanJaar">{{ w.vanMaand.toString().padStart(2, '0') }}/{{ w.vanJaar }}</span>
-                            <span v-if="w.isHuidigeBaan"> - Heden</span>
-                            <span v-else-if="w.totMaand && w.totJaar"> - {{ w.totMaand.toString().padStart(2, '0') }}/{{ w.totJaar }}</span>
+<div v-if="toonWerkervaring">
+                    <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Werkervaring</div>
+                    <div v-if="werkervaringen.length === 0"><p class="cv-p-italic">Nog geen werkervaring toegevoegd.</p></div>
+                    <div v-for="w in werkervaringen" :key="w.id" class="cv-item">
+                        <div class="cv-item-titel">{{ w.functie || 'Functie' }}</div>
+                        <div class="cv-item-sub">
+                                {{ w.bedrijf || 'Organisatie' }} | 
+                                <span v-if="w.vanMaand && w.vanJaar">{{ w.vanMaand.toString().padStart(2, '0') }}/{{ w.vanJaar }}</span>
+                                <span v-if="w.isHuidigeBaan"> - Heden</span>
+                                <span v-else-if="w.totMaand && w.totJaar"> - {{ w.totMaand.toString().padStart(2, '0') }}/{{ w.totJaar }}</span>
+                        </div>
+                        <p class="cv-p">{{ w.omschrijving }}</p>
                     </div>
-                    <p class="cv-p">{{ w.omschrijving }}</p>
                 </div>
 
                 <div v-if="toonOpleidingen && opleidingen.length > 0">
