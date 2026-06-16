@@ -221,7 +221,7 @@ function sorteerOpleidingen() {
 // --- OPSLAAN LOGICA ---
 let opslaanTimer = null;
 const toonOpgeslagenFeedback = ref(false);
-const heeftOngeslagenWijzigingen = ref(false); // NIEUW: Houdt bij of er iets te redden valt
+const heeftOngeslagenWijzigingen = ref(false);
 
 function verzamelData() {
   return {
@@ -239,35 +239,34 @@ function verzamelData() {
   };
 }
 
-// Interne helper om de status netjes af te vangen
+// Helper die daadwerkelijk opslaat en áltijd de animatie toont
 async function voerOpslaanUit() {
   if (!gebruiker.value || isLaden.value) return;
   await slaGegevensOp(verzamelData());
-  heeftOngeslagenWijzigingen.value = false; // Reset de status na succesvol opslaan
+  
+  heeftOngeslagenWijzigingen.value = false; // Reset de status
+  toonOpgeslagenFeedback.value = true;      // Toon het groene vinkje (ook bij auto-save!)
+  
+  setTimeout(() => { toonOpgeslagenFeedback.value = false; }, 2000);
 }
 
-// Database trigger met debounce (wordt geactiveerd bij élke type-actie)
+// Database trigger met debounce
 function triggerOpslaan() {
   if (!gebruiker.value || isLaden.value) return;
   
-  heeftOngeslagenWijzigingen.value = true; // Maak de knop actief zodra er getypt wordt
+  heeftOngeslagenWijzigingen.value = true; // Maak knop blauw zodra de gebruiker typt
   
   clearTimeout(opslaanTimer);
   opslaanTimer = setTimeout(() => {
-    voerOpslaanUit();
-  }, 1000);
+    voerOpslaanUit(); // Sla op na 1.5 seconde niet typen
+  }, 1500); 
 }
 
 // Handmatige Opslaan knop
 async function forceerOpslaan() {
-  // Blokkeer de klik als er niets op te slaan valt
   if (!heeftOngeslagenWijzigingen.value || !gebruiker.value || isLaden.value) return;
-  
   clearTimeout(opslaanTimer); 
   await voerOpslaanUit(); 
-  
-  toonOpgeslagenFeedback.value = true;
-  setTimeout(() => { toonOpgeslagenFeedback.value = false; }, 2000);
 }
 
 watch(
@@ -791,30 +790,41 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 /* Styling voor Dynamische Opslaan knop */
 .opslaan-knop { 
     border-radius: 20px; padding: 0 16px; height: 40px; display: flex; align-items: center; gap: 8px; 
-    font-size: 13px; font-weight: 600; border: none; outline: none;
+    font-size: 13px; font-weight: 600; outline: none; border: none;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
 }
 
-/* Staat 1: Niets om op te slaan (Greyed out) */
+/* Staat 1: Inactief / Greyed out */
 .opslaan-knop.inactief {
-    background: #f8fafc; color: #a0aec0; border: 1px solid #e2e8f0; cursor: default;
+    background-color: #edf2f7; 
+    color: #a0aec0; 
+    border: 1px solid #e2e8f0; 
+    cursor: not-allowed;
+    opacity: 0.5; /* Maakt hem overduidelijk uitgegrijsd */
 }
 
-/* Staat 2: Er zijn wijzigingen getypt (Helder) */
+/* Staat 2: Actief (Klaar om op te slaan) */
 .opslaan-knop.actief {
-    background: #4A90E2; color: white; border: 1px solid #4A90E2; cursor: pointer; 
+    background-color: #4A90E2; 
+    color: white; 
+    border: 1px solid #4A90E2; 
+    cursor: pointer; 
     box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    opacity: 1;
 }
-.opslaan-knop.actief:hover { background: #357ABD; transform: translateY(-1px); }
-.opslaan-knop.actief:active { transform: scale(0.95); } /* Klik effect */
+.opslaan-knop.actief:hover { background-color: #357ABD; transform: translateY(-1px); }
+.opslaan-knop.actief:active { transform: scale(0.95); }
 
-/* Staat 3: Opgeslagen (Groene pop animatie) */
+/* Staat 3: Succes (Groen vinkje) */
 .opslaan-knop.succes { 
-    background: #2ECC71; color: white; border: 1px solid #2ECC71;
+    background-color: #2ECC71; 
+    color: white; 
+    border: 1px solid #2ECC71;
+    opacity: 1;
+    cursor: default;
     animation: knopPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-/* Animatie */
 @keyframes knopPop {
     0% { transform: scale(0.8); opacity: 0.5; }
     50% { transform: scale(1.08); }
