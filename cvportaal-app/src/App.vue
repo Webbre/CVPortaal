@@ -37,8 +37,12 @@ const toonTalen = ref(false)
 const talen = ref([])
 
 const kleuren = [
+  // De originele kleuren
   '#4A90E2', '#E24A4A', '#2ECC71', '#9B59B6', '#F1C40F',
-  '#E67E22', '#FF85A2', '#1ABC9C', '#34495E'
+  '#E67E22', '#FF85A2', '#1ABC9C', '#34495E',
+  // Nieuwe professionele & moderne kleuren
+  '#0F172A', '#64748B', '#0EA5E9', '#14B8A6', '#10B981', 
+  '#8B5CF6', '#EC4899', '#F43F5E', '#D97706'
 ]
 
 // --- JAARTALLEN LIJST GENEREREN ---
