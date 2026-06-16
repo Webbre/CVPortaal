@@ -37,8 +37,6 @@ const toonTalen = ref(false)
 const talen = ref([])
 const toonHobbys = ref(false) 
 const hobbys = ref([]) 
-
-// Variabelen voor 'Meer over mij'
 const toonMeerOverMij = ref(false)
 const meerOverMijTekst = ref('')
 
@@ -224,8 +222,6 @@ const toonOpgeslagenFeedback = ref(false);
 const heeftOngeslagenWijzigingen = ref(false);
 
 function verzamelData() {
-  // JSON.parse(JSON.stringify(...)) maakt een harde kopie (snapshot) van de data.
-  // Dit voorkomt dat de database-actie de live Vue-reactiviteit (watch) stiekem triggert.
   return JSON.parse(JSON.stringify({
     voornaam: voornaam.value, achternaam: achternaam.value, woonplaats: woonplaats.value,
     email: email.value, telefoon: telefoon.value,
@@ -245,15 +241,23 @@ function verzamelData() {
 async function voerOpslaanUit() {
   if (!gebruiker.value || isLaden.value) return;
   
+  // OPTIMISTIC UI: We resetten de knop direct vóór het opslaan!
+  // Hierdoor blijft hij nooit vastlopen op blauw als de server traag is of weigert.
+  heeftOngeslagenWijzigingen.value = false;
+  toonOpgeslagenFeedback.value = true;
+  
   try {
+    // Sla op de achtergrond op
     await slaGegevensOp(verzamelData());
-    
-    heeftOngeslagenWijzigingen.value = false; // Reset de knop definitief
-    toonOpgeslagenFeedback.value = true;      // Start succes-animatie
-    
-    setTimeout(() => { toonOpgeslagenFeedback.value = false; }, 2000);
   } catch (error) {
     console.error("Fout bij opslaan:", error);
+    // Als het opslaan écht crasht, maken we de knop weer blauw zodat de gebruiker het opnieuw kan proberen
+    heeftOngeslagenWijzigingen.value = true;
+  } finally {
+    // Haal de groene feedback na 2 seconden weg
+    setTimeout(() => { 
+        toonOpgeslagenFeedback.value = false; 
+    }, 2000);
   }
 }
 
@@ -261,19 +265,21 @@ async function voerOpslaanUit() {
 function triggerOpslaan() {
   if (!gebruiker.value || isLaden.value) return;
   
+  // Zodra je typt: markeer als gewijzigd
   heeftOngeslagenWijzigingen.value = true; 
   
   clearTimeout(opslaanTimer);
   opslaanTimer = setTimeout(() => {
-    voerOpslaanUit(); 
+    // Check of er nog écht onopgeslagen werk is voordat we auto-saven
+    if (heeftOngeslagenWijzigingen.value) {
+        voerOpslaanUit(); 
+    }
   }, 1500); 
 }
 
 // Handmatige Opslaan knop
 async function forceerOpslaan() {
-  // Blokkeer de knop als hij inactief is, of als de animatie nog draait
   if (!heeftOngeslagenWijzigingen.value || !gebruiker.value || isLaden.value || toonOpgeslagenFeedback.value) return;
-  
   clearTimeout(opslaanTimer); 
   await voerOpslaanUit(); 
 }
@@ -326,7 +332,7 @@ watch(
           </div>
           
           <div style="display: flex; gap: 10px; align-items: center;">
-<button class="opslaan-knop" 
+              <button class="opslaan-knop" 
                       :class="{ 
                           'succes': toonOpgeslagenFeedback, 
                           'actief': heeftOngeslagenWijzigingen && !toonOpgeslagenFeedback, 
