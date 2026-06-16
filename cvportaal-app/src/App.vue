@@ -481,7 +481,7 @@ watch(
                         <input type="text" v-model="opl.studie" :placeholder="opl.type === 'Cursus' ? 'Bijv. BHV of VCA' : 'Bijv. Assistent Logistiek (mbo BBL)'">
                     </div>
                     <div class="form-groep volledige-breedte">
-                        <label>School of Instituut</label>
+                        <label>School of instituut</label>
                         <input type="text" v-model="opl.instelling" placeholder="Bijv. Noorderpoort">
                     </div>
 
