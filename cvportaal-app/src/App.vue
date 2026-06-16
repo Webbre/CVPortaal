@@ -38,6 +38,10 @@ const talen = ref([])
 const toonHobbys = ref(false) 
 const hobbys = ref([]) 
 
+// NIEUW: Variabelen voor 'Meer over mij'
+const toonMeerOverMij = ref(false)
+const meerOverMijTekst = ref('')
+
 // Uitgebreid kleurenpalet
 const kleuren = [
   '#4A90E2', '#E24A4A', '#2ECC71', '#9B59B6', '#F1C40F',
@@ -92,6 +96,10 @@ onMounted(async () => {
 
           toonHobbys.value = data.toonHobbys !== undefined ? data.toonHobbys : false;
           hobbys.value = (data.hobbys || []).map(h => ({ id: h.id || Date.now() + Math.random(), ...h }));
+
+          // NIEUW: Inladen van Meer over mij data
+          toonMeerOverMij.value = data.toonMeerOverMij !== undefined ? data.toonMeerOverMij : false;
+          meerOverMijTekst.value = data.meerOverMijTekst || '';
         }
       } else {
         gebruiker.value = null;
@@ -142,6 +150,7 @@ function maakCvLeeg(forceerDatabaseOpslag = false) {
   toonOpleidingen.value = false; opleidingen.value = [];
   toonTalen.value = false; talen.value = [];
   toonHobbys.value = false; hobbys.value = []; 
+  toonMeerOverMij.value = false; meerOverMijTekst.value = ''; // NIEUW: Leegmaken 'Meer over mij'
   
   if (forceerDatabaseOpslag) triggerOpslaan();
 }
@@ -159,14 +168,9 @@ function verwerkFoto(event) {
 function verwijderFoto() { profielfoto.value = null }
 function veranderKleur(kleur) { gekozenKleur.value = kleur }
 
-// Functies voor dynamische lijsten
 function voegWerkervaringToe() { 
   werkervaringen.value.push({ 
-    id: Date.now(),
-    functie: '', bedrijf: '', 
-    vanMaand: '', vanJaar: '', 
-    totMaand: '', totJaar: '', 
-    isHuidigeBaan: false, omschrijving: '' 
+    id: Date.now(), functie: '', bedrijf: '', vanMaand: '', vanJaar: '', totMaand: '', totJaar: '', isHuidigeBaan: false, omschrijving: '' 
   }) 
 }
 function verwijderWerkervaring(index) { werkervaringen.value.splice(index, 1) }
@@ -176,14 +180,7 @@ function verwijderSterkPunt(index) { sterkePunten.value.splice(index, 1) }
 
 function voegOpleidingToe() { 
   opleidingen.value.push({ 
-    id: Date.now(),
-    type: 'Opleiding', 
-    studie: '', instelling: '', 
-    vanMaand: '', vanJaar: '', 
-    totMaand: '', totJaar: '', 
-    isHuidigeOpleiding: false, 
-    isBehaald: false, 
-    omschrijving: '' 
+    id: Date.now(), type: 'Opleiding', studie: '', instelling: '', vanMaand: '', vanJaar: '', totMaand: '', totJaar: '', isHuidigeOpleiding: false, isBehaald: false, omschrijving: '' 
   }) 
 }
 function verwijderOpleiding(index) { opleidingen.value.splice(index, 1) }
@@ -240,13 +237,14 @@ function triggerOpslaan() {
       toonSterkePunten: toonSterkePunten.value, sterkePunten: sterkePunten.value,
       toonOpleidingen: toonOpleidingen.value, opleidingen: opleidingen.value,
       toonTalen: toonTalen.value, talen: talen.value,
-      toonHobbys: toonHobbys.value, hobbys: hobbys.value
+      toonHobbys: toonHobbys.value, hobbys: hobbys.value,
+      toonMeerOverMij: toonMeerOverMij.value, meerOverMijTekst: meerOverMijTekst.value // NIEUW: Opslaan 'Meer over mij'
     });
   }, 1000); 
 }
 
 watch(
-  [voornaam, achternaam, woonplaats, email, telefoon, profieltekst, gekozenKleur, toonWerkervaring, werkervaringen, sterkePunten, toonSterkePunten, opleidingen, toonOpleidingen, heeftRijbewijs, heeftAuto, profielfoto, toonFotoOpCv, toonTalen, talen, toonHobbys, hobbys],
+  [voornaam, achternaam, woonplaats, email, telefoon, profieltekst, gekozenKleur, toonWerkervaring, werkervaringen, sterkePunten, toonSterkePunten, opleidingen, toonOpleidingen, heeftRijbewijs, heeftAuto, profielfoto, toonFotoOpCv, toonTalen, talen, toonHobbys, hobbys, toonMeerOverMij, meerOverMijTekst],
   () => { triggerOpslaan(); },
   { deep: true } 
 )
@@ -325,7 +323,8 @@ watch(
           <button class="onderdeel-knop" :class="{ 'knop-uit': !toonOpleidingen }" @click="toonOpleidingen = !toonOpleidingen">Welke opleiding of cursus heb ik gedaan?</button>
           <button class="onderdeel-knop" :class="{ 'knop-uit': !toonTalen }" @click="toonTalen = !toonTalen">Talen die ik spreek</button>
           <button class="onderdeel-knop" :class="{ 'knop-uit': !toonHobbys }" @click="toonHobbys = !toonHobbys">Dit vind ik leuk</button>
-          <button class="onderdeel-knop knop-uit">Meer over mij</button>
+          <!-- NIEUW: Knop 'Meer over mij' is nu werkzaam -->
+          <button class="onderdeel-knop" :class="{ 'knop-uit': !toonMeerOverMij }" @click="toonMeerOverMij = !toonMeerOverMij">Meer over mij</button>
       </div>
 
       <h2 class="hoofdtitel">Mijn gegevens</h2>
@@ -588,6 +587,17 @@ watch(
           </div>
       </div>
 
+      <!-- NIEUW: Invoerblok voor 'Meer over mij' -->
+      <div v-if="toonMeerOverMij">
+          <h2 class="hoofdtitel">Meer over mij</h2>
+          <div class="dynamisch-blok">
+              <div class="form-groep" style="margin-bottom: 0;">
+                  <label>Is er nog iets extra's dat je wilt delen?</label>
+                  <textarea v-model="meerOverMijTekst" rows="3" placeholder="Bijv. Ik ben elke ochtend beschikbaar voor werk, of ik wil graag leren fietsen."></textarea>
+              </div>
+          </div>
+      </div>
+
     </div>
 
     <!-- START RECHTERKOLOM (HET CV) -->
@@ -689,6 +699,15 @@ watch(
                         <span v-for="hobby in hobbys" :key="hobby.id" v-show="hobby.tekst" class="cv-tag" :style="{ color: gekozenKleur, border: '1.5px solid ' + gekozenKleur }">
                             {{ hobby.tekst }}
                         </span>
+                    </div>
+                </div>
+
+                <!-- NIEUW: Weergave van 'Meer over mij' als informatiekaartje -->
+                <div v-if="toonMeerOverMij">
+                    <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Meer over mij</div>
+                    <div v-if="!meerOverMijTekst"><p class="cv-p-italic">Nog geen tekst toegevoegd.</p></div>
+                    <div v-else class="cv-info-kaart" :style="{ borderLeftColor: gekozenKleur }">
+                        {{ meerOverMijTekst }}
                     </div>
                 </div>
 
@@ -799,8 +818,23 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 .cv-p-italic { font-size: 13px; color: #a0aec0; font-style: italic; margin-bottom: 20px;}
 .cv-lijst { padding-left: 20px; margin-bottom: 25px; font-size: 13px; color: #4a5568; line-height: 1.6; }
 
-/* NIEUW: Styling voor de hobby tags */
+/* Styling voor de hobby tags */
 .cv-tag { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; background-color: #ffffff; }
+
+/* NIEUW: Styling voor de 'Meer over mij' informatiekaart */
+.cv-info-kaart {
+    padding: 12px 18px;
+    border-radius: 12px;
+    border-top: 1.5px solid #edf2f7;
+    border-right: 1.5px solid #edf2f7;
+    border-bottom: 1.5px solid #edf2f7;
+    border-left: 4px solid; /* Kleur wordt via Vue dynamisch gezet */
+    font-size: 13px;
+    color: #4a5568;
+    line-height: 1.5;
+    margin-bottom: 25px;
+    background-color: #ffffff;
+}
 
 /* WYSIWYG SCHALING */
 @media (max-width: 1700px) and (min-width: 1367px) {
