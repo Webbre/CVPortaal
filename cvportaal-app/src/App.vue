@@ -38,7 +38,7 @@ const talen = ref([])
 const toonHobbys = ref(false) 
 const hobbys = ref([]) 
 
-// NIEUW: Variabelen voor 'Meer over mij'
+// Variabelen voor 'Meer over mij'
 const toonMeerOverMij = ref(false)
 const meerOverMijTekst = ref('')
 
@@ -93,11 +93,10 @@ onMounted(async () => {
           
           toonTalen.value = data.toonTalen !== undefined ? data.toonTalen : false;
           talen.value = (data.talen || []).map(t => ({ id: t.id || Date.now() + Math.random(), ...t }));
-
+          
           toonHobbys.value = data.toonHobbys !== undefined ? data.toonHobbys : false;
           hobbys.value = (data.hobbys || []).map(h => ({ id: h.id || Date.now() + Math.random(), ...h }));
-
-          // NIEUW: Inladen van Meer over mij data
+          
           toonMeerOverMij.value = data.toonMeerOverMij !== undefined ? data.toonMeerOverMij : false;
           meerOverMijTekst.value = data.meerOverMijTekst || '';
         }
@@ -150,7 +149,7 @@ function maakCvLeeg(forceerDatabaseOpslag = false) {
   toonOpleidingen.value = false; opleidingen.value = [];
   toonTalen.value = false; talen.value = [];
   toonHobbys.value = false; hobbys.value = []; 
-  toonMeerOverMij.value = false; meerOverMijTekst.value = ''; // NIEUW: Leegmaken 'Meer over mij'
+  toonMeerOverMij.value = false; meerOverMijTekst.value = '';
   
   if (forceerDatabaseOpslag) triggerOpslaan();
 }
@@ -219,7 +218,25 @@ function sorteerOpleidingen() {
   });
 }
 
+// --- OPSLAAN LOGICA ---
 let opslaanTimer = null;
+const toonOpgeslagenFeedback = ref(false);
+
+function verzamelData() {
+  return {
+    voornaam: voornaam.value, achternaam: achternaam.value, woonplaats: woonplaats.value,
+    email: email.value, telefoon: telefoon.value,
+    heeftRijbewijs: heeftRijbewijs.value, heeftAuto: heeftAuto.value,
+    profielfoto: profielfoto.value, toonFotoOpCv: toonFotoOpCv.value,
+    profieltekst: profieltekst.value, gekozenKleur: gekozenKleur.value,
+    toonWerkervaring: toonWerkervaring.value, werkervaringen: werkervaringen.value,
+    toonSterkePunten: toonSterkePunten.value, sterkePunten: sterkePunten.value,
+    toonOpleidingen: toonOpleidingen.value, opleidingen: opleidingen.value,
+    toonTalen: toonTalen.value, talen: talen.value,
+    toonHobbys: toonHobbys.value, hobbys: hobbys.value,
+    toonMeerOverMij: toonMeerOverMij.value, meerOverMijTekst: meerOverMijTekst.value
+  };
+}
 
 // Database trigger met debounce
 function triggerOpslaan() {
@@ -227,20 +244,19 @@ function triggerOpslaan() {
   
   clearTimeout(opslaanTimer);
   opslaanTimer = setTimeout(() => {
-    slaGegevensOp({
-      voornaam: voornaam.value, achternaam: achternaam.value, woonplaats: woonplaats.value,
-      email: email.value, telefoon: telefoon.value,
-      heeftRijbewijs: heeftRijbewijs.value, heeftAuto: heeftAuto.value,
-      profielfoto: profielfoto.value, toonFotoOpCv: toonFotoOpCv.value,
-      profieltekst: profieltekst.value, gekozenKleur: gekozenKleur.value,
-      toonWerkervaring: toonWerkervaring.value, werkervaringen: werkervaringen.value,
-      toonSterkePunten: toonSterkePunten.value, sterkePunten: sterkePunten.value,
-      toonOpleidingen: toonOpleidingen.value, opleidingen: opleidingen.value,
-      toonTalen: toonTalen.value, talen: talen.value,
-      toonHobbys: toonHobbys.value, hobbys: hobbys.value,
-      toonMeerOverMij: toonMeerOverMij.value, meerOverMijTekst: meerOverMijTekst.value // NIEUW: Opslaan 'Meer over mij'
-    });
-  }, 1000); 
+    slaGegevensOp(verzamelData());
+  }, 1000);
+}
+
+// Handmatige Opslaan knop
+async function forceerOpslaan() {
+  if (!gebruiker.value || isLaden.value) return;
+  
+  clearTimeout(opslaanTimer); 
+  await slaGegevensOp(verzamelData()); 
+  
+  toonOpgeslagenFeedback.value = true;
+  setTimeout(() => { toonOpgeslagenFeedback.value = false; }, 2000);
 }
 
 watch(
@@ -289,17 +305,33 @@ watch(
               </svg>
               <h1 class="app-titel">CVPortaal. Jouw cv, simpel & snel.</h1>
           </div>
-          <div class="menu-container-header relative">
-              <button class="tandwiel-knop" @click="toonMenu = !toonMenu" aria-label="Menu openen">
-                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
-                      <circle cx="12" cy="12" r="3"></circle>
-                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          
+          <div style="display: flex; gap: 10px; align-items: center;">
+              <button class="opslaan-knop" :class="{ 'succes': toonOpgeslagenFeedback }" @click="forceerOpslaan" aria-label="Gegevens opslaan">
+                  <svg v-if="!toonOpgeslagenFeedback" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                      <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                      <polyline points="7 3 7 8 15 8"></polyline>
                   </svg>
+                  <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span v-if="toonOpgeslagenFeedback">Opgeslagen!</span>
+                  <span v-else>Opslaan</span>
               </button>
-              <div v-if="toonMenu" class="dropdown-menu-header">
-                  <p class="dropdown-header">Ingelogd als {{ gebruiker.email }}</p>
-                  <button class="dropdown-item" @click="resetMijnCV">❌ Cv leegmaken</button>
-                  <button class="dropdown-item" @click="logMijUit">📴 Uitloggen</button>
+
+              <div class="menu-container-header relative">
+                  <button class="tandwiel-knop" @click="toonMenu = !toonMenu" aria-label="Menu openen">
+                      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                          <circle cx="12" cy="12" r="3"></circle>
+                          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                      </svg>
+                  </button>
+                  <div v-if="toonMenu" class="dropdown-menu-header">
+                      <p class="dropdown-header">Ingelogd als {{ gebruiker.email }}</p>
+                      <button class="dropdown-item" @click="resetMijnCV">❌ Cv leegmaken</button>
+                      <button class="dropdown-item" @click="logMijUit">📴 Uitloggen</button>
+                  </div>
               </div>
           </div>
       </div>
@@ -323,7 +355,6 @@ watch(
           <button class="onderdeel-knop" :class="{ 'knop-uit': !toonOpleidingen }" @click="toonOpleidingen = !toonOpleidingen">Welke opleiding of cursus heb ik gedaan?</button>
           <button class="onderdeel-knop" :class="{ 'knop-uit': !toonTalen }" @click="toonTalen = !toonTalen">Talen die ik spreek</button>
           <button class="onderdeel-knop" :class="{ 'knop-uit': !toonHobbys }" @click="toonHobbys = !toonHobbys">Dit vind ik leuk</button>
-          <!-- NIEUW: Knop 'Meer over mij' is nu werkzaam -->
           <button class="onderdeel-knop" :class="{ 'knop-uit': !toonMeerOverMij }" @click="toonMeerOverMij = !toonMeerOverMij">Meer over mij</button>
       </div>
 
@@ -587,7 +618,6 @@ watch(
           </div>
       </div>
 
-      <!-- NIEUW: Invoerblok voor 'Meer over mij' -->
       <div v-if="toonMeerOverMij">
           <h2 class="hoofdtitel">Meer over mij</h2>
           <div class="dynamisch-blok">
@@ -600,7 +630,6 @@ watch(
 
     </div>
 
-    <!-- START RECHTERKOLOM (HET CV) -->
     <div class="rechterkolom">
         <div class="cv-papier">
             <div class="cv-zijbalk" :style="{ backgroundColor: gekozenKleur }">
@@ -702,7 +731,6 @@ watch(
                     </div>
                 </div>
 
-                <!-- NIEUW: Weergave van 'Meer over mij' als informatiekaartje -->
                 <div v-if="toonMeerOverMij">
                     <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Meer over mij</div>
                     <div v-if="!meerOverMijTekst"><p class="cv-p-italic">Nog geen tekst toegevoegd.</p></div>
@@ -741,6 +769,11 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 .dropdown-header { padding: 15px; background: #f8fafc; font-size: 12px; color: #718096; border-bottom: 1px solid #e2e8f0; word-break: break-all; margin: 0;}
 .dropdown-item { width: 100%; text-align: left; background: none; border: none; padding: 12px 15px; font-size: 13px; font-weight: 600; cursor: pointer; color: #4a5568; transition: background 0.2s;}
 .dropdown-item:hover { background: #edf2f7; color: #1a202c;}
+
+/* Styling voor Opslaan knop */
+.opslaan-knop { background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 0 16px; height: 40px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #4a5568; cursor: pointer; transition: all 0.2s; }
+.opslaan-knop:hover { border-color: #4A90E2; color: #4A90E2; background-color: #f8fafc; }
+.opslaan-knop.succes { border-color: #2ECC71; color: #2ECC71; background-color: #eafaf1; }
 
 /* FORMULIER & LINKERKOLOM */
 .linkerkolom { width: 50%; padding: 40px; background: white; overflow-y: auto; border-right: 1px solid #e2e8f0; }
@@ -821,14 +854,14 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 /* Styling voor de hobby tags */
 .cv-tag { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; background-color: #ffffff; }
 
-/* NIEUW: Styling voor de 'Meer over mij' informatiekaart */
+/* Styling voor de 'Meer over mij' informatiekaart */
 .cv-info-kaart {
     padding: 12px 18px;
     border-radius: 12px;
     border-top: 1.5px solid #edf2f7;
     border-right: 1.5px solid #edf2f7;
     border-bottom: 1.5px solid #edf2f7;
-    border-left: 4px solid; /* Kleur wordt via Vue dynamisch gezet */
+    border-left: 4px solid;
     font-size: 13px;
     color: #4a5568;
     line-height: 1.5;
