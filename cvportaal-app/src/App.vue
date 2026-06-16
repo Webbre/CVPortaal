@@ -366,7 +366,7 @@ watch(
       <div class="dynamisch-blok">
           <div class="form-groep" style="margin-bottom: 0;">
               <label>Vertel iets over jezelf</label>
-              <textarea v-model="profieltekst" rows="5" placeholder="Ik ben een enthousiaste werknemer..."></textarea>
+              <textarea v-model="profieltekst" rows="5" placeholder="Denk aan je dagelijks leven, wat je leuk vindt en wat je graag wilt gaan doen."></textarea>
           </div>
       </div>
 
