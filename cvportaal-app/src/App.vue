@@ -298,8 +298,8 @@ watch(
               </button>
               <div v-if="toonMenu" class="dropdown-menu-header">
                   <p class="dropdown-header">Ingelogd als {{ gebruiker.email }}</p>
-                  <button class="dropdown-item" @click="resetMijnCV">⚠️ CV Leegmaken</button>
-                  <button class="dropdown-item" @click="logMijUit">Uitloggen</button>
+                  <button class="dropdown-item" @click="resetMijnCV">❌ Cv leegmaken</button>
+                  <button class="dropdown-item" @click="logMijUit">📴 Uitloggen</button>
               </div>
           </div>
       </div>
@@ -478,11 +478,11 @@ watch(
 
                     <div class="form-groep volledige-breedte">
                         <label>{{ opl.type === 'Cursus' ? 'Naam cursus of verklaring' : 'Naam opleiding' }}</label>
-                        <input type="text" v-model="opl.studie" :placeholder="opl.type === 'Cursus' ? 'Bijv. BHV of VCA' : 'Bijv. MBO Verkoopmedewerker'">
+                        <input type="text" v-model="opl.studie" :placeholder="opl.type === 'Cursus' ? 'Bijv. BHV of VCA' : 'Bijv. Assistent Logistiek (mbo BBL)'">
                     </div>
                     <div class="form-groep volledige-breedte">
                         <label>School of Instituut</label>
-                        <input type="text" v-model="opl.instelling" placeholder="Bijv. ROC Amsterdam">
+                        <input type="text" v-model="opl.instelling" placeholder="Bijv. Noorderpoort">
                     </div>
 
                     <div class="form-groep">
@@ -580,7 +580,7 @@ watch(
           <h2 class="hoofdtitel">Dit vind ik leuk</h2>
           <div class="dynamisch-blok">
               <div v-for="(hobby, index) in hobbys" :key="hobby.id" style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
-                  <input type="text" v-model="hobby.tekst" placeholder="Bijv. Fotografie, Reizen of Koken" style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #ffffff; font-size: 14px; outline: none; transition: all 0.2s;">
+                  <input type="text" v-model="hobby.tekst" placeholder="Bijv. Fotografie, reizen of koken" style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #ffffff; font-size: 14px; outline: none; transition: all 0.2s;">
                   <button class="verwijder-knop-klein" @click="verwijderHobby(index)" aria-label="Verwijder dit item">✕</button>
               </div>
               <button class="toevoeg-knop" @click="voegHobbyToe" style="margin-bottom: 0; margin-top: 0;">+ Voeg een item toe</button>
