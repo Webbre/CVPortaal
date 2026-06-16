@@ -224,7 +224,9 @@ const toonOpgeslagenFeedback = ref(false);
 const heeftOngeslagenWijzigingen = ref(false);
 
 function verzamelData() {
-  return {
+  // JSON.parse(JSON.stringify(...)) maakt een harde kopie (snapshot) van de data.
+  // Dit voorkomt dat de database-actie de live Vue-reactiviteit (watch) stiekem triggert.
+  return JSON.parse(JSON.stringify({
     voornaam: voornaam.value, achternaam: achternaam.value, woonplaats: woonplaats.value,
     email: email.value, telefoon: telefoon.value,
     heeftRijbewijs: heeftRijbewijs.value, heeftAuto: heeftAuto.value,
@@ -236,35 +238,42 @@ function verzamelData() {
     toonTalen: toonTalen.value, talen: talen.value,
     toonHobbys: toonHobbys.value, hobbys: hobbys.value,
     toonMeerOverMij: toonMeerOverMij.value, meerOverMijTekst: meerOverMijTekst.value
-  };
+  }));
 }
 
-// Helper die daadwerkelijk opslaat en áltijd de animatie toont
+// Helper die daadwerkelijk opslaat
 async function voerOpslaanUit() {
   if (!gebruiker.value || isLaden.value) return;
-  await slaGegevensOp(verzamelData());
   
-  heeftOngeslagenWijzigingen.value = false; // Reset de status
-  toonOpgeslagenFeedback.value = true;      // Toon het groene vinkje (ook bij auto-save!)
-  
-  setTimeout(() => { toonOpgeslagenFeedback.value = false; }, 2000);
+  try {
+    await slaGegevensOp(verzamelData());
+    
+    heeftOngeslagenWijzigingen.value = false; // Reset de knop definitief
+    toonOpgeslagenFeedback.value = true;      // Start succes-animatie
+    
+    setTimeout(() => { toonOpgeslagenFeedback.value = false; }, 2000);
+  } catch (error) {
+    console.error("Fout bij opslaan:", error);
+  }
 }
 
 // Database trigger met debounce
 function triggerOpslaan() {
   if (!gebruiker.value || isLaden.value) return;
   
-  heeftOngeslagenWijzigingen.value = true; // Maak knop blauw zodra de gebruiker typt
+  heeftOngeslagenWijzigingen.value = true; 
   
   clearTimeout(opslaanTimer);
   opslaanTimer = setTimeout(() => {
-    voerOpslaanUit(); // Sla op na 1.5 seconde niet typen
+    voerOpslaanUit(); 
   }, 1500); 
 }
 
 // Handmatige Opslaan knop
 async function forceerOpslaan() {
-  if (!heeftOngeslagenWijzigingen.value || !gebruiker.value || isLaden.value) return;
+  // Blokkeer de knop als hij inactief is, of als de animatie nog draait
+  if (!heeftOngeslagenWijzigingen.value || !gebruiker.value || isLaden.value || toonOpgeslagenFeedback.value) return;
+  
   clearTimeout(opslaanTimer); 
   await voerOpslaanUit(); 
 }
@@ -317,10 +326,14 @@ watch(
           </div>
           
           <div style="display: flex; gap: 10px; align-items: center;">
-              <button class="opslaan-knop" 
-                      :class="{ 'succes': toonOpgeslagenFeedback, 'actief': heeftOngeslagenWijzigingen, 'inactief': !heeftOngeslagenWijzigingen && !toonOpgeslagenFeedback }" 
+<button class="opslaan-knop" 
+                      :class="{ 
+                          'succes': toonOpgeslagenFeedback, 
+                          'actief': heeftOngeslagenWijzigingen && !toonOpgeslagenFeedback, 
+                          'inactief': !heeftOngeslagenWijzigingen && !toonOpgeslagenFeedback 
+                      }" 
                       @click="forceerOpslaan" 
-                      :aria-disabled="!heeftOngeslagenWijzigingen"
+                      :aria-disabled="!heeftOngeslagenWijzigingen || toonOpgeslagenFeedback"
                       aria-label="Gegevens opslaan">
                       
                   <svg v-if="!toonOpgeslagenFeedback" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
