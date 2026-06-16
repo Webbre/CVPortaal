@@ -35,8 +35,8 @@ const toonOpleidingen = ref(false)
 const opleidingen = ref([])
 const toonTalen = ref(false)
 const talen = ref([])
-const toonHobbys = ref(false) // NIEUW: Weergave status hobby's
-const hobbys = ref([]) // NIEUW: Array voor hobby's
+const toonHobbys = ref(false) 
+const hobbys = ref([]) 
 
 // Uitgebreid kleurenpalet
 const kleuren = [
@@ -90,7 +90,6 @@ onMounted(async () => {
           toonTalen.value = data.toonTalen !== undefined ? data.toonTalen : false;
           talen.value = (data.talen || []).map(t => ({ id: t.id || Date.now() + Math.random(), ...t }));
 
-          // NIEUW: Database inladen voor hobby's
           toonHobbys.value = data.toonHobbys !== undefined ? data.toonHobbys : false;
           hobbys.value = (data.hobbys || []).map(h => ({ id: h.id || Date.now() + Math.random(), ...h }));
         }
@@ -142,7 +141,7 @@ function maakCvLeeg(forceerDatabaseOpslag = false) {
   toonSterkePunten.value = false; sterkePunten.value = [];
   toonOpleidingen.value = false; opleidingen.value = [];
   toonTalen.value = false; talen.value = [];
-  toonHobbys.value = false; hobbys.value = []; // NIEUW: Leegmaken hobby's
+  toonHobbys.value = false; hobbys.value = []; 
   
   if (forceerDatabaseOpslag) triggerOpslaan();
 }
@@ -193,7 +192,6 @@ function voegTaalToe() { talen.value.push({ id: Date.now(), naam: '', niveau: 0 
 function verwijderTaal(index) { talen.value.splice(index, 1) }
 function zetTaalNiveau(taal, niveau) { taal.niveau = niveau; triggerOpslaan(); }
 
-// NIEUW: Functies voor Hobby's
 function voegHobbyToe() { hobbys.value.push({ id: Date.now(), tekst: '' }) }
 function verwijderHobby(index) { hobbys.value.splice(index, 1) }
 
@@ -242,7 +240,7 @@ function triggerOpslaan() {
       toonSterkePunten: toonSterkePunten.value, sterkePunten: sterkePunten.value,
       toonOpleidingen: toonOpleidingen.value, opleidingen: opleidingen.value,
       toonTalen: toonTalen.value, talen: talen.value,
-      toonHobbys: toonHobbys.value, hobbys: hobbys.value // NIEUW: Database opslag hobby's
+      toonHobbys: toonHobbys.value, hobbys: hobbys.value
     });
   }, 1000); 
 }
@@ -326,7 +324,6 @@ watch(
           <button class="onderdeel-knop" :class="{ 'knop-uit': !toonWerkervaring }" @click="toonWerkervaring = !toonWerkervaring">Waar heb ik gewerkt?</button>
           <button class="onderdeel-knop" :class="{ 'knop-uit': !toonOpleidingen }" @click="toonOpleidingen = !toonOpleidingen">Welke opleiding of cursus heb ik gedaan?</button>
           <button class="onderdeel-knop" :class="{ 'knop-uit': !toonTalen }" @click="toonTalen = !toonTalen">Talen die ik spreek</button>
-          <!-- NIEUW: Knop voor Hobby's geactiveerd -->
           <button class="onderdeel-knop" :class="{ 'knop-uit': !toonHobbys }" @click="toonHobbys = !toonHobbys">Dit vind ik leuk</button>
           <button class="onderdeel-knop knop-uit">Meer over mij</button>
       </div>
@@ -580,15 +577,14 @@ watch(
           </div>
       </div>
 
-      <!-- NIEUW: Invoerblok voor Hobby's -->
       <div v-if="toonHobbys">
-          <h2 class="hoofdtitel">Dit vind ik leuk (Hobby's)</h2>
+          <h2 class="hoofdtitel">Dit vind ik leuk</h2>
           <div class="dynamisch-blok">
               <div v-for="(hobby, index) in hobbys" :key="hobby.id" style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
                   <input type="text" v-model="hobby.tekst" placeholder="Bijv. Fotografie, Reizen of Koken" style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #ffffff; font-size: 14px; outline: none; transition: all 0.2s;">
-                  <button class="verwijder-knop-klein" @click="verwijderHobby(index)" aria-label="Verwijder deze hobby">✕</button>
+                  <button class="verwijder-knop-klein" @click="verwijderHobby(index)" aria-label="Verwijder dit item">✕</button>
               </div>
-              <button class="toevoeg-knop" @click="voegHobbyToe" style="margin-bottom: 0; margin-top: 0;">+ Voeg een hobby toe</button>
+              <button class="toevoeg-knop" @click="voegHobbyToe" style="margin-bottom: 0; margin-top: 0;">+ Voeg een item toe</button>
           </div>
       </div>
 
@@ -686,11 +682,10 @@ watch(
                     </div>
                 </div>
 
-                <!-- NIEUW: Weergave van Hobby's als visuele Tags -->
                 <div v-if="toonHobbys">
                     <div class="cv-sectie-titel-hoofd" :style="{ color: gekozenKleur }">Dit vind ik leuk</div>
-                    <div v-if="hobbys.length === 0"><p class="cv-p-italic">Nog geen hobby's of interesses toegevoegd.</p></div>
-                    <div v-else style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 25px;">
+                    <div v-if="hobbys.length === 0"><p class="cv-p-italic">Nog geen items toegevoegd.</p></div>
+                    <div v-else style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; align-content: flex-start;">
                         <span v-for="hobby in hobbys" :key="hobby.id" v-show="hobby.tekst" class="cv-tag" :style="{ color: gekozenKleur, border: '1.5px solid ' + gekozenKleur }">
                             {{ hobby.tekst }}
                         </span>
