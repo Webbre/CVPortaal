@@ -704,8 +704,28 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 .variant-kaart.actief { border-color: #4A90E2; color: #4A90E2; background-color: #ffffff; }
 .variant-kaart.inactief { opacity: 0.5; cursor: not-allowed; background-color: #f8fafc; border-color: #e2e8f0; color: #cbd5e0; }
 
-.kleur-kiezer { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; text-align: center; }
-.kleur-rondje { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.1s ease; }
+.kleur-kiezer { 
+    display: flex; 
+    gap: 12px; 
+    margin-bottom: 25px; 
+    flex-wrap: nowrap; /* Zorgt dat ze op 1 regel blijven */
+    overflow-x: auto; /* Zet de horizontale scroller aan */
+    padding-bottom: 8px; /* Ruimte voor de hover-animatie */
+    -webkit-overflow-scrolling: touch; /* Vloeiend scrollen op mobiel */
+    scrollbar-width: none; /* Verbergt de lelijke scrollbalk in Firefox */
+}
+.kleur-kiezer::-webkit-scrollbar { 
+    display: none; /* Verbergt de lelijke scrollbalk in Chrome/Safari */
+}
+.kleur-rondje { 
+    width: 26px; 
+    height: 26px; 
+    border-radius: 50%; 
+    cursor: pointer; 
+    border: 2px solid transparent; 
+    transition: transform 0.1s ease; 
+    flex-shrink: 0; /* Zorgt dat de bolletjes niet platgedrukt worden */
+}
 .kleur-rondje:hover { transform: scale(1.1); }
 .kleur-rondje.actief { border-color: #333; }
 
