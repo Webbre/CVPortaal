@@ -287,7 +287,7 @@ watch(
                   <line x1="16" y1="17" x2="8" y2="17"></line>
                   <polyline points="10 9 9 9 8 9"></polyline>
               </svg>
-              <h1 class="app-titel">CVPortaal. Je cv simpel & snel.</h1>
+              <h1 class="app-titel">CVPortaal. Jouw cv, simpel & snel.</h1>
           </div>
           <div class="menu-container-header relative">
               <button class="tandwiel-knop" @click="toonMenu = !toonMenu" aria-label="Menu openen">
