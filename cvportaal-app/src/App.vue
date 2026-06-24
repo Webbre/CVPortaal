@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, nextTick } from 'vue'
 import { 
   slaGegevensOp, haalGegevensOp, 
   stuurInlogLink, voltooiInloggen, 
@@ -19,6 +19,7 @@ const achternaam = ref('')
 const woonplaats = ref('') 
 const email = ref('')
 const telefoon = ref('')
+const geboorteJaar = ref('') // NIEUW
 const profieltekst = ref('')
 const heeftRijbewijs = ref(false)
 const heeftAuto = ref(false)
@@ -48,10 +49,15 @@ const kleuren = [
   '#8B5CF6', '#EC4899', '#F43F5E', '#D97706'
 ]
 
-// --- JAARTALLEN LIJST GENEREREN ---
+// --- JAARTALLEN LIJSTEN GENEREREN ---
 const jarenLijst = []
 for (let i = new Date().getFullYear() + 5; i >= 1980; i--) {
   jarenLijst.push(i)
+}
+
+const geboorteJarenLijst = []
+for (let i = new Date().getFullYear() - 15; i >= 1950; i--) {
+  geboorteJarenLijst.push(i)
 }
 
 // --- LIFECYCLE & INLOG LOGICA ---
@@ -73,6 +79,7 @@ onMounted(async () => {
           woonplaats.value = data.woonplaats || '';
           email.value = data.email || '';
           telefoon.value = data.telefoon || '';
+          geboorteJaar.value = data.geboorteJaar || '';
           profieltekst.value = data.profieltekst || '';
           heeftRijbewijs.value = data.heeftRijbewijs || false;
           heeftAuto.value = data.heeftAuto || false;
@@ -97,10 +104,16 @@ onMounted(async () => {
           
           toonMeerOverMij.value = data.toonMeerOverMij !== undefined ? data.toonMeerOverMij : false;
           meerOverMijTekst.value = data.meerOverMijTekst || '';
+
+          // NIEUW: Maak direct een snapshot nadat de data in de Vue velden zit
+          await nextTick();
+          laatsteBekendeDataString = JSON.stringify(verzamelData());
         }
       } else {
         gebruiker.value = null;
         maakCvLeeg(false);
+        await nextTick();
+        laatsteBekendeDataString = JSON.stringify(verzamelData());
       }
     } catch (error) {
       console.error("Fout bij het inladen:", error);
@@ -139,8 +152,8 @@ function resetMijnCV() {
 
 function maakCvLeeg(forceerDatabaseOpslag = false) {
   voornaam.value = ''; achternaam.value = ''; woonplaats.value = '';
-  email.value = ''; telefoon.value = ''; profieltekst.value = '';
-  heeftRijbewijs.value = false; heeftAuto.value = false; profielfoto.value = null;
+  email.value = ''; telefoon.value = ''; geboorteJaar.value = '';
+  profieltekst.value = ''; heeftRijbewijs.value = false; heeftAuto.value = false; profielfoto.value = null;
   gekozenKleur.value = '#4A90E2'; 
   toonWerkervaring.value = false; werkervaringen.value = [];
   toonSterkePunten.value = false; sterkePunten.value = [];
@@ -216,15 +229,71 @@ function sorteerOpleidingen() {
   });
 }
 
+// --- AI INTEGRATIE ---
+const isAiLaden = ref(false);
+const origineleProfieltekst = ref('');
+const isAiToegepast = ref(false);
+
+async function verbeterMetAI() {
+  // Als AI al is toegepast, fungeert de knop als een 'Ongedaan maken' knop
+  if (isAiToegepast.value) {
+    profieltekst.value = origineleProfieltekst.value;
+    isAiToegepast.value = false;
+    triggerOpslaan();
+    return;
+  }
+
+  if (!profieltekst.value) {
+    alert("Typ eerst een stukje tekst zodat de AI iets heeft om mee te werken.");
+    return;
+  }
+
+  isAiLaden.value = true;
+  origineleProfieltekst.value = profieltekst.value; // Sla de originele tekst veilig op
+
+  try {
+    // Hier komt later de koppeling met jouw backend of server.
+    // Voor nu simuleren we de laadtijd van de AI met een pauze van 2 seconden.
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Dit is het formaat dat we straks van de echte AI verwachten.
+    const nepAiAntwoord = {
+      verbeterdeTekst: "Dit is een professioneel herschreven versie van het profiel, speciaal door de AI op maat gemaakt om krachtig over te komen op toekomstige werkgevers.",
+      nieuweSterkePunten: ["Samenwerken", "Nauwkeurig", "Leergierig"]
+    };
+
+    // Overschrijf het tekstvak met de nieuwe tekst
+    profieltekst.value = nepAiAntwoord.verbeterdeTekst;
+
+    // Loop door de lijst met sterke punten en voeg ze toe
+    nepAiAntwoord.nieuweSterkePunten.forEach(punt => {
+      sterkePunten.value.push({ id: Date.now() + Math.random(), tekst: punt });
+    });
+
+    // Zet de weergave van sterke punten aan, zodat de gebruiker ze direct ziet
+    toonSterkePunten.value = true;
+    isAiToegepast.value = true;
+
+    triggerOpslaan();
+  } catch (error) {
+    console.error("Fout bij het ophalen van AI:", error);
+    alert("Oeps, de AI is even niet bereikbaar.");
+  } finally {
+    isAiLaden.value = false;
+  }
+}
+
 // --- OPSLAAN LOGICA ---
 let opslaanTimer = null;
+let laatsteBekendeDataString = ''; // Werkt als ons 'geheugen' om de loop af te breken
+
 const toonOpgeslagenFeedback = ref(false);
 const heeftOngeslagenWijzigingen = ref(false);
 
 function verzamelData() {
-  return JSON.parse(JSON.stringify({
+  return {
     voornaam: voornaam.value, achternaam: achternaam.value, woonplaats: woonplaats.value,
-    email: email.value, telefoon: telefoon.value,
+    email: email.value, telefoon: telefoon.value, geboorteJaar: geboorteJaar.value,
     heeftRijbewijs: heeftRijbewijs.value, heeftAuto: heeftAuto.value,
     profielfoto: profielfoto.value, toonFotoOpCv: toonFotoOpCv.value,
     profieltekst: profieltekst.value, gekozenKleur: gekozenKleur.value,
@@ -234,29 +303,39 @@ function verzamelData() {
     toonTalen: toonTalen.value, talen: talen.value,
     toonHobbys: toonHobbys.value, hobbys: hobbys.value,
     toonMeerOverMij: toonMeerOverMij.value, meerOverMijTekst: meerOverMijTekst.value
-  }));
+  };
 }
 
 // Helper die daadwerkelijk opslaat
 async function voerOpslaanUit() {
   if (!gebruiker.value || isLaden.value) return;
   
-  // OPTIMISTIC UI: We resetten de knop direct vóór het opslaan!
-  // Hierdoor blijft hij nooit vastlopen op blauw als de server traag is of weigert.
+  const teOpslaanData = verzamelData();
+  const stringifiedData = JSON.stringify(teOpslaanData);
+
+  // Veilige check: Is er echt iets gewijzigd vergeleken met het geheugen?
+  if (stringifiedData === laatsteBekendeDataString) {
+      heeftOngeslagenWijzigingen.value = false;
+      return; 
+  }
+
+  // Update het geheugen naar de nieuwe status
+  laatsteBekendeDataString = stringifiedData;
+
+  // We verzetten de knop alvast (Optimistic UI)
   heeftOngeslagenWijzigingen.value = false;
   toonOpgeslagenFeedback.value = true;
   
   try {
-    // Sla op de achtergrond op
-    await slaGegevensOp(verzamelData());
+    await slaGegevensOp(teOpslaanData);
   } catch (error) {
     console.error("Fout bij opslaan:", error);
-    // Als het opslaan écht crasht, maken we de knop weer blauw zodat de gebruiker het opnieuw kan proberen
-    heeftOngeslagenWijzigingen.value = true;
+    heeftOngeslagenWijzigingen.value = true; // Herstel bij een echte error
   } finally {
-    // Haal de groene feedback na 2 seconden weg
     setTimeout(() => { 
-        toonOpgeslagenFeedback.value = false; 
+        if (!heeftOngeslagenWijzigingen.value) {
+            toonOpgeslagenFeedback.value = false; 
+        }
     }, 2000);
   }
 }
@@ -265,12 +344,18 @@ async function voerOpslaanUit() {
 function triggerOpslaan() {
   if (!gebruiker.value || isLaden.value) return;
   
-  // Zodra je typt: markeer als gewijzigd
+  // Controleer eerst of er écht een wijziging is gedaan door de gebruiker
+  const huidigeDataString = JSON.stringify(verzamelData());
+  if (huidigeDataString === laatsteBekendeDataString) {
+      heeftOngeslagenWijzigingen.value = false;
+      return; // Breek af: dit was een valse ping-pong update!
+  }
+  
   heeftOngeslagenWijzigingen.value = true; 
+  toonOpgeslagenFeedback.value = false;
   
   clearTimeout(opslaanTimer);
   opslaanTimer = setTimeout(() => {
-    // Check of er nog écht onopgeslagen werk is voordat we auto-saven
     if (heeftOngeslagenWijzigingen.value) {
         voerOpslaanUit(); 
     }
@@ -285,7 +370,7 @@ async function forceerOpslaan() {
 }
 
 watch(
-  [voornaam, achternaam, woonplaats, email, telefoon, profieltekst, gekozenKleur, toonWerkervaring, werkervaringen, sterkePunten, toonSterkePunten, opleidingen, toonOpleidingen, heeftRijbewijs, heeftAuto, profielfoto, toonFotoOpCv, toonTalen, talen, toonHobbys, hobbys, toonMeerOverMij, meerOverMijTekst],
+  [voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar, profieltekst, gekozenKleur, toonWerkervaring, werkervaringen, sterkePunten, toonSterkePunten, opleidingen, toonOpleidingen, heeftRijbewijs, heeftAuto, profielfoto, toonFotoOpCv, toonTalen, talen, toonHobbys, hobbys, toonMeerOverMij, meerOverMijTekst],
   () => { triggerOpslaan(); },
   { deep: true } 
 )
@@ -404,6 +489,14 @@ watch(
             <div class="form-groep"><label>Telefoon</label><input type="tel" v-model="telefoon" placeholder="Je telefoonnummer"></div>
             
             <div class="form-groep">
+                <label>Geboortejaar (optioneel)</label>
+                <select v-model="geboorteJaar" @change="triggerOpslaan">
+                    <option value="">Kies een jaartal</option>
+                    <option v-for="jaar in geboorteJarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
+                </select>
+            </div>
+            
+            <div class="form-groep">
                 <div class="foto-upload-sectie">
                     <div class="foto-preview-container">
                         <div class="foto-preview" :style="{ backgroundImage: profielfoto ? `url(${profielfoto})` : '' }">
@@ -432,8 +525,17 @@ watch(
       <h2 class="hoofdtitel">Dit ben ik</h2>
       <div class="dynamisch-blok">
           <div class="form-groep" style="margin-bottom: 0;">
-              <label>Vertel iets over jezelf</label>
-              <textarea v-model="profieltekst" rows="5" placeholder="Denk aan je dagelijks leven, wat je leuk vindt en wat je graag wilt gaan doen."></textarea>
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
+                  <label style="margin-bottom: 0;">Vertel iets over jezelf</label>
+                  <button class="ai-knop" @click="verbeterMetAI" :disabled="isAiLaden">
+                      <svg v-if="!isAiToegepast && !isAiLaden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                      <svg v-if="isAiToegepast && !isAiLaden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
+                      <svg v-if="isAiLaden" class="spin-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+                      
+                      {{ isAiLaden ? 'Even nadenken...' : (isAiToegepast ? 'Ongedaan maken' : 'Verbeter met AI') }}
+                  </button>
+              </div>
+              <textarea v-model="profieltekst" rows="5" placeholder="Denk aan je dagelijks leven, wat je leuk vindt en wat je graag wilt gaan doen." :disabled="isAiLaden" :style="{ opacity: isAiLaden ? 0.6 : 1 }"></textarea>
           </div>
       </div>
 
@@ -686,6 +788,10 @@ watch(
                         <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                         <span class="cv-tekst-zijbalk" style="margin-bottom: 0;">{{ telefoon || 'Telefoon' }}</span>
                     </div>
+                    <div v-if="geboorteJaar" style="display: flex; align-items: center; gap: 8px;">
+                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        <span class="cv-tekst-zijbalk" style="margin-bottom: 0;">{{ geboorteJaar }}</span>
+                    </div>
                 </div>
 
                 <div v-if="heeftRijbewijs || heeftAuto" style="margin-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.3); padding-top: 15px;">
@@ -795,7 +901,8 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 .inlog-box { background: white; padding: 40px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
 
 /* HEADER & MENU */
-.app-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #edf2f7; padding-bottom: 20px; margin-bottom: 20px; }
+.app-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-bottom: 2px solid #edf2f7; padding-bottom: 20px; margin-bottom: 20px; }
+.app-header + .hoofdtitel { border-top: none; padding-top: 0; }
 .app-logo-groep { display: flex; align-items: center; gap: 10px; }
 .app-titel { font-size: 20px; font-weight: 800; color: #1a202c; letter-spacing: -0.5px; margin: 0; }
 .menu-container-header { position: relative; }
@@ -807,52 +914,24 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 .dropdown-item:hover { background: #edf2f7; color: #1a202c;}
 
 /* Styling voor Dynamische Opslaan knop */
-.opslaan-knop { 
-    border-radius: 20px; padding: 0 16px; height: 40px; display: flex; align-items: center; gap: 8px; 
-    font-size: 13px; font-weight: 600; outline: none; border: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-}
+.opslaan-knop { border-radius: 20px; padding: 0 16px; height: 40px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; outline: none; border: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 
 /* Staat 1: Inactief / Greyed out */
-.opslaan-knop.inactief {
-    background-color: #edf2f7; 
-    color: #a0aec0; 
-    border: 1px solid #e2e8f0; 
-    cursor: not-allowed;
-    opacity: 0.5; /* Maakt hem overduidelijk uitgegrijsd */
-}
+.opslaan-knop.inactief { background-color: #edf2f7; color: #a0aec0; border: 1px solid #e2e8f0; cursor: not-allowed; opacity: 0.5; }
 
 /* Staat 2: Actief (Klaar om op te slaan) */
-.opslaan-knop.actief {
-    background-color: #4A90E2; 
-    color: white; 
-    border: 1px solid #4A90E2; 
-    cursor: pointer; 
-    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
-    opacity: 1;
-}
+.opslaan-knop.actief { background-color: #4A90E2; color: white; border: 1px solid #4A90E2; cursor: pointer; box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3); opacity: 1; }
 .opslaan-knop.actief:hover { background-color: #357ABD; transform: translateY(-1px); }
 .opslaan-knop.actief:active { transform: scale(0.95); }
 
 /* Staat 3: Succes (Groen vinkje) */
-.opslaan-knop.succes { 
-    background-color: #2ECC71; 
-    color: white; 
-    border: 1px solid #2ECC71;
-    opacity: 1;
-    cursor: default;
-    animation: knopPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
+.opslaan-knop.succes { background-color: #2ECC71; color: white; border: 1px solid #2ECC71; opacity: 1; cursor: default; animation: knopPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
-@keyframes knopPop {
-    0% { transform: scale(0.8); opacity: 0.5; }
-    50% { transform: scale(1.08); }
-    100% { transform: scale(1); opacity: 1; }
-}
+@keyframes knopPop { 0% { transform: scale(0.8); opacity: 0.5; } 50% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
 
 /* FORMULIER & LINKERKOLOM */
-.linkerkolom { width: 50%; padding: 40px; background: white; overflow-y: auto; border-right: 1px solid #e2e8f0; }
-.hoofdtitel { font-size: 16px; font-weight: 700; color: #4a5568; text-transform: uppercase; margin-top: 30px; margin-bottom: 15px; letter-spacing: 0.5px; }
+.linkerkolom { width: 50%; padding: 40px; background: #f0f4f8; overflow-y: auto; border-right: 1px solid #e2e8f0; }
+.hoofdtitel { font-size: 18px; font-weight: 700; color: #2d3748; margin-top: 35px; margin-bottom: 15px; letter-spacing: 0px; text-transform: none; }
 
 /* VARIANTEN EN KLEUREN */
 .varianten-grid { display: flex; gap: 15px; margin-bottom: 20px; }
@@ -901,16 +980,24 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 .foto-verwijder-knop:hover { text-decoration: underline; }
 
 /* DYNAMISCHE BLOKKEN EN ALGEMENE KNOPPEN */
-.dynamisch-blok { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+.dynamisch-blok { background-color: #ffffff; border: none; border-radius: 20px; padding: 30px; margin-bottom: 25px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.dynamisch-blok:hover { transform: translateY(-2px); box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1); }
 .hoofd-knop { background: #4A90E2; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
-.toevoeg-knop { background: white; color: #4A90E2; border: 2px dashed #4A90E2; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; margin-bottom: 30px; transition: 0.2s;}.toevoeg-knop:hover { background: #f8fafc;}
+.toevoeg-knop { background: #eff6ff; color: #4A90E2; border: none; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; margin-bottom: 30px; transition: all 0.2s ease; }
+.toevoeg-knop:hover { background: #DBEAFE; transform: translateY(-1px); }
 .toevoeg-knop-sec { background: transparent; color: #4A90E2; border: none; font-size: 13px; font-weight: 600; cursor: pointer; }
 .verwijder-knop { background: none; border: none; color: #e53e3e; font-size: 12px; font-weight: 600; cursor: pointer; }
 .verwijder-knop:hover { text-decoration: underline; }
 .verwijder-knop-klein { background: #fee2e2; border: none; color: #e53e3e; width: 42px; height: 44px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px;}
 
+/* AI KNOP STYLING */
+.ai-knop { background: linear-gradient(135deg, #2b6cb0 0%, #2c5282 100%); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 5px; }
+.ai-knop:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(43, 108, 176, 0.3); }
+.ai-knop:disabled { opacity: 0.6; cursor: not-allowed; }
+.spin-icon { animation: spin 1s linear infinite; }
+
 /* CV PAPIER RECHTERKOLOM */
-.rechterkolom { width: 50%; padding: 40px; background: #DBEAFE; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; }
+.rechterkolom { width: 50%; padding: 40px; background: #cbd5e0; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; }
 .cv-papier { width: 210mm; min-width: 210mm; height: 297mm; background: white; display: flex; box-shadow: 0 10px 30px rgba(0,0,0,0.15); flex-shrink: 0; transition: transform 0.4s ease-in-out, margin-bottom 0.4s ease-in-out;}
 .cv-zijbalk { width: 35%; color: white; padding: 40px 25px; transition: background-color 0.3s ease; text-align: left; }
 .cv-hoofdkolom { width: 65%; padding: 40px 35px; text-align: left; }
@@ -930,19 +1017,7 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 .cv-tag { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; background-color: #ffffff; }
 
 /* Styling voor de 'Meer over mij' informatiekaart */
-.cv-info-kaart {
-    padding: 12px 18px;
-    border-radius: 12px;
-    border-top: 1.5px solid #edf2f7;
-    border-right: 1.5px solid #edf2f7;
-    border-bottom: 1.5px solid #edf2f7;
-    border-left: 4px solid;
-    font-size: 13px;
-    color: #4a5568;
-    line-height: 1.5;
-    margin-bottom: 25px;
-    background-color: #ffffff;
-}
+.cv-info-kaart { padding: 12px 18px; border-radius: 12px; border-top: 1.5px solid #edf2f7; border-right: 1.5px solid #edf2f7; border-bottom: 1.5px solid #edf2f7; border-left: 4px solid; font-size: 13px; color: #4a5568; line-height: 1.5; margin-bottom: 25px; background-color: #ffffff; }
 
 /* WYSIWYG SCHALING */
 @media (max-width: 1700px) and (min-width: 1367px) {
@@ -958,7 +1033,6 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
     .linkerkolom { width: 100%; padding: 20px; }
     .rechterkolom { width: 100%; padding: 20px; overflow: hidden; } 
     .cv-papier { transform: scale(0.85); transform-origin: top center; margin-bottom: -170px; }
-    .menu-container-header { position: absolute; right: 20px; top: 20px; } 
 }
 @media (max-width: 600px) {
     .form-grid { grid-template-columns: 1fr; } 
