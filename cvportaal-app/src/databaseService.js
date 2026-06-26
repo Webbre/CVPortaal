@@ -86,10 +86,10 @@ export async function haalGegevensOp() {
         if (docSnap.exists()) {
             return docSnap.data(); // Geef de bewaarde gegevens terug aan Vue
         } else {
-            return null; // Gebruiker heeft nog geen CV
+            return null; // Gebruiker heeft nog geen cv
         }
     } catch (error) {
-        console.error("Fout bij het ophalen van het CV: ", error);
+        console.error("Fout bij het ophalen van het cv: ", error);
         return null;
     }
 }

@@ -1,10 +1,12 @@
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { VertexAI } = require("@google-cloud/vertexai");
 
-// We forceren de regio naar Nederland (Eemshaven)
-const REGION = "europe-west4"; 
+// De Cloud Function zelf woont veilig in Nederland (Eemshaven)
+const FUNCTION_REGION = "europe-west4"; 
+// De AI-rekenkracht halen we uit de Europese hoofd-hub (Frankfurt)
+const AI_REGION = "europe-west3"; 
 
-exports.verbeterProfiel = onCall({ region: REGION }, async (request) => {
+exports.verbeterProfiel = onCall({ region: FUNCTION_REGION }, async (request) => {
   const inputTekst = request.data.tekst;
 
   if (!inputTekst) {
@@ -12,11 +14,10 @@ exports.verbeterProfiel = onCall({ region: REGION }, async (request) => {
   }
 
   try {
-    // Haal het project ID automatisch op uit Firebase
     const projectId = process.env.GCLOUD_PROJECT;
     
-    // Maak een veilige verbinding met Vertex AI in de juiste regio
-    const vertexAi = new VertexAI({ project: projectId, location: REGION });
+    // Hier maken we de connectie specifiek met Frankfurt!
+    const vertexAi = new VertexAI({ project: projectId, location: AI_REGION });
     const model = vertexAi.preview.getGenerativeModel({
       model: "gemini-1.5-flash", 
       generationConfig: {
