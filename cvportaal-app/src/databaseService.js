@@ -1,9 +1,9 @@
 // databaseService.js
-// We importeren de specifieke Firebase code (Nu inclusief Auth en specifieke Firestore acties)
+// We importeren de specifieke Firebase code (Alles nu via dezelfde gstatic web-links)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js";
 
 // Jouw unieke Firebase configuratie
 const firebaseConfig = {
