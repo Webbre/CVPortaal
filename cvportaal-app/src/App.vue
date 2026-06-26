@@ -1,6 +1,8 @@
 <script setup>
 import { ref, watch, onMounted, nextTick } from 'vue'
+import { getFunctions, httpsCallable } from 'firebase/functions' // NIEUW: Importeer de Firebase functions
 import { 
+  app, // <--- DEZE IS NIEUW TOEGEVOEGD
   slaGegevensOp, haalGegevensOp, 
   stuurInlogLink, voltooiInloggen, 
   logUit, luisterNaarInlogStatus 
@@ -252,32 +254,37 @@ async function verbeterMetAI() {
   origineleProfieltekst.value = profieltekst.value; // Sla de originele tekst veilig op
 
   try {
-    // Hier komt later de koppeling met jouw backend of server.
-    // Voor nu simuleren we de laadtijd van de AI met een pauze van 2 seconden.
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // 1. Maak connectie met jouw Cloud Function in regio europe-west4
+    const functions = getFunctions(app, 'europe-west4');
+    const verbeterProfielFunctie = httpsCallable(functions, 'verbeterProfiel');
+    
+    // 2. Stuur de getypte tekst naar onze backend brug
+    const resultaat = await verbeterProfielFunctie({ tekst: profieltekst.value });
+    const aiData = resultaat.data; // Dit is de JSON die we van Google Gemini terugkrijgen
 
-    // Dit is het formaat dat we straks van de echte AI verwachten.
-    const nepAiAntwoord = {
-      verbeterdeTekst: "Dit is een professioneel herschreven versie van het profiel, speciaal door de AI op maat gemaakt om krachtig over te komen op toekomstige werkgevers.",
-      nieuweSterkePunten: ["Samenwerken", "Nauwkeurig", "Leergierig"]
-    };
+    // 3. Update het profiel tekstvak
+    if (aiData.verbeterdeTekst) {
+      profieltekst.value = aiData.verbeterdeTekst;
+    }
 
-    // Overschrijf het tekstvak met de nieuwe tekst
-    profieltekst.value = nepAiAntwoord.verbeterdeTekst;
+    // 4. Update de sterke punten (Maak de lijst eerst leeg om dubbelingen te voorkomen!)
+    if (aiData.kwaliteiten && Array.isArray(aiData.kwaliteiten)) {
+      sterkePunten.value = []; // Verwijder de oude punten
+      
+      aiData.kwaliteiten.forEach(punt => {
+        sterkePunten.value.push({ id: Date.now() + Math.random(), tekst: punt });
+      });
+      
+      // Zet de weergave aan zodat ze direct op het scherm verschijnen
+      toonSterkePunten.value = true;
+    }
 
-    // Loop door de lijst met sterke punten en voeg ze toe
-    nepAiAntwoord.nieuweSterkePunten.forEach(punt => {
-      sterkePunten.value.push({ id: Date.now() + Math.random(), tekst: punt });
-    });
-
-    // Zet de weergave van sterke punten aan, zodat de gebruiker ze direct ziet
-    toonSterkePunten.value = true;
     isAiToegepast.value = true;
-
     triggerOpslaan();
+
   } catch (error) {
     console.error("Fout bij het ophalen van AI:", error);
-    alert("Oeps, de AI is even niet bereikbaar.");
+    alert("Oeps, de AI is even niet bereikbaar. Controleer je verbinding.");
   } finally {
     isAiLaden.value = false;
   }
