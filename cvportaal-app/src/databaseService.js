@@ -3,6 +3,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 // Jouw unieke Firebase configuratie
 const firebaseConfig = {
@@ -16,6 +17,8 @@ const firebaseConfig = {
 
 // We starten de applicatie, database en authenticatie
 export const app = initializeApp(firebaseConfig);
+const functions = getFunctions(app, 'europe-west4');
+export const aiBrug = httpsCallable(functions, 'verbeterProfiel');
 const db = getFirestore(app);
 const auth = getAuth(app);
 

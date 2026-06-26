@@ -1,8 +1,7 @@
 <script setup>
 import { ref, watch, onMounted, nextTick } from 'vue'
-import { getFunctions, httpsCallable } from 'firebase/functions' // NIEUW: Importeer de Firebase functions
 import { 
-  app, // <--- DEZE IS NIEUW TOEGEVOEGD
+  aiBrug, // <--- Hier halen we de veilige AI-brug op uit je databaseService
   slaGegevensOp, haalGegevensOp, 
   stuurInlogLink, voltooiInloggen, 
   logUit, luisterNaarInlogStatus 
@@ -107,7 +106,6 @@ onMounted(async () => {
           toonMeerOverMij.value = data.toonMeerOverMij !== undefined ? data.toonMeerOverMij : false;
           meerOverMijTekst.value = data.meerOverMijTekst || '';
 
-          // NIEUW: Maak direct een snapshot nadat de data in de Vue velden zit
           await nextTick();
           laatsteBekendeDataString = JSON.stringify(verzamelData());
         }
@@ -254,22 +252,18 @@ async function verbeterMetAI() {
   origineleProfieltekst.value = profieltekst.value; // Sla de originele tekst veilig op
 
   try {
-    // 1. Maak connectie met jouw Cloud Function in regio europe-west4
-    const functions = getFunctions(app, 'europe-west4');
-    const verbeterProfielFunctie = httpsCallable(functions, 'verbeterProfiel');
-    
-    // 2. Stuur de getypte tekst naar onze backend brug
-    const resultaat = await verbeterProfielFunctie({ tekst: profieltekst.value });
-    const aiData = resultaat.data; // Dit is de JSON die we van Google Gemini terugkrijgen
+    // 1. Roep de echte AI brug aan!
+    const resultaat = await aiBrug({ tekst: profieltekst.value });
+    const aiData = resultaat.data; 
 
-    // 3. Update het profiel tekstvak
+    // 2. Update het profiel tekstvak met het échte antwoord
     if (aiData.verbeterdeTekst) {
       profieltekst.value = aiData.verbeterdeTekst;
     }
 
-    // 4. Update de sterke punten (Maak de lijst eerst leeg om dubbelingen te voorkomen!)
+    // 3. Update de sterke punten (Lijst eerst leegmaken!)
     if (aiData.kwaliteiten && Array.isArray(aiData.kwaliteiten)) {
-      sterkePunten.value = []; // Verwijder de oude punten
+      sterkePunten.value = []; // Dit voorkomt de dubbelingen
       
       aiData.kwaliteiten.forEach(punt => {
         sterkePunten.value.push({ id: Date.now() + Math.random(), tekst: punt });
