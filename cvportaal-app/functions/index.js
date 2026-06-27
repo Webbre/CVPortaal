@@ -4,8 +4,13 @@ const { GoogleGenAI } = require("@google/genai");
 // We forceren de regio naar Nederland (Eemshaven)
 const REGION = "europe-west4"; 
 
-// Initialiseer de nieuwe SDK. Hij pakt automatisch je project ID via Firebase.
-const ai = new GoogleGenAI({ project: process.env.GCLOUD_PROJECT, location: REGION });
+// DE FIX: Vertel de SDK expliciet dat we de beveiligde Vertex AI (enterprise) route nemen
+const ai = new GoogleGenAI({ 
+  vertexai: {
+    project: process.env.GCLOUD_PROJECT, 
+    location: REGION 
+  }
+});
 
 exports.verbeterProfiel = onCall({ region: REGION }, async (request) => {
   const inputTekst = request.data.tekst;
@@ -31,7 +36,7 @@ exports.verbeterProfiel = onCall({ region: REGION }, async (request) => {
     Input: ${inputTekst}
     `;
 
-    // Nieuwe aanroepmethode met het nieuwste model
+    // Aanroepmethode met het nieuwste model via de Vertex AI route
     const response = await ai.models.generateContent({
         model: 'gemini-3.5-flash',
         contents: prompt,
