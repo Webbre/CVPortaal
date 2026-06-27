@@ -1,12 +1,13 @@
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
-const { VertexAI } = require("@google-cloud/vertexai");
+const { GoogleGenAI } = require("@google/genai");
 
-// De Cloud Function zelf woont veilig in Nederland (Eemshaven)
-const FUNCTION_REGION = "europe-west4"; 
-// De AI-rekenkracht halen we uit de Europese hoofd-hub (Frankfurt)
-const AI_REGION = "europe-west3"; 
+// We forceren de regio naar Nederland (Eemshaven)
+const REGION = "europe-west4"; 
 
-exports.verbeterProfiel = onCall({ region: FUNCTION_REGION }, async (request) => {
+// Initialiseer de nieuwe SDK. Hij pakt automatisch je project ID via Firebase.
+const ai = new GoogleGenAI({ project: process.env.GCLOUD_PROJECT, location: REGION });
+
+exports.verbeterProfiel = onCall({ region: REGION }, async (request) => {
   const inputTekst = request.data.tekst;
 
   if (!inputTekst) {
@@ -14,21 +15,6 @@ exports.verbeterProfiel = onCall({ region: FUNCTION_REGION }, async (request) =>
   }
 
   try {
-    const projectId = process.env.GCLOUD_PROJECT;
-    
-    // Connectie met de AI-hub in Frankfurt
-    const vertexAi = new VertexAI({ project: projectId, location: AI_REGION });
-    
-    // DE FIX: We gebruiken nu het nieuwste Gemini 3.5 Flash model!
-    const model = vertexAi.preview.getGenerativeModel({
-      model: "gemini-3.5-flash", 
-      generationConfig: {
-        response_mime_type: "application/json",
-      },
-    });
-
-    // ... Jouw code vanaf 'const prompt = `Rol: ...`' blijft hieronder exact hetzelfde!
-
     const prompt = `
     Rol: Je bent een no-nonsense expert in het schrijven van cv-profielteksten. Je weet precies wat werkgevers zoeken en schrijft glashelder.
 
@@ -45,15 +31,20 @@ exports.verbeterProfiel = onCall({ region: FUNCTION_REGION }, async (request) =>
     Input: ${inputTekst}
     `;
 
-    const requestVertex = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-    const response = await model.generateContent(requestVertex);
-    const aiAntwoord = response.response.candidates[0].content.parts[0].text;
+    // Nieuwe aanroepmethode met het nieuwste model
+    const response = await ai.models.generateContent({
+        model: 'gemini-3.5-flash',
+        contents: prompt,
+        config: {
+            responseMimeType: "application/json",
+        }
+    });
 
     // Stuur de JSON veilig terug naar de applicatie
-    return JSON.parse(aiAntwoord);
+    return JSON.parse(response.text);
 
   } catch (error) {
-    console.error("Fout in Vertex AI:", error);
+    console.error("Fout in GenAI:", error);
     throw new HttpsError("internal", "Kan de AI niet bereiken. Probeer het later opnieuw.");
   }
 });
