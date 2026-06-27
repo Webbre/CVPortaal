@@ -16,14 +16,18 @@ exports.verbeterProfiel = onCall({ region: FUNCTION_REGION }, async (request) =>
   try {
     const projectId = process.env.GCLOUD_PROJECT;
     
-    // Hier maken we de connectie specifiek met Frankfurt!
+    // Connectie met de AI-hub in Frankfurt
     const vertexAi = new VertexAI({ project: projectId, location: AI_REGION });
+    
+    // DE FIX: We gebruiken nu het nieuwste Gemini 3.5 Flash model!
     const model = vertexAi.preview.getGenerativeModel({
-      model: "gemini-1.5-flash", 
+      model: "gemini-3.5-flash", 
       generationConfig: {
         response_mime_type: "application/json",
       },
     });
+
+    // ... Jouw code vanaf 'const prompt = `Rol: ...`' blijft hieronder exact hetzelfde!
 
     const prompt = `
     Rol: Je bent een no-nonsense expert in het schrijven van cv-profielteksten. Je weet precies wat werkgevers zoeken en schrijft glashelder.
