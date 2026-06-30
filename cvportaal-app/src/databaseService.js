@@ -17,7 +17,7 @@ const firebaseConfig = {
 
 // We starten de applicatie, database en authenticatie
 export const app = initializeApp(firebaseConfig);
-const functions = getFunctions(app, 'europe-west4');
+const functions = getFunctions(app, 'europe-west3');
 export const aiBrug = httpsCallable(functions, 'verbeterProfiel');
 const db = getFirestore(app);
 const auth = getAuth(app);

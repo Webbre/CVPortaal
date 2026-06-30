@@ -1,51 +1,52 @@
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { GoogleGenAI } = require("@google/genai");
 
-// We forceren de regio naar Nederland (Eemshaven)
-const REGION = "europe-west4"; 
-
-// DE FIX: Vertel de SDK expliciet dat we de beveiligde Vertex AI (enterprise) route nemen
-const ai = new GoogleGenAI({ 
-  vertexai: {
-    project: process.env.GCLOUD_PROJECT, 
-    location: REGION 
-  }
-});
+const REGION = "europe-west3"; 
+const PROJECT_ID = "cvportaal-ae317";
 
 exports.verbeterProfiel = onCall({ region: REGION }, async (request) => {
+  const ai = new GoogleGenAI({ 
+    vertexai: true,
+    project: PROJECT_ID, 
+    location: REGION 
+  });
+
   const inputTekst = request.data.tekst;
+  const type = request.data.type || 'profiel'; // Welk blokje zijn we aan het verbeteren?
 
   if (!inputTekst) {
     throw new HttpsError("invalid-argument", "Er is geen tekst meegestuurd.");
   }
 
   try {
-    const prompt = `
-    Rol: Je bent een no-nonsense expert in het schrijven van cv-profielteksten. Je weet precies wat werkgevers zoeken en schrijft glashelder.
+    const taakOmschrijving = type === 'profiel' 
+      ? "Taak: Schrijf op basis van de input een foutloze cv-profieltekst. Filter daarnaast de belangrijkste 3 tot 5 kwaliteiten (sterke punten) uit de tekst."
+      : "Taak: Schrijf op basis van de input een foutloze, bondige sectie 'extra informatie'. (Extraheer GEEN kwaliteiten, laat de kwaliteiten array leeg).";
 
-    Taak: Analyseer de input, herken automatisch de brontaal en schrijf op basis hiervan een foutloze profieltekst in eenvoudig Nederlands op B1-niveau. Filter daarnaast de belangrijkste 3 tot 5 kwaliteiten (sterke punten) uit de tekst.
+    const prompt = `
+    Rol: Je bent een no-nonsense expert in het schrijven van cv-teksten. Je weet precies wat werkgevers zoeken en schrijft glashelder.
+
+    ${taakOmschrijving}
 
     Instructies en randvoorwaarden:
-    - Vertaalslag: Is de input in een andere taal geschreven? Vertaal de inhoud dan eerst naar het Nederlands.
-    - Taalniveau (B1): Gebruik uitsluitend alledaagse woorden en korte zinnen. Vermijd vaktaal en woorden met meer dan 3 lettergrepen.
-    - Toon en stijl: Schrijf nuchter, eerlijk en recht door zee (de 'Groningse' stijl). Gebruik geen poespas, marketingtaal of holle containerwoorden zoals 'passie'.
-    - Inhoudelijke trouw: Werk alleen met feiten uit de tekst. Benoem concrete vaardigheden, maar verzin er absoluut niets bij.
-    - Lengte en verhouding: Maximaal 150 woorden. Vormt de input slechts een paar zinnen? Houd de output dan beknopt. Maak het niet mooier of groter dan het is.
+    - Vertaalslag: Vertaal de inhoud naar het Nederlands indien de input in een andere taal is.
+    - Taalniveau (B1): Gebruik alledaagse woorden en korte zinnen.
+    - Toon en stijl: Schrijf nuchter, eerlijk en recht door zee (de 'Groningse' stijl). Geen containerwoorden.
+    - Inhoudelijke trouw: Werk alleen met feiten uit de tekst. Verzin niets bij.
+    - LENGTE (CRUCIAAL): Maximaal 400 karakters (spaties NIET meegerekend). Wees uiterst bondig!
     - Format: Geef je antwoord uitsluitend in JSON formaat met exact deze twee sleutels: "verbeterdeTekst" (string) en "kwaliteiten" (array met strings).
 
     Input: ${inputTekst}
     `;
 
-    // Aanroepmethode met het nieuwste model via de Vertex AI route
     const response = await ai.models.generateContent({
-        model: 'gemini-3.5-flash',
+        model: 'gemini-2.5-flash',
         contents: prompt,
         config: {
             responseMimeType: "application/json",
         }
     });
 
-    // Stuur de JSON veilig terug naar de applicatie
     return JSON.parse(response.text);
 
   } catch (error) {
