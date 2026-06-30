@@ -14,10 +14,11 @@ import {
       <div class="header-content">
         <h1 class="modern-naam">{{ voornaam || 'Jouw' }} {{ achternaam || 'Naam' }}</h1>
         <div class="modern-contact">
-          <span v-if="woonplaats">{{ woonplaats }}</span>
-          <span v-if="email">• {{ email }}</span>
-          <span v-if="telefoon">• {{ telefoon }}</span>
-        </div>
+  <span v-if="woonplaats">{{ woonplaats }}</span>
+  <span v-if="email">• {{ email }}</span>
+  <span v-if="telefoon">• {{ telefoon }}</span>
+  <span v-if="geboorteJaar">• Geboortejaar: {{ geboorteJaar }}</span>
+</div>
       </div>
       <div v-if="profielfoto && toonFotoOpCv" class="modern-foto" :style="{ backgroundImage: `url(${profielfoto})` }"></div>
     </div>
@@ -52,6 +53,13 @@ import {
             <li v-for="h in hobbys" :key="h.id" v-show="h.tekst">{{ h.tekst }}</li>
           </ul>
         </div>
+        <div v-if="heeftRijbewijs || heeftAuto" class="modern-sectie">
+  <h3 class="modern-sectietitel" :style="{ color: gekozenKleur }">Vervoer</h3>
+  <ul class="modern-lijst">
+    <li v-if="heeftRijbewijs">Rijbewijs B</li>
+    <li v-if="heeftAuto">Eigen auto</li>
+  </ul>
+</div>
       </div>
 
       <div class="modern-hoofd">

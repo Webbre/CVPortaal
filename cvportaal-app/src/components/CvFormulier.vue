@@ -10,7 +10,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
   gebruiker, toonMenu, logMijUit, resetMijnCV, verwerkFoto, verwijderFoto, veranderKleur,
   voegWerkervaringToe, verwijderWerkervaring, voegSterkPuntToe, verwijderSterkPunt,
   voegOpleidingToe, verwijderOpleiding, voegTaalToe, verwijderTaal, zetTaalNiveau,
-  voegHobbyToe, verwijderHobby, sorteerErvaringen, sorteerOpleidingen, verbeterMetAI,
+  voegHobbyToe, verwijderHobby, verbeterMetAI,
   triggerOpslaan, forceerOpslaan,
   emailFout, profielLengte, meerOverMijLengte,
   isAiLadenMeerOverMij, isAiToegepastMeerOverMij, origineleMeerOverMijTekst
@@ -101,8 +101,13 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
             <div class="form-groep"><label>Voornaam</label><input type="text" v-model="voornaam" placeholder="Je voornaam"></div>
             <div class="form-groep"><label>Achternaam</label><input type="text" v-model="achternaam" placeholder="Je achternaam"></div>
             <div class="form-groep volledige-breedte"><label>Woonplaats</label><input type="text" v-model="woonplaats" placeholder="Je woonplaats"></div>
-            <input type="email" v-model="email" placeholder="Je e-mailadres" :style="{ borderColor: emailFout ? '#e53e3e' : '' }">
+            <div class="form-groep">
+    <label>E-mail</label>
+    <div class="form-groep">
+    <label>E-mail</label>
+    <input type="email" v-model="email" placeholder="Je e-mailadres" :style="{ borderColor: emailFout ? '#e53e3e' : '' }">
     <span v-if="emailFout" style="color: #e53e3e; font-size: 11px; margin-top: 4px; display: block; font-weight: 600;">Vul een geldig e-mailadres in (bijv. naam@mail.nl).</span>
+</div>
             <div class="form-groep"><label>Telefoon</label><input type="tel" v-model="telefoon" placeholder="Je telefoonnummer"></div>
             
             <div class="form-groep">
@@ -148,7 +153,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
         
         <div style="display: flex; align-items: center; gap: 15px;">
             <span :style="{ color: profielLengte > 400 ? '#e53e3e' : '#718096', fontSize: '11px', fontWeight: '600' }">
-                {{ profielLengte }} / 400 tekens (zonder spaties)
+                {{ profielLengte }} / 400 tekens
             </span>
             <button class="ai-knop" @click="verbeterMetAI('profiel')" :disabled="isAiLaden">
                 <svg v-if="!isAiToegepast && !isAiLaden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
@@ -158,7 +163,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
             </button>
         </div>
     </div>
-    <textarea v-model="profieltekst" @input="isAiToegepast = false" rows="5" placeholder="Denk aan je dagelijks leven, wat je leuk vindt en wat je graag wilt gaan doen." :disabled="isAiLaden" :style="{ opacity: isAiLaden ? 0.6 : 1, borderColor: profielLengte > 400 ? '#e53e3e' : '' }"></textarea>
+    <textarea v-model="profieltekst" @input="isAiToegepast = false" rows="5" placeholder="Denk aan je dagelijks leven, wat je leuk vindt of wat je graag wilt gaan doen..." :disabled="isAiLaden" :style="{ opacity: isAiLaden ? 0.6 : 1, borderColor: profielLengte > 400 ? '#e53e3e' : '' }"></textarea>
 </div>
       </div>
 
@@ -198,11 +203,11 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                       <div class="form-groep">
                           <label>Van</label>
                           <div style="display: flex; gap: 8px;">
-                              <select v-model="werk.vanMaand" @change="sorteerErvaringen" style="width: 50%;" aria-label="Van maand">
+                              <select v-model="werk.vanMaand" style="width: 50%;" aria-label="Van maand">
                                   <option value="">Maand</option>
                                   <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                               </select>
-                              <select v-model="werk.vanJaar" @change="sorteerErvaringen" style="width: 50%;" aria-label="Van jaar">
+                              <select v-model="werk.vanJaar" style="width: 50%;" aria-label="Van jaar">
                                   <option value="">Jaar</option>
                                   <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
                               </select>
@@ -212,11 +217,11 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                       <div class="form-groep">
                           <label>Tot</label>
                           <div style="display: flex; gap: 8px;" v-if="!werk.isHuidigeBaan">
-                              <select v-model="werk.totMaand" @change="sorteerErvaringen" style="width: 50%;" aria-label="Tot maand">
+                              <select v-model="werk.totMaand" style="width: 50%;" aria-label="Tot maand">
                                   <option value="">Maand</option>
                                   <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                               </select>
-                              <select v-model="werk.totJaar" @change="sorteerErvaringen" style="width: 50%;" aria-label="Tot jaar">
+                              <select v-model="werk.totJaar" style="width: 50%;" aria-label="Tot jaar">
                                   <option value="">Jaar</option>
                                   <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
                               </select>
@@ -229,7 +234,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                       <div class="form-groep volledige-breedte">
                           <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
                               <label class="toggle-switch">
-                                  <input type="checkbox" v-model="werk.isHuidigeBaan" @change="sorteerErvaringen" aria-label="Ik werk hier nu nog">
+                                  <input type="checkbox" v-model="werk.isHuidigeBaan" aria-label="Ik werk hier nu nog">
                                   <span class="toggle-slider"></span>
                               </label>
                               <span class="toggle-label" style="font-weight: 600;">Ik werk hier nu nog</span>
@@ -280,11 +285,11 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                     <div class="form-groep">
                         <label>Van</label>
                         <div style="display: flex; gap: 8px;">
-                            <select v-model="opl.vanMaand" @change="sorteerOpleidingen" style="width: 50%;" aria-label="Van maand">
+                            <select v-model="opl.vanMaand" style="width: 50%;" aria-label="Van maand">
                                 <option value="">Maand</option>
                                 <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                             </select>
-                            <select v-model="opl.vanJaar" @change="sorteerOpleidingen" style="width: 50%;" aria-label="Van jaar">
+                            <select v-model="opl.vanJaar" style="width: 50%;" aria-label="Van jaar">
                                 <option value="">Jaar</option>
                                 <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
                             </select>
@@ -294,11 +299,11 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                     <div class="form-groep">
                         <label>Tot</label>
                         <div style="display: flex; gap: 8px;" v-if="!opl.isHuidigeOpleiding">
-                            <select v-model="opl.totMaand" @change="sorteerOpleidingen" style="width: 50%;" aria-label="Tot maand">
+                            <select v-model="opl.totMaand" style="width: 50%;" aria-label="Tot maand">
                                 <option value="">Maand</option>
                                 <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                             </select>
-                            <select v-model="opl.totJaar" @change="sorteerOpleidingen" style="width: 50%;" aria-label="Tot jaar">
+                            <select v-model="opl.totJaar" style="width: 50%;" aria-label="Tot jaar">
                                 <option value="">Jaar</option>
                                 <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
                             </select>
@@ -323,7 +328,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                     <div class="form-groep volledige-breedte">
                         <div class="toggle-container" style="justify-content: flex-start; gap: 10px;">
                             <label class="toggle-switch">
-                                <input type="checkbox" v-model="opl.isHuidigeOpleiding" @change="sorteerOpleidingen" aria-label="Ik volg dit momenteel nog">
+                                <input type="checkbox" v-model="opl.isHuidigeOpleiding" aria-label="Ik volg dit momenteel nog">
                                 <span class="toggle-slider"></span>
                             </label>
                             <span class="toggle-label" style="font-weight: 600;">Ik volg dit momenteel nog</span>
@@ -388,7 +393,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                 
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <span :style="{ color: meerOverMijLengte > 400 ? '#e53e3e' : '#718096', fontSize: '11px', fontWeight: '600' }">
-                        {{ meerOverMijLengte }} / 400 tekens (zonder spaties)
+                        {{ meerOverMijLengte }} / 400 tekens
                     </span>
                     <button class="ai-knop" @click="verbeterMetAI('meerOverMij')" :disabled="isAiLadenMeerOverMij">
                         <svg v-if="!isAiToegepastMeerOverMij && !isAiLadenMeerOverMij" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
@@ -398,7 +403,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                     </button>
                 </div>
             </div>
-            <textarea v-model="meerOverMijTekst" @input="isAiToegepastMeerOverMij = false" rows="3" placeholder="Bijv. Ik ben elke ochtend beschikbaar voor werk..." :disabled="isAiLadenMeerOverMij" :style="{ opacity: isAiLadenMeerOverMij ? 0.6 : 1, borderColor: meerOverMijLengte > 400 ? '#e53e3e' : '' }"></textarea>
+            <textarea v-model="meerOverMijTekst" @input="isAiToegepastMeerOverMij = false" rows="3" placeholder="Bijv. Ik ben vrijwilliger bij de voetbalclub van mijn dochter..." :disabled="isAiLadenMeerOverMij" :style="{ opacity: isAiLadenMeerOverMij ? 0.6 : 1, borderColor: meerOverMijLengte > 400 ? '#e53e3e' : '' }"></textarea>
         </div>
     </div>
 </div>

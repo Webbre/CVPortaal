@@ -76,7 +76,8 @@ let opslaanTimer = null
 let isAanHetOpslaan = false
 
 export async function initialiseerApp() {
-  try { await voltooiInloggen(); } catch (error) { console.error("Fout:", error); }
+  try { await voltooiInloggen();
+  } catch (error) { console.error("Fout:", error); }
 
   luisterNaarInlogStatus(async (user) => {
     try {
@@ -108,10 +109,12 @@ export async function initialiseerApp() {
       } else {
         gebruiker.value = null; maakCvLeeg(false);
       }
-    } catch (error) { console.error("Fout bij inladen:", error); } 
+    } catch (error) { console.error("Fout bij inladen:", error);
+    } 
     finally {
       isLaden.value = false;
-      watch(verzamelData, () => { triggerOpslaan(); }, { deep: true });
+      // Robuuste watch-array voor gegarandeerd opslaan!
+      watch([voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar, profieltekst, gekozenKleur, gekozenSjabloon, toonWerkervaring, werkervaringen, toonSterkePunten, sterkePunten, toonOpleidingen, opleidingen, toonTalen, talen, toonHobbys, hobbys, toonMeerOverMij, meerOverMijTekst], () => { triggerOpslaan(); }, { deep: true });
     }
   });
 }
@@ -120,26 +123,32 @@ export async function loginMetLink() { /* ... Blijft hetzelfde ... */
   if (!loginEmail.value) return;
   isLaden.value = true;
   try { await stuurInlogLink(loginEmail.value); linkVerstuurd.value = true; } 
-  catch (error) { alert("Er ging iets mis: " + error.message); } 
+  catch (error) { alert("Er ging iets mis: " + error.message);
+  } 
   finally { isLaden.value = false; }
 }
 
-export async function logMijUit() { toonMenu.value = false; isLaden.value = true; await logUit(); }
-export function resetMijnCV() { toonMenu.value = false; if (confirm("Weet je zeker dat je helemaal opnieuw wilt beginnen?")) { maakCvLeeg(true); } }
+export async function logMijUit() { toonMenu.value = false; isLaden.value = true;
+  await logUit(); }
+export function resetMijnCV() { toonMenu.value = false; if (confirm("Weet je zeker dat je helemaal opnieuw wilt beginnen?")) { maakCvLeeg(true);
+} }
 
 export function maakCvLeeg(forceerDatabaseOpslag = false) {
-  voornaam.value = ''; achternaam.value = ''; woonplaats.value = ''; email.value = ''; telefoon.value = ''; geboorteJaar.value = '';
+  voornaam.value = ''; achternaam.value = ''; woonplaats.value = ''; email.value = '';
+  telefoon.value = ''; geboorteJaar.value = '';
   profieltekst.value = ''; heeftRijbewijs.value = false; heeftAuto.value = false; profielfoto.value = null;
   gekozenKleur.value = '#4A90E2'; gekozenSjabloon.value = 'TemplateBasis';
   toonWerkervaring.value = false; werkervaringen.value = []; toonSterkePunten.value = false; sterkePunten.value = [];
   toonOpleidingen.value = false; opleidingen.value = []; toonTalen.value = false; talen.value = [];
-  toonHobbys.value = false; hobbys.value = []; toonMeerOverMij.value = false; meerOverMijTekst.value = '';
+  toonHobbys.value = false; hobbys.value = [];
+  toonMeerOverMij.value = false; meerOverMijTekst.value = '';
   if (forceerDatabaseOpslag) triggerOpslaan();
 }
 
 export function verwerkFoto(event) {
   const file = event.target.files[0];
-  if (file) { const reader = new FileReader(); reader.onload = (e) => { profielfoto.value = e.target.result }; reader.readAsDataURL(file); }
+  if (file) { const reader = new FileReader(); reader.onload = (e) => { profielfoto.value = e.target.result }; reader.readAsDataURL(file);
+  }
 }
 export function verwijderFoto() { profielfoto.value = null }
 export function veranderKleur(kleur) { gekozenKleur.value = kleur }
@@ -152,30 +161,37 @@ export function voegOpleidingToe() { opleidingen.value.push({ id: crypto.randomU
 export function verwijderOpleiding(index) { opleidingen.value.splice(index, 1) }
 export function voegTaalToe() { talen.value.push({ id: crypto.randomUUID(), naam: '', niveau: 0 }) }
 export function verwijderTaal(index) { talen.value.splice(index, 1) }
-export function zetTaalNiveau(taal, niveau) { taal.niveau = niveau; }
+export function zetTaalNiveau(taal, niveau) { taal.niveau = niveau;
+}
 export function voegHobbyToe() { hobbys.value.push({ id: crypto.randomUUID(), tekst: '' }) }
 export function verwijderHobby(index) { hobbys.value.splice(index, 1) }
 
-export function sorteerErvaringen() {
-  werkervaringen.value.sort((a, b) => {
+// NIEUW: Slimme Sorteer Functies (Computed Properties)
+export const gesorteerdeWerkervaringen = computed(() => {
+  return [...werkervaringen.value].sort((a, b) => {
     if (a.isHuidigeBaan && !b.isHuidigeBaan) return -1;
     if (!a.isHuidigeBaan && b.isHuidigeBaan) return 1;
-    const jaarA = parseInt(a.vanJaar) || 0; const jaarB = parseInt(b.vanJaar) || 0;
+    const jaarA = parseInt(a.vanJaar) || 0; 
+    const jaarB = parseInt(b.vanJaar) || 0;
     if (jaarB !== jaarA) return jaarB - jaarA;
-    const maandA = parseInt(a.vanMaand) || 0; const maandB = parseInt(b.vanMaand) || 0;
+    const maandA = parseInt(a.vanMaand) || 0; 
+    const maandB = parseInt(b.vanMaand) || 0;
     return maandB - maandA;
   });
-}
-export function sorteerOpleidingen() {
-  opleidingen.value.sort((a, b) => {
+});
+
+export const gesorteerdeOpleidingen = computed(() => {
+  return [...opleidingen.value].sort((a, b) => {
     if (a.isHuidigeOpleiding && !b.isHuidigeOpleiding) return -1;
     if (!a.isHuidigeOpleiding && b.isHuidigeOpleiding) return 1;
-    const jaarA = parseInt(a.vanJaar) || 0; const jaarB = parseInt(b.vanJaar) || 0;
+    const jaarA = parseInt(a.vanJaar) || 0; 
+    const jaarB = parseInt(b.vanJaar) || 0;
     if (jaarB !== jaarA) return jaarB - jaarA;
-    const maandA = parseInt(a.vanMaand) || 0; const maandB = parseInt(b.vanMaand) || 0;
+    const maandA = parseInt(a.vanMaand) || 0; 
+    const maandB = parseInt(b.vanMaand) || 0;
     return maandB - maandA;
   });
-}
+});
 
 // NIEUW: Één krachtige AI-functie voor beide velden
 export async function verbeterMetAI(type = 'profiel') {
@@ -184,20 +200,19 @@ export async function verbeterMetAI(type = 'profiel') {
   const isToegepastRef = isProfiel ? isAiToegepast : isAiToegepastMeerOverMij;
   const origineleRef = isProfiel ? origineleProfieltekst : origineleMeerOverMijTekst;
   const isLadenRef = isProfiel ? isAiLaden : isAiLadenMeerOverMij;
-
   if (isToegepastRef.value) { 
     tekstRef.value = origineleRef.value; 
     isToegepastRef.value = false; 
-    return; 
+    return;
   }
-  if (!tekstRef.value) { alert("Typ eerst een stukje tekst zodat de AI iets heeft om mee te werken."); return; }
+  if (!tekstRef.value) { alert("Typ eerst een stukje tekst zodat de AI iets heeft om mee te werken."); return;
+  }
   
   isLadenRef.value = true;
   origineleRef.value = tekstRef.value;
-
   try {
     const resultaat = await aiBrug({ tekst: tekstRef.value, type: type });
-    const aiData = resultaat.data; 
+    const aiData = resultaat.data;
     if (aiData.verbeterdeTekst) { tekstRef.value = aiData.verbeterdeTekst; }
     
     // Alleen kwaliteiten toevoegen als het om het hoofdprofiel gaat
@@ -225,7 +240,8 @@ export async function voerOpslaanUit() {
   if (!gebruiker.value || isAanHetOpslaan) return;
   isAanHetOpslaan = true; heeftOngeslagenWijzigingen.value = false; toonOpgeslagenFeedback.value = true;
   try { await slaGegevensOp(verzamelData()); } 
-  catch (error) { console.error("Fout bij opslaan:", error); heeftOngeslagenWijzigingen.value = true; } 
+  catch (error) { console.error("Fout bij opslaan:", error); heeftOngeslagenWijzigingen.value = true;
+  } 
   finally {
     isAanHetOpslaan = false;
     setTimeout(() => { if (!heeftOngeslagenWijzigingen.value) { toonOpgeslagenFeedback.value = false; } }, 2000);
@@ -235,7 +251,8 @@ export async function voerOpslaanUit() {
 export function triggerOpslaan() {
   if (!gebruiker.value || isLaden.value) return;
   heeftOngeslagenWijzigingen.value = true; toonOpgeslagenFeedback.value = false;
-  clearTimeout(opslaanTimer); opslaanTimer = setTimeout(() => { voerOpslaanUit(); }, 1500); 
+  clearTimeout(opslaanTimer);
+  opslaanTimer = setTimeout(() => { voerOpslaanUit(); }, 1500); 
 }
 
 export async function forceerOpslaan() {

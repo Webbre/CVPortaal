@@ -140,7 +140,6 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 
 /* DYNAMISCHE BLOKKEN EN ALGEMENE KNOPPEN */
 .dynamisch-blok { background-color: #ffffff; border: none; border-radius: 20px; padding: 30px; margin-bottom: 25px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06); transition: transform 0.2s ease, box-shadow 0.2s ease; }
-.dynamisch-blok:hover { transform: translateY(-2px); box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1); }
 .hoofd-knop { background: #4A90E2; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
 .toevoeg-knop { background: #eff6ff; color: #4A90E2; border: none; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; margin-bottom: 30px; transition: all 0.2s ease; }
 .toevoeg-knop:hover { background: #DBEAFE; transform: translateY(-1px); }
