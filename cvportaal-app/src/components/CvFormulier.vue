@@ -408,4 +408,5 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
     </div>
 </div>
 </div>
+</div>
 </template>
