@@ -147,8 +147,42 @@ export function maakCvLeeg(forceerDatabaseOpslag = false) {
 
 export function verwerkFoto(event) {
   const file = event.target.files[0];
-  if (file) { const reader = new FileReader(); reader.onload = (e) => { profielfoto.value = e.target.result }; reader.readAsDataURL(file);
-  }
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      // Maak een onzichtbaar canvas element om de foto op te tekenen
+      const canvas = document.createElement('canvas');
+      const MAX_WIDTH = 800; // Maximale breedte van de foto in pixels
+      const MAX_HEIGHT = 800; // Maximale hoogte van de foto in pixels
+      let width = img.width;
+      let height = img.height;
+
+      // Bereken de nieuwe, kleinere verhoudingen
+      if (width > height) {
+        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+      } else {
+        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+      }
+      
+      canvas.width = width; 
+      canvas.height = height;
+      
+      // Teken de verkleinde foto op het canvas
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Sla de foto op als JPEG met 90% kwaliteit, dit maakt het bestand super klein!
+      profielfoto.value = canvas.toDataURL('image/jpeg', 0.9);
+      
+      // Sla direct op in de database
+      triggerOpslaan();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 export function verwijderFoto() { profielfoto.value = null }
 export function veranderKleur(kleur) { gekozenKleur.value = kleur }

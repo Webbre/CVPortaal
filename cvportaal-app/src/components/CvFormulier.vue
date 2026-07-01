@@ -22,7 +22,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
 
     <div class="app-header">
           <div class="app-logo-groep">
-              <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="#4A90E2" stroke-width="2" width="28" height="28">
+               <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="#4A90E2" stroke-width="2" width="28" height="28">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                   <polyline points="14 2 14 8 20 8"></polyline>
                   <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -62,7 +62,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                       <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
                           <circle cx="12" cy="12" r="3"></circle>
                           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                      </svg>
+                       </svg>
                   </button>
                   <div v-if="toonMenu" class="dropdown-menu-header">
                       <p class="dropdown-header">Ingelogd als {{ gebruiker.email }}</p>
@@ -101,22 +101,21 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
             <div class="form-groep"><label>Voornaam</label><input type="text" v-model="voornaam" placeholder="Je voornaam"></div>
             <div class="form-groep"><label>Achternaam</label><input type="text" v-model="achternaam" placeholder="Je achternaam"></div>
             <div class="form-groep volledige-breedte"><label>Woonplaats</label><input type="text" v-model="woonplaats" placeholder="Je woonplaats"></div>
+            
             <div class="form-groep">
-    <label>E-mail</label>
-    <div class="form-groep">
-    <label>E-mail</label>
-    <input type="email" v-model="email" placeholder="Je e-mailadres" :style="{ borderColor: emailFout ? '#e53e3e' : '' }">
-    <span v-if="emailFout" style="color: #e53e3e; font-size: 11px; margin-top: 4px; display: block; font-weight: 600;">Vul een geldig e-mailadres in (bijv. naam@mail.nl).</span>
-</div>
+                <label>E-mail</label>
+                <input type="email" v-model="email" placeholder="Je e-mailadres" :style="{ borderColor: emailFout ? '#e53e3e' : '' }">
+                <span v-if="emailFout" style="color: #e53e3e; font-size: 11px; margin-top: 4px; display: block; font-weight: 600;">Vul een geldig e-mailadres in.</span>
+            </div>
+
             <div class="form-groep"><label>Telefoon</label><input type="tel" v-model="telefoon" placeholder="Je telefoonnummer"></div>
             
             <div class="form-groep">
                 <label>Geboortejaar (optioneel)</label>
-    <input type="text" list="jarenLijstId" v-model="geboorteJaar" placeholder="Bijv. 1990" maxlength="4">
-    <datalist id="jarenLijstId">
-        <option v-for="jaar in geboorteJarenLijst" :key="jaar" :value="jaar"></option>
-    </datalist>
-                
+                <input type="text" list="jarenLijstId" v-model="geboorteJaar" placeholder="Bijv. 1990" maxlength="4">
+                <datalist id="jarenLijstId">
+                    <option v-for="jaar in geboorteJarenLijst" :key="jaar" :value="jaar"></option>
+                </datalist>
             </div>
             
             <div class="form-groep">
@@ -148,23 +147,23 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
       <h2 class="hoofdtitel">Dit ben ik</h2>
       <div class="dynamisch-blok">
           <div class="form-groep" style="margin-bottom: 0;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
-        <label style="margin-bottom: 0;">Vertel iets over jezelf</label>
-        
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <span :style="{ color: profielLengte > 400 ? '#e53e3e' : '#718096', fontSize: '11px', fontWeight: '600' }">
-                {{ profielLengte }} / 400 tekens
-            </span>
-            <button class="ai-knop" @click="verbeterMetAI('profiel')" :disabled="isAiLaden">
-                <svg v-if="!isAiToegepast && !isAiLaden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                <svg v-if="isAiToegepast && !isAiLaden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
-                <svg v-if="isAiLaden" class="spin-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
-                {{ isAiLaden ? 'Even nadenken...' : (isAiToegepast ? 'Ongedaan maken' : 'Verbeter met AI') }}
-            </button>
-        </div>
-    </div>
-    <textarea v-model="profieltekst" @input="isAiToegepast = false" rows="5" placeholder="Denk aan je dagelijks leven, wat je leuk vindt of wat je graag wilt gaan doen..." :disabled="isAiLaden" :style="{ opacity: isAiLaden ? 0.6 : 1, borderColor: profielLengte > 400 ? '#e53e3e' : '' }"></textarea>
-</div>
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
+                  <label style="margin-bottom: 0;">Vertel iets over jezelf</label>
+                  
+                  <div style="display: flex; align-items: center; gap: 15px;">
+                      <span :style="{ color: profielLengte > 400 ? '#e53e3e' : '#718096', fontSize: '11px', fontWeight: '600' }">
+                          {{ profielLengte }} / 400 tekens
+                      </span>
+                      <button class="ai-knop" @click="verbeterMetAI('profiel')" :disabled="isAiLaden">
+                          <svg v-if="!isAiToegepast && !isAiLaden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                          <svg v-if="isAiToegepast && !isAiLaden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
+                          <svg v-if="isAiLaden" class="spin-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+                          {{ isAiLaden ? 'Even nadenken...' : (isAiToegepast ? 'Ongedaan maken' : 'Verbeter met AI') }}
+                      </button>
+                  </div>
+              </div>
+              <textarea v-model="profieltekst" @input="isAiToegepast = false" rows="5" placeholder="Denk aan je dagelijks leven, wat je leuk vindt of wat je graag wilt gaan doen..." :disabled="isAiLaden" :style="{ opacity: isAiLaden ? 0.6 : 1, borderColor: profielLengte > 400 ? '#e53e3e' : '' }"></textarea>
+          </div>
       </div>
 
       <div v-if="toonSterkePunten">
@@ -175,6 +174,22 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                   <button class="verwijder-knop-klein" @click="verwijderSterkPunt(index)" aria-label="Verwijder dit sterk punt">✕</button>
               </div>
               <button class="toevoeg-knop" @click="voegSterkPuntToe" style="margin-bottom: 0; margin-top: 0;">+ Voeg een sterk punt toe</button>
+          </div>
+      </div>
+
+<div v-if="toonWerkervaring || toonOpleidingen">
+          <!-- De vaste, vriendelijke tip over de 1-pagina regel -->
+          <div style="background-color: #ebf8ff; border-left: 4px solid #4A90E2; padding: 15px; border-radius: 8px; margin-bottom: 20px; margin-top: 35px;">
+              <p style="font-size: 13px; color: #2b6cb0; margin: 0; font-weight: 600; line-height: 1.5;">
+                  💡 Werkgevers houden van een cv van maximaal 1 pagina. Kies daarom je belangrijkste werkervaring en opleidingen. Of laat alles weg van meer dan 10 jaar geleden.
+              </p>
+          </div>
+
+          <!-- De dynamische waarschuwing (verschijnt pas als Werk + Opleiding samen meer dan 5 items zijn) -->
+          <div v-if="werkervaringen.length + opleidingen.length > 5" style="background-color: #fff5f5; border-left: 4px solid #e53e3e; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+              <p style="font-size: 13px; color: #c53030; margin: 0; font-weight: 600; line-height: 1.5;">
+                  ⚠️ Let op: Je hebt veel informatie toegevoegd. Kijk aan de rechterkant of je cv nog op één pagina past. Past het niet? Dan verdwijnt er tekst als je het cv opslaat als PDF.
+              </p>
           </div>
       </div>
 
@@ -222,10 +237,10 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                                   <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                               </select>
                               <select v-model="werk.totJaar" style="width: 50%;" aria-label="Tot jaar">
-                                  <option value="">Jaar</option>
+                                   <option value="">Jaar</option>
                                   <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
                               </select>
-                          </div>
+                           </div>
                           <div v-else style="display: flex; align-items: center; height: 46px; color: #718096; font-size: 14px; font-weight: 600;">
                               Heden
                           </div>
@@ -294,7 +309,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                                 <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
                             </select>
                         </div>
-                    </div>
+                     </div>
 
                     <div class="form-groep">
                         <label>Tot</label>
@@ -384,29 +399,29 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
           </div>
       </div>
 
-<div v-if="toonMeerOverMij">
-    <h2 class="hoofdtitel">Meer over mij</h2>
-    <div class="dynamisch-blok">
-        <div class="form-groep" style="margin-bottom: 0;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
-                <label style="margin-bottom: 0;">Is er nog iets extra's dat je wilt delen?</label>
-                
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <span :style="{ color: meerOverMijLengte > 400 ? '#e53e3e' : '#718096', fontSize: '11px', fontWeight: '600' }">
-                        {{ meerOverMijLengte }} / 400 tekens
-                    </span>
-                    <button class="ai-knop" @click="verbeterMetAI('meerOverMij')" :disabled="isAiLadenMeerOverMij">
-                        <svg v-if="!isAiToegepastMeerOverMij && !isAiLadenMeerOverMij" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                        <svg v-if="isAiToegepastMeerOverMij && !isAiLadenMeerOverMij" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
-                        <svg v-if="isAiLadenMeerOverMij" class="spin-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
-                        {{ isAiLadenMeerOverMij ? 'Nadenken...' : (isAiToegepastMeerOverMij ? 'Ongedaan maken' : 'Verbeter met AI') }}
-                    </button>
-                </div>
-            </div>
-            <textarea v-model="meerOverMijTekst" @input="isAiToegepastMeerOverMij = false" rows="3" placeholder="Bijv. Ik ben vrijwilliger bij de voetbalclub van mijn dochter..." :disabled="isAiLadenMeerOverMij" :style="{ opacity: isAiLadenMeerOverMij ? 0.6 : 1, borderColor: meerOverMijLengte > 400 ? '#e53e3e' : '' }"></textarea>
-        </div>
-    </div>
-</div>
-</div>
-</div>
+      <div v-if="toonMeerOverMij">
+          <h2 class="hoofdtitel">Meer over mij</h2>
+          <div class="dynamisch-blok">
+              <div class="form-groep" style="margin-bottom: 0;">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
+                      <label style="margin-bottom: 0;">Is er nog iets extra's dat je wilt delen?</label>
+                      
+                      <div style="display: flex; align-items: center; gap: 15px;">
+                          <span :style="{ color: meerOverMijLengte > 400 ? '#e53e3e' : '#718096', fontSize: '11px', fontWeight: '600' }">
+                              {{ meerOverMijLengte }} / 400 tekens
+                          </span>
+                          <button class="ai-knop" @click="verbeterMetAI('meerOverMij')" :disabled="isAiLadenMeerOverMij">
+                              <svg v-if="!isAiToegepastMeerOverMij && !isAiLadenMeerOverMij" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                              <svg v-if="isAiToegepastMeerOverMij && !isAiLadenMeerOverMij" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
+                              <svg v-if="isAiLadenMeerOverMij" class="spin-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+                              {{ isAiLadenMeerOverMij ? 'Nadenken...' : (isAiToegepastMeerOverMij ? 'Ongedaan maken' : 'Verbeter met AI') }}
+                          </button>
+                      </div>
+                  </div>
+                  <textarea v-model="meerOverMijTekst" @input="isAiToegepastMeerOverMij = false" rows="3" placeholder="Bijv. Ik ben vrijwilliger bij de voetbalclub van mijn dochter..." :disabled="isAiLadenMeerOverMij" :style="{ opacity: isAiLadenMeerOverMij ? 0.6 : 1, borderColor: meerOverMijLengte > 400 ? '#e53e3e' : '' }"></textarea>
+              </div>
+          </div>
+      </div>
+      
+  </div>
 </template>

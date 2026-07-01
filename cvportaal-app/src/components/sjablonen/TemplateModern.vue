@@ -17,7 +17,7 @@ import {
   <span v-if="woonplaats">{{ woonplaats }}</span>
   <span v-if="email">• {{ email }}</span>
   <span v-if="telefoon">• {{ telefoon }}</span>
-  <span v-if="geboorteJaar">• Geboortejaar: {{ geboorteJaar }}</span>
+  <span v-if="geboorteJaar">• {{ geboorteJaar }}</span>
 </div>
       </div>
       <div v-if="profielfoto && toonFotoOpCv" class="modern-foto" :style="{ backgroundImage: `url(${profielfoto})` }"></div>

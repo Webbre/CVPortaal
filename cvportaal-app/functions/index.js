@@ -4,7 +4,7 @@ const { GoogleGenAI } = require("@google/genai");
 const REGION = "europe-west3"; 
 const PROJECT_ID = "cvportaal-ae317";
 
-exports.verbeterProfiel = onCall({ region: REGION }, async (request) => {
+exports.verbeterProfiel = onCall({ region: REGION }, timeoutSeconds: 120 }, async (request) => {
   const ai = new GoogleGenAI({ 
     vertexai: true,
     project: PROJECT_ID, 
