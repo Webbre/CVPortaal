@@ -139,7 +139,16 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 .foto-verwijder-knop:hover { text-decoration: underline; }
 
 /* DYNAMISCHE BLOKKEN EN ALGEMENE KNOPPEN */
-.dynamisch-blok { background-color: #ffffff; border: none; border-radius: 20px; padding: 30px; margin-bottom: 25px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.dynamisch-blok { 
+    background-color: #ffffff; 
+    border: none;
+    border-radius: 20px; 
+    padding: 30px; 
+    margin-bottom: 25px; 
+    /* NIEUWE STRAKKE SCHADUW */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05); 
+    transition: transform 0.2s ease, box-shadow 0.2s ease; 
+}
 .hoofd-knop { background: #4A90E2; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
 .toevoeg-knop { background: #eff6ff; color: #4A90E2; border: none; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; margin-bottom: 30px; transition: all 0.2s ease; }
 .toevoeg-knop:hover { background: #DBEAFE; transform: translateY(-1px); }
@@ -156,7 +165,17 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 
 /* CV PAPIER RECHTERKOLOM */
 .rechterkolom { width: 50%; padding: 40px; background: #cbd5e0; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; }
-.cv-papier { width: 210mm; min-width: 210mm; height: 297mm; background: white; display: flex; box-shadow: 0 10px 30px rgba(0,0,0,0.15); flex-shrink: 0; transition: transform 0.4s ease-in-out, margin-bottom 0.4s ease-in-out;}
+.cv-papier { 
+    width: 210mm; 
+    min-width: 210mm; 
+    height: 297mm; 
+    background: white; 
+    display: flex; 
+    flex-shrink: 0;
+    transition: transform 0.4s ease-in-out, margin-bottom 0.4s ease-in-out;
+    /* NIEUWE DIEPE PAPIER-SCHADUW */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08); 
+}
 .cv-zijbalk { width: 35%; color: white; padding: 40px 25px; transition: background-color 0.3s ease; text-align: left; }
 .cv-hoofdkolom { width: 65%; padding: 40px 35px; text-align: left; }
 .cv-profielfoto { width: 130px; height: 130px; background-color: #e2e8f0; border-radius: 50%; margin: 0 auto 30px auto; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -177,26 +196,42 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 /* Styling voor de 'Meer over mij' informatiekaart */
 .cv-info-kaart { padding: 12px 18px; border-radius: 12px; border-top: 1.5px solid #edf2f7; border-right: 1.5px solid #edf2f7; border-bottom: 1.5px solid #edf2f7; border-left: 4px solid; font-size: 13px; color: #4a5568; line-height: 1.5; margin-bottom: 25px; background-color: #ffffff; }
 
-/* WYSIWYG SCHALING */
+/* WYSIWYG SCHALING & RESPONSIVE DESIGN (APP BREED) */
+
+/* Grote laptops (iets uitzoomen) */
 @media (max-width: 1700px) and (min-width: 1367px) {
     .rechterkolom { overflow-x: hidden; }
-    .cv-papier { transform: scale(0.85); transform-origin: top center; margin-bottom: -170px; }
+    .cv-papier { transform: scale(0.85); transform-origin: top center; margin-bottom: -160px; }
 }
+
+/* Kleine laptops (verder uitzoomen) */
 @media (max-width: 1366px) and (min-width: 1025px) {
     .rechterkolom { overflow-x: hidden; }
-    .cv-papier { transform: scale(0.70); transform-origin: top center; margin-bottom: -340px; }
+    .cv-papier { transform: scale(0.70); transform-origin: top center; margin-bottom: -320px; }
 }
+
+/* TABLET: Schermen onder elkaar plaatsen */
 @media (max-width: 1024px) {
-    .container { flex-direction: column; height: auto; }
-    .linkerkolom { width: 100%; padding: 20px; }
-    .rechterkolom { width: 100%; padding: 20px; overflow: hidden; } 
-    .cv-papier { transform: scale(0.85); transform-origin: top center; margin-bottom: -170px; }
+    .container { flex-direction: column; height: auto; min-height: 100vh; }
+    .linkerkolom { width: 100%; border-right: none; border-bottom: 2px solid #e2e8f0; }
+    .rechterkolom { width: 100%; padding: 40px 20px; overflow: hidden; display: flex; justify-content: center; background-color: #cbd5e0; }
+    .cv-papier { transform: scale(0.80); transform-origin: top center; margin-bottom: -220px; }
 }
+
+/* MOBIEL: Formulier in 1 kolom en maximaal uitzoomen op het papier */
 @media (max-width: 600px) {
-    .form-grid { grid-template-columns: 1fr; } 
+    .linkerkolom { padding: 20px 15px; }
+    
+    /* Formulier velden naar 1 kolom dwingen */
+    .form-grid { grid-template-columns: 1fr; }
     .volledige-breedte { grid-column: span 1; }
-    .rechterkolom { padding: 10px; } 
-    .cv-papier { transform: scale(0.44); transform-origin: top center; margin-bottom: -630px; }
+    
+    /* Variant knoppen onder elkaar op smalle schermen */
+    .varianten-grid { flex-direction: column; gap: 10px; }
+    
+    /* CV papier passend maken voor telefoon (ca 42% van origineel) */
+    .rechterkolom { padding: 30px 10px; }
+    .cv-papier { transform: scale(0.42); transform-origin: top center; margin-bottom: -650px; }
 }
 
 /* LOADER */
