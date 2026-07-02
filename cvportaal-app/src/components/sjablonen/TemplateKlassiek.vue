@@ -80,7 +80,7 @@ import {
         </div>
 
         <div v-if="toonHobbys && hobbys.length > 0" class="zijbalk-sectie">
-          <h3 class="zijbalk-titel" :style="{ color: gekozenKleur }">Hobby's</h3>
+          <h3 class="zijbalk-titel" :style="{ color: gekozenKleur }">Dit vind ik leuk</h3>
           <ul class="klassiek-lijst">
             <li v-for="h in hobbys" :key="h.id" v-show="h.tekst">{{ h.tekst }}</li>
           </ul>

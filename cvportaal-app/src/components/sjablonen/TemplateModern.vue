@@ -31,7 +31,7 @@ import {
         </div>
 
         <div v-if="toonSterkePunten && sterkePunten.length > 0" class="modern-sectie">
-          <h3 class="modern-sectietitel" :style="{ color: gekozenKleur }">Kwaliteiten</h3>
+          <h3 class="modern-sectietitel" :style="{ color: gekozenKleur }">Sterke punten</h3>
           <div class="modern-tags">
             <span v-for="p in sterkePunten" :key="p.id" v-show="p.tekst" class="modern-tag" :style="{ backgroundColor: gekozenKleur + '20', color: gekozenKleur }">{{ p.tekst }}</span>
           </div>
@@ -48,7 +48,7 @@ import {
         </div>
 
         <div v-if="toonHobbys && hobbys.length > 0" class="modern-sectie">
-          <h3 class="modern-sectietitel" :style="{ color: gekozenKleur }">Hobby's</h3>
+          <h3 class="modern-sectietitel" :style="{ color: gekozenKleur }">Dit vind ik leuk</h3>
           <ul class="modern-lijst">
             <li v-for="h in hobbys" :key="h.id" v-show="h.tekst">{{ h.tekst }}</li>
           </ul>

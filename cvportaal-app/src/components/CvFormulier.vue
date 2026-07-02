@@ -73,26 +73,34 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
           </div>
       </div>
 
-      <h2 class="hoofdtitel" style="margin-top: 10px;">Kies je cv variant</h2>
-      <div class="varianten-grid">
-          <div class="variant-kaart" :class="{ actief: gekozenSjabloon === 'TemplateBasis' }" @click="gekozenSjabloon = 'TemplateBasis'">Basis</div>
-          <div class="variant-kaart" :class="{ actief: gekozenSjabloon === 'TemplateKlassiek' }" @click="gekozenSjabloon = 'TemplateKlassiek'">Klassiek</div>
-          <div class="variant-kaart" :class="{ actief: gekozenSjabloon === 'TemplateModern' }" @click="gekozenSjabloon = 'TemplateModern'">Modern</div>
-      </div>
+      <!-- Overkoepelend "Cv Instellingen" blok (Licht & Fris) -->
+      <div style="background-color: #ffffff; border-radius: 16px; padding: 25px; margin-bottom: 30px; margin-top: 10px; box-shadow: 0 10px 25px rgba(74, 144, 226, 0.1);">
+          
+          <div style="margin-bottom: 20px; border-bottom: 2px solid #edf2f7; padding-bottom: 15px;">
+              <h2 style="font-size: 16px; font-weight: 800; color: #1a202c; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">Cv instellingen</h2>
+          </div>
 
-      <p style="font-size: 13px; font-weight:600; color:#718096; margin-bottom:8px;">Kies je kleur</p>
-      <div class="kleur-kiezer">
-          <button v-for="kleur in kleuren" :key="kleur" class="kleur-rondje" :class="{ actief: gekozenKleur === kleur }" :style="{ backgroundColor: kleur }" @click="veranderKleur(kleur)" :aria-label="`Kies kleur ${kleur}`"></button>
-      </div>
+          <p style="font-size: 13px; font-weight: 700; color: #4a5568; margin-bottom: 12px;">1. Kies je variant</p>
+          <div class="varianten-grid" style="margin-bottom: 25px;">
+              <div class="variant-kaart" :class="{ actief: gekozenSjabloon === 'TemplateBasis' }" @click="gekozenSjabloon = 'TemplateBasis'">Basis</div>
+              <div class="variant-kaart" :class="{ actief: gekozenSjabloon === 'TemplateKlassiek' }" @click="gekozenSjabloon = 'TemplateKlassiek'">Klassiek</div>
+              <div class="variant-kaart" :class="{ actief: gekozenSjabloon === 'TemplateModern' }" @click="gekozenSjabloon = 'TemplateModern'">Modern</div>
+          </div>
 
-      <h2 class="hoofdtitel">Kies je cv onderdelen</h2>
-      <div class="onderdelen-grid">
-          <button class="onderdeel-knop" :class="{ 'knop-uit': !toonSterkePunten }" @click="toonSterkePunten = !toonSterkePunten">Mijn sterke punten</button>
-          <button class="onderdeel-knop" :class="{ 'knop-uit': !toonWerkervaring }" @click="toonWerkervaring = !toonWerkervaring">Waar heb ik gewerkt?</button>
-          <button class="onderdeel-knop" :class="{ 'knop-uit': !toonOpleidingen }" @click="toonOpleidingen = !toonOpleidingen">Welke opleiding of cursus heb ik gedaan?</button>
-          <button class="onderdeel-knop" :class="{ 'knop-uit': !toonTalen }" @click="toonTalen = !toonTalen">Talen die ik spreek</button>
-          <button class="onderdeel-knop" :class="{ 'knop-uit': !toonHobbys }" @click="toonHobbys = !toonHobbys">Dit vind ik leuk</button>
-          <button class="onderdeel-knop" :class="{ 'knop-uit': !toonMeerOverMij }" @click="toonMeerOverMij = !toonMeerOverMij">Meer over mij</button>
+          <p style="font-size: 13px; font-weight: 700; color: #4a5568; margin-bottom: 12px;">2. Kies je kleur</p>
+          <div class="kleur-kiezer" style="margin-bottom: 25px;">
+              <button v-for="kleur in kleuren" :key="kleur" class="kleur-rondje" :class="{ actief: gekozenKleur === kleur }" :style="{ backgroundColor: kleur }" @click="veranderKleur(kleur)" :aria-label="`Kies kleur ${kleur}`"></button>
+          </div>
+
+          <p style="font-size: 13px; font-weight: 700; color: #4a5568; margin-bottom: 12px;">3. Kies je onderdelen</p>
+          <div class="onderdelen-grid" style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">
+              <button class="onderdeel-knop" :class="{ 'knop-uit': !toonSterkePunten }" @click="toonSterkePunten = !toonSterkePunten">Mijn sterke punten</button>
+              <button class="onderdeel-knop" :class="{ 'knop-uit': !toonWerkervaring }" @click="toonWerkervaring = !toonWerkervaring">Waar heb ik gewerkt?</button>
+              <button class="onderdeel-knop" :class="{ 'knop-uit': !toonOpleidingen }" @click="toonOpleidingen = !toonOpleidingen">Welke opleiding of cursus heb ik gedaan?</button>
+              <button class="onderdeel-knop" :class="{ 'knop-uit': !toonTalen }" @click="toonTalen = !toonTalen">Talen die ik spreek</button>
+              <button class="onderdeel-knop" :class="{ 'knop-uit': !toonHobbys }" @click="toonHobbys = !toonHobbys">Dit vind ik leuk</button>
+              <button class="onderdeel-knop" :class="{ 'knop-uit': !toonMeerOverMij }" @click="toonMeerOverMij = !toonMeerOverMij">Meer over mij</button>
+          </div>
       </div>
 
       <h2 class="hoofdtitel">Mijn gegevens</h2>
@@ -162,7 +170,12 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                       </button>
                   </div>
               </div>
-              <textarea v-model="profieltekst" @input="isAiToegepast = false" rows="5" placeholder="Denk aan je dagelijks leven, wat je leuk vindt of wat je graag wilt gaan doen..." :disabled="isAiLaden" :style="{ opacity: isAiLaden ? 0.6 : 1, borderColor: profielLengte > 400 ? '#e53e3e' : '' }"></textarea>
+              
+              <div v-if="profielLengte >= 380" style="background-color: #fff5f5; border-left: 4px solid #e53e3e; padding: 12px; border-radius: 8px; margin-top: 10px; margin-bottom: 15px;">
+                  <p style="font-size: 13px; color: #c53030; margin: 0; font-weight: 600; line-height: 1.5;">⚠️ Let op: je cv raakt te vol! Tekst die buiten het papier valt, wordt straks niet afgedrukt.</p>
+              </div>
+              
+              <textarea v-model="profieltekst" maxlength="400" @input="isAiToegepast = false" rows="5" placeholder="Denk aan je dagelijks leven, wat je leuk vindt of wat je graag wilt gaan doen..." :disabled="isAiLaden" :style="{ opacity: isAiLaden ? 0.6 : 1, borderColor: profielLengte >= 400 ? '#e53e3e' : '' }"></textarea>
           </div>
       </div>
 
@@ -173,19 +186,17 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                   <input type="text" v-model="punt.tekst" placeholder="Bijv. Klantvriendelijk" style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #ffffff; font-size: 14px; outline: none; transition: all 0.2s;">
                   <button class="verwijder-knop-klein" @click="verwijderSterkPunt(index)" aria-label="Verwijder dit sterk punt">✕</button>
               </div>
-              <button class="toevoeg-knop" @click="voegSterkPuntToe" style="margin-bottom: 0; margin-top: 0;">+ Voeg een sterk punt toe</button>
+              <button v-if="sterkePunten.length < 6" class="toevoeg-knop" @click="voegSterkPuntToe" style="margin-bottom: 0; margin-top: 0;">+ Voeg een sterk punt toe</button>
+              <p v-else style="font-size: 13px; color: #718096; font-weight: 600; text-align: center; margin: 10px 0 0 0;">Maximum bereikt</p>
           </div>
       </div>
 
-<div v-if="toonWerkervaring || toonOpleidingen">
-          <!-- De vaste, vriendelijke tip over de 1-pagina regel -->
+      <div v-if="toonWerkervaring || toonOpleidingen">
           <div style="background-color: #ebf8ff; border-left: 4px solid #4A90E2; padding: 15px; border-radius: 8px; margin-bottom: 20px; margin-top: 35px;">
               <p style="font-size: 13px; color: #2b6cb0; margin: 0; font-weight: 600; line-height: 1.5;">
                   💡 Werkgevers houden van een cv van maximaal 1 pagina. Kies daarom je belangrijkste werkervaring en opleidingen. Of laat alles weg van meer dan 10 jaar geleden.
               </p>
           </div>
-
-          <!-- De dynamische waarschuwing (verschijnt pas als Werk + Opleiding samen meer dan 5 items zijn) -->
           <div v-if="werkervaringen.length + opleidingen.length > 5" style="background-color: #fff5f5; border-left: 4px solid #e53e3e; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
               <p style="font-size: 13px; color: #c53030; margin: 0; font-weight: 600; line-height: 1.5;">
                   ⚠️ Let op: Je hebt veel informatie toegevoegd. Kijk aan de rechterkant of je cv nog op één pagina past. Past het niet? Dan verdwijnt er tekst als je het cv opslaat als PDF.
@@ -237,10 +248,10 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                                   <option v-for="m in 12" :key="m" :value="m">{{ m }}</option>
                               </select>
                               <select v-model="werk.totJaar" style="width: 50%;" aria-label="Tot jaar">
-                                   <option value="">Jaar</option>
+                                  <option value="">Jaar</option>
                                   <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
                               </select>
-                           </div>
+                          </div>
                           <div v-else style="display: flex; align-items: center; height: 46px; color: #718096; font-size: 14px; font-weight: 600;">
                               Heden
                           </div>
@@ -309,7 +320,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                                 <option v-for="jaar in jarenLijst" :key="jaar" :value="jaar">{{ jaar }}</option>
                             </select>
                         </div>
-                     </div>
+                    </div>
 
                     <div class="form-groep">
                         <label>Tot</label>
@@ -384,7 +395,8 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                       </span>
                   </div>
               </div>
-              <button class="toevoeg-knop" @click="voegTaalToe" style="margin-bottom: 0; margin-top: 0;">+ Voeg een taal toe</button>
+              <button v-if="talen.length < 5" class="toevoeg-knop" @click="voegTaalToe" style="margin-bottom: 0; margin-top: 0;">+ Voeg een taal toe</button>
+              <p v-else style="font-size: 13px; color: #718096; font-weight: 600; text-align: center; margin: 10px 0 0 0;">Maximum bereikt</p>
           </div>
       </div>
 
@@ -395,7 +407,8 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                   <input type="text" v-model="hobby.tekst" placeholder="Bijv. Fotografie, reizen of koken" style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #ffffff; font-size: 14px; outline: none; transition: all 0.2s;">
                   <button class="verwijder-knop-klein" @click="verwijderHobby(index)" aria-label="Verwijder dit item">✕</button>
               </div>
-              <button class="toevoeg-knop" @click="voegHobbyToe" style="margin-bottom: 0; margin-top: 0;">+ Voeg een item toe</button>
+              <button v-if="hobbys.length < 6" class="toevoeg-knop" @click="voegHobbyToe" style="margin-bottom: 0; margin-top: 0;">+ Voeg een item toe</button>
+              <p v-else style="font-size: 13px; color: #718096; font-weight: 600; text-align: center; margin: 10px 0 0 0;">Maximum bereikt</p>
           </div>
       </div>
 
@@ -418,7 +431,12 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                           </button>
                       </div>
                   </div>
-                  <textarea v-model="meerOverMijTekst" @input="isAiToegepastMeerOverMij = false" rows="3" placeholder="Bijv. Ik ben vrijwilliger bij de voetbalclub van mijn dochter..." :disabled="isAiLadenMeerOverMij" :style="{ opacity: isAiLadenMeerOverMij ? 0.6 : 1, borderColor: meerOverMijLengte > 400 ? '#e53e3e' : '' }"></textarea>
+                  
+                  <div v-if="meerOverMijLengte >= 380" style="background-color: #fff5f5; border-left: 4px solid #e53e3e; padding: 12px; border-radius: 8px; margin-top: 10px; margin-bottom: 15px;">
+                      <p style="font-size: 13px; color: #c53030; margin: 0; font-weight: 600; line-height: 1.5;">⚠️ Let op: je cv raakt te vol! Tekst die buiten het papier valt, wordt straks niet afgedrukt.</p>
+                  </div>
+                  
+                  <textarea v-model="meerOverMijTekst" maxlength="400" @input="isAiToegepastMeerOverMij = false" rows="3" placeholder="Bijv. Ik ben vrijwilliger bij de voetbalclub van mijn dochter..." :disabled="isAiLadenMeerOverMij" :style="{ opacity: isAiLadenMeerOverMij ? 0.6 : 1, borderColor: meerOverMijLengte >= 400 ? '#e53e3e' : '' }"></textarea>
               </div>
           </div>
       </div>
