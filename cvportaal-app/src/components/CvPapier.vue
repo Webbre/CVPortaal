@@ -9,16 +9,11 @@ const cvInhoud = ref(null)
 const cvIsTeLang = ref(false)
 let resizeObserver = null
 
-// Deze functie zoekt het papier en meet de inhoud op
 const observePaper = async () => {
   await nextTick() 
+  if (resizeObserver) resizeObserver.disconnect()
   
-  if (resizeObserver) {
-    resizeObserver.disconnect()
-  }
-  
-  // We zoeken naar het element dat de .cv-papier class heeft in de nieuwe structuur
-  const paperElement = cvInhoud.value?.querySelector('.cv-papier') || cvInhoud.value?.firstElementChild || cvInhoud.value
+  const paperElement = cvInhoud.value?.querySelector('.cv-papier') || cvInhoud.value
   
   if (paperElement) {
     resizeObserver = new ResizeObserver(entries => {
@@ -30,24 +25,15 @@ const observePaper = async () => {
   }
 }
 
-onMounted(() => {
-  setTimeout(observePaper, 100)
-})
-
-watch(gekozenSjabloon, () => {
-  setTimeout(observePaper, 100)
-})
-
-onUnmounted(() => {
-  if (resizeObserver) resizeObserver.disconnect()
-})
+onMounted(() => setTimeout(observePaper, 100))
+watch(gekozenSjabloon, () => setTimeout(observePaper, 100))
+onUnmounted(() => { if (resizeObserver) resizeObserver.disconnect() })
 </script>
 
 <template>
   <div class="rechterkolom">
-    
     <div class="cv-scaler">
-        <div ref="cvInhoud" style="height: 100%; width: 100%;">
+        <div class="cv-papier" ref="cvInhoud" style="height: 100%; width: 100%;">
             <component :is="gekozenSjabloon === 'TemplateKlassiek' ? TemplateKlassiek : (gekozenSjabloon === 'TemplateModern' ? TemplateModern : TemplateBasis)" />
         </div>
     </div>
@@ -67,65 +53,29 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.rechterkolom { 
-  position: relative; 
-  display: flex;
-  justify-content: center; /* Centreert de nieuwe scaler wrapper */
-  align-items: flex-start; /* Zorgt dat hij netjes bovenaan begint */
-  padding-bottom: 80px; /* Het gewenste grijze kussen aan de onderkant */
-} 
+.rechterkolom { position: relative; display: flex; justify-content: center; align-items: flex-start; padding-bottom: 80px; } 
 
 .zwevende-pdf-knop {
-  position: fixed; 
-  bottom: 40px; 
-  right: 40px; 
-  width: 60px; 
-  height: 60px;
-  border-radius: 50%; 
-  background-color: #4A90E2; 
-  color: white; 
-  border: none;
-  box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4); 
-  cursor: pointer; 
-  display: flex;
-  justify-content: center; 
-  align-items: center; 
-  transition: all 0.2s ease; 
-  z-index: 100;
+  position: fixed; bottom: 40px; right: 40px; width: 60px; height: 60px;
+  border-radius: 50%; background-color: #4A90E2; color: white; border: none;
+  box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4); cursor: pointer; display: flex;
+  justify-content: center; align-items: center; transition: all 0.2s ease; z-index: 100;
 }
-
-.zwevende-pdf-knop:hover { 
-  transform: translateY(-4px) scale(1.05); 
-  box-shadow: 0 10px 25px rgba(74, 144, 226, 0.6); 
-}
+.zwevende-pdf-knop:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 10px 25px rgba(74, 144, 226, 0.6); }
 
 .smart-waarschuwing {
-  position: fixed;
-  bottom: 115px; 
-  right: 40px;
-  background-color: #e53e3e;
-  color: white;
-  padding: 15px 20px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  box-shadow: 0 10px 25px rgba(229, 62, 62, 0.4);
-  z-index: 100;
-  animation: slideIn 0.3s ease-out;
+  position: fixed; bottom: 115px; right: 40px; background-color: #e53e3e; color: white;
+  padding: 15px 20px; border-radius: 8px; font-size: 14px; font-weight: 600;
+  box-shadow: 0 10px 25px rgba(229, 62, 62, 0.4); z-index: 100; animation: slideIn 0.3s ease-out;
 }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-@keyframes slideIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
+/* Dit is de CSS-regel die de knop verbergt op mobiele apparaten */
 @media (max-width: 600px) { 
-  .zwevende-pdf-knop, .smart-waarschuwing { 
+  .zwevende-pdf-knop { 
     display: none; 
   } 
 }
 
-@media print {
-  .smart-waarschuwing { display: none !important; }
-}
+@media print { .smart-waarschuwing, .zwevende-pdf-knop { display: none !important; } }
 </style>

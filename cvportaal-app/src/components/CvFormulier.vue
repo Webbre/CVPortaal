@@ -15,6 +15,12 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
   emailFout, profielLengte, meerOverMijLengte,
   isAiLadenMeerOverMij, isAiToegepastMeerOverMij, origineleMeerOverMijTekst, downloadPDF
 } from '../cvStore.js'
+
+// De magische functie die tekstvakken laat meegroeien tijdens het typen
+const autoResize = (event) => {
+  event.target.style.height = 'auto';
+  event.target.style.height = event.target.scrollHeight + 'px';
+}
 </script>
 
 <template>
@@ -29,49 +35,26 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                   <line x1="16" y1="17" x2="8" y2="17"></line>
                   <polyline points="10 9 9 9 8 9"></polyline>
               </svg>
-              <h1 class="app-titel">CVPortaal. Jouw cv, simpel & snel.</h1>
+              <h1 class="app-titel">CVPortaal.</h1>
           </div>
           
-          <div style="display: flex; gap: 10px; align-items: center;">
+          <div class="header-acties">
               <button class="opslaan-knop" 
-                      :class="{ 
-                          'succes': toonOpgeslagenFeedback, 
-                          'actief': heeftOngeslagenWijzigingen && !toonOpgeslagenFeedback, 
-                          'inactief': !heeftOngeslagenWijzigingen && !toonOpgeslagenFeedback 
-                      }" 
-                      @click="forceerOpslaan" 
-                      :aria-disabled="!heeftOngeslagenWijzigingen || toonOpgeslagenFeedback"
-                      aria-label="Gegevens opslaan">
-                      
-                  <svg v-if="!toonOpgeslagenFeedback" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                      <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                      <polyline points="7 3 7 8 15 8"></polyline>
-                  </svg>
-                  
-                  <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                      <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                  
-                  <span v-if="toonOpgeslagenFeedback">Opgeslagen!</span>
-                  <span v-else>Opslaan</span>
+                      :class="{ 'succes': toonOpgeslagenFeedback, 'actief': heeftOngeslagenWijzigingen && !toonOpgeslagenFeedback, 'inactief': !heeftOngeslagenWijzigingen && !toonOpgeslagenFeedback }" 
+                      @click="forceerOpslaan" :aria-disabled="!heeftOngeslagenWijzigingen || toonOpgeslagenFeedback">
+                  <svg v-if="!toonOpgeslagenFeedback" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                  <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  <span v-if="toonOpgeslagenFeedback">Opgeslagen!</span><span v-else>Opslaan</span>
               </button>
 
               <button class="download-knop" @click="downloadPDF" aria-label="Download als PDF">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                          <polyline points="7 10 12 15 17 10"></polyline>
-                          <line x1="12" y1="15" x2="12" y2="3"></line>
-                      </svg>
-                      <span>PDF</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                  <span>PDF</span>
               </button>
 
               <div class="menu-container-header relative">
                   <button class="tandwiel-knop" @click="toonMenu = !toonMenu" aria-label="Menu openen">
-                      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
-                          <circle cx="12" cy="12" r="3"></circle>
-                          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                       </svg>
+                      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                   </button>
                   <div v-if="toonMenu" class="dropdown-menu-header">
                       <p class="dropdown-header">Ingelogd als {{ gebruiker.email }}</p>
@@ -178,11 +161,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                   </div>
               </div>
               
-              <div v-if="profielLengte >= 380" class="waarschuwing-rood">
-                  <p class="waarschuwing-tekst-rood">⚠️ Let op: je cv raakt te vol! Tekst die buiten het papier valt, wordt straks niet afgedrukt.</p>
-              </div>
-              
-              <textarea v-model="profieltekst" @input="isAiToegepast = false; if(profieltekst.length > 400) profieltekst = profieltekst.substring(0, 400)" rows="5" placeholder="Denk aan je dagelijks leven, wat je leuk vindt of wat je graag wilt gaan doen..." :disabled="isAiLaden" :style="{ opacity: isAiLaden ? 0.6 : 1, borderColor: profielLengte >= 400 ? '#e53e3e' : '' }"></textarea>
+              <textarea v-model="profieltekst" @input="isAiToegepast = false; autoResize($event)" rows="5" placeholder="Denk aan je dagelijks leven, wat je leuk vindt of wat je graag wilt gaan doen..." :disabled="isAiLaden" style="overflow: hidden; resize: none;" :style="{ opacity: isAiLaden ? 0.6 : 1, borderColor: profielLengte > 400 ? '#e53e3e' : '' }"></textarea>
           </div>
       </div>
 
@@ -271,7 +250,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
 
                       <div class="form-groep volledige-breedte">
                           <label>Korte omschrijving</label>
-                          <textarea v-model="werk.omschrijving" rows="3" placeholder="Wat waren je taken?"></textarea>
+                          <textarea v-model="werk.omschrijving" @input="autoResize($event)" rows="3" style="overflow: hidden; resize: none;" placeholder="Wat waren je taken?"></textarea>
                       </div>
                   </div>
               </div>
@@ -442,11 +421,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                       </div>
                   </div>
                   
-                  <div v-if="meerOverMijLengte >= 380" class="waarschuwing-rood">
-                      <p class="waarschuwing-tekst-rood">⚠️ Let op: je cv raakt te vol! Tekst die buiten het papier valt, wordt straks niet afgedrukt.</p>
-                  </div>
-                  
-                  <textarea v-model="meerOverMijTekst" @input="isAiToegepastMeerOverMij = false; if(meerOverMijTekst.length > 400) meerOverMijTekst = meerOverMijTekst.substring(0, 400)" rows="3" placeholder="Bijv. Ik ben vrijwilliger bij de voetbalclub van mijn dochter..." :disabled="isAiLadenMeerOverMij" :style="{ opacity: isAiLadenMeerOverMij ? 0.6 : 1, borderColor: meerOverMijLengte >= 400 ? '#e53e3e' : '' }"></textarea>
+                  <textarea v-model="meerOverMijTekst" @input="isAiToegepastMeerOverMij = false; autoResize($event)" rows="3" placeholder="Bijv. Ik ben vrijwilliger bij de voetbalclub van mijn dochter..." :disabled="isAiLadenMeerOverMij" style="overflow: hidden; resize: none;" :style="{ opacity: isAiLadenMeerOverMij ? 0.6 : 1, borderColor: meerOverMijLengte > 400 ? '#e53e3e' : '' }"></textarea>
               </div>
           </div>
       </div>
@@ -455,129 +430,50 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
 </template>
 
 <style scoped>
-/* Nieuwe, responsieve CSS voor het CV Instellingen blok */
 .instellingen-kaart {
     background-color: #ffffff;
     border-radius: 16px;
     padding: 25px;
     margin-bottom: 30px;
     margin-top: 10px;
-    /* NIEUWE STRAKKE SCHADUW (Matcht met dynamisch-blok) */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.instellingen-header {
-  margin-bottom: 20px;
-  border-bottom: 2px solid #edf2f7;
-  padding-bottom: 15px;
+.instellingen-header { margin-bottom: 20px; border-bottom: 2px solid #edf2f7; padding-bottom: 15px; }
+.instellingen-titel { font-size: 16px; font-weight: 800; color: #1a202c; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+.instellingen-label { font-size: 13px; font-weight: 700; color: #4a5568; margin-bottom: 12px; }
+.instellingen-marge { margin-bottom: 25px; }
+.onderdelen-grid-instellingen { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
+.waarschuwing-rood { background-color: #fff5f5; border-left: 4px solid #e53e3e; padding: 12px; border-radius: 8px; margin-top: 10px; margin-bottom: 15px; }
+.waarschuwing-tekst-rood { font-size: 13px; color: #c53030; margin: 0; font-weight: 600; line-height: 1.5; }
+.waarschuwing-blauw { background-color: #ebf8ff; border-left: 4px solid #4A90E2; padding: 15px; border-radius: 8px; margin-bottom: 20px; margin-top: 35px; }
+.waarschuwing-tekst-blauw { font-size: 13px; color: #2b6cb0; margin: 0; font-weight: 600; line-height: 1.5; }
+.lijst-item-rij { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; }
+.lijst-input { flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #ffffff; font-size: 14px; outline: none; transition: all 0.2s; }
+.toevoeg-knop-marge { margin-bottom: 0; margin-top: 0; }
+.maximum-bereikt { font-size: 13px; color: #718096; font-weight: 600; text-align: center; margin: 10px 0 0 0; }
+.download-knop { background: white; color: #4A90E2; border: 2px solid #4A90E2; border-radius: 20px; padding: 0 16px; height: 40px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+.download-knop:hover { background: #eff6ff; transform: translateY(-1px); }
+
+/* NIEUW: De layout fix voor de mobiele header */
+.header-acties {
+    display: flex; 
+    gap: 10px; 
+    align-items: center;
 }
 
-.instellingen-titel {
-  font-size: 16px;
-  font-weight: 800;
-  color: #1a202c;
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.instellingen-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: #4a5568;
-  margin-bottom: 12px;
-}
-
-.instellingen-marge {
-  margin-bottom: 25px;
-}
-
-.onderdelen-grid-instellingen {
-  margin-bottom: 0;
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-/* CSS voor de waarschuwingsblokken */
-.waarschuwing-rood {
-  background-color: #fff5f5;
-  border-left: 4px solid #e53e3e;
-  padding: 12px;
-  border-radius: 8px;
-  margin-top: 10px;
-  margin-bottom: 15px;
-}
-
-.waarschuwing-tekst-rood {
-  font-size: 13px;
-  color: #c53030;
-  margin: 0;
-  font-weight: 600;
-  line-height: 1.5;
-}
-
-.waarschuwing-blauw {
-  background-color: #ebf8ff;
-  border-left: 4px solid #4A90E2;
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  margin-top: 35px;
-}
-
-.waarschuwing-tekst-blauw {
-  font-size: 13px;
-  color: #2b6cb0;
-  margin: 0;
-  font-weight: 600;
-  line-height: 1.5;
-}
-
-/* CSS voor de kleine lijstjes */
-.lijst-item-rij {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
-  align-items: center;
-}
-
-.lijst-input {
-  flex: 1;
-  padding: 12px;
-  border: 1px solid #cbd5e0;
-  border-radius: 6px;
-  background: #ffffff;
-  font-size: 14px;
-  outline: none;
-  transition: all 0.2s;
-}
-
-.toevoeg-knop-marge {
-  margin-bottom: 0;
-  margin-top: 0;
-}
-
-.maximum-bereikt {
-  font-size: 13px;
-  color: #718096;
-  font-weight: 600;
-  text-align: center;
-  margin: 10px 0 0 0;
-}
-
-.download-knop {
-  background: white; color: #4A90E2;
-  border: 2px solid #4A90E2; border-radius: 20px;
-  padding: 0 16px; height: 40px; display: flex; align-items: center; gap: 8px; font-size: 13px;
-  font-weight: 600; cursor: pointer; transition: all 0.2s ease;
-}
-.download-knop:hover { background: #eff6ff; transform: translateY(-1px);
-}
-
-/* Responsieve regels voor mobiel en tablet */
 @media (max-width: 768px) {
-  .instellingen-kaart {
-    padding: 15px; /* Neemt minder ruimte in beslag op kleinere schermen */
+  .instellingen-kaart { padding: 15px; }
+}
+
+@media (max-width: 600px) {
+  .header-acties {
+    width: 100%;
+    justify-content: flex-end; /* Duwt het tandwiel helemaal naar rechts */
+  }
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 </style>
