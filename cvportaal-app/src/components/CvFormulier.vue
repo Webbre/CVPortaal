@@ -16,10 +16,10 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
   isAiLadenMeerOverMij, isAiToegepastMeerOverMij, origineleMeerOverMijTekst, downloadPDF
 } from '../cvStore.js'
 
-// Verbeterde autoResize functie met +15px voor de witregel
+// De autoResize functie om tekstvakken te laten meegroeien
 const autoResize = (event) => {
   event.target.style.height = 'auto';
-  event.target.style.height = (event.target.scrollHeight + 15) + 'px';
+  event.target.style.height = event.target.scrollHeight + 'px';
 }
 </script>
 
@@ -38,7 +38,6 @@ const autoResize = (event) => {
               <h1 class="app-titel">CVPortaal.</h1>
           </div>
           
-          <!-- NIEUWE LAY-OUT VOOR DE HEADER KNOPPEN -->
           <div class="header-acties">
               <div class="header-knoppen-links">
                   <button class="opslaan-knop" 
@@ -60,8 +59,9 @@ const autoResize = (event) => {
                       <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                   </button>
                   <div v-if="toonMenu" class="dropdown-menu-header">
-                      <!-- Tekst ingekort naar alleen het e-mailadres -->
                       <p class="dropdown-header">{{ gebruiker.email }}</p>
+                      
+                      <button class="dropdown-item" @click="toonMenu = false">✕ Sluiten</button>
                       <button class="dropdown-item" @click="resetMijnCV">❌ Cv leegmaken</button>
                       <button class="dropdown-item" @click="logMijUit">📴 Uitloggen</button>
                   </div>
@@ -82,8 +82,11 @@ const autoResize = (event) => {
           </div>
 
           <p class="instellingen-label">2. Kies je kleur</p>
-          <div class="kleur-kiezer instellingen-marge">
-              <button v-for="kleur in kleuren" :key="kleur" class="kleur-rondje" :class="{ actief: gekozenKleur === kleur }" :style="{ backgroundColor: kleur }" @click="veranderKleur(kleur)" :aria-label="`Kies kleur ${kleur}`"></button>
+          
+          <div class="kleur-container-wrapper instellingen-marge">
+              <div class="kleur-kiezer">
+                  <button v-for="kleur in kleuren" :key="kleur" class="kleur-rondje" :class="{ actief: gekozenKleur === kleur }" :style="{ backgroundColor: kleur }" @click="veranderKleur(kleur)" :aria-label="`Kies kleur ${kleur}`"></button>
+              </div>
           </div>
 
           <p class="instellingen-label">3. Kies je onderdelen</p>
@@ -165,7 +168,7 @@ const autoResize = (event) => {
                   </div>
               </div>
               
-              <textarea v-model="profieltekst" @input="isAiToegepast = false; autoResize($event)" rows="5" placeholder="Denk aan je dagelijks leven, wat je leuk vindt of wat je graag wilt gaan doen..." :disabled="isAiLaden" style="overflow: hidden; resize: none;" :style="{ opacity: isAiLaden ? 0.6 : 1, borderColor: profielLengte > 400 ? '#e53e3e' : '' }"></textarea>
+              <textarea v-model="profieltekst" @input="isAiToegepast = false; autoResize($event)" rows="5" placeholder="Denk aan je dagelijks leven, wat je leuk vindt of wat je graag wilt gaan doen..." :disabled="isAiLaden" style="overflow: hidden; resize: none;" :style="{ opacity: isAiLaden ? 0.6 : 1, borderColor: profielLengte > 400 ? '#e53e3e' : '' }" class="profieltekst mobiel-marge-fix"></textarea>
           </div>
       </div>
 
@@ -425,7 +428,7 @@ const autoResize = (event) => {
                       </div>
                   </div>
                   
-                  <textarea v-model="meerOverMijTekst" @input="isAiToegepastMeerOverMij = false; autoResize($event)" rows="3" placeholder="Bijv. Ik ben vrijwilliger bij de voetbalclub van mijn dochter..." :disabled="isAiLadenMeerOverMij" style="overflow: hidden; resize: none;" :style="{ opacity: isAiLadenMeerOverMij ? 0.6 : 1, borderColor: meerOverMijLengte > 400 ? '#e53e3e' : '' }"></textarea>
+                  <textarea v-model="meerOverMijTekst" @input="isAiToegepastMeerOverMij = false; autoResize($event)" rows="3" placeholder="Bijv. Ik ben vrijwilliger bij de voetbalclub van mijn dochter..." :disabled="isAiLadenMeerOverMij" style="overflow: hidden; resize: none;" :style="{ opacity: isAiLadenMeerOverMij ? 0.6 : 1, borderColor: meerOverMijLengte > 400 ? '#e53e3e' : '' }" class="mobiel-marge-fix"></textarea>
               </div>
           </div>
       </div>
@@ -434,15 +437,7 @@ const autoResize = (event) => {
 </template>
 
 <style scoped>
-.instellingen-kaart {
-    background-color: #ffffff;
-    border-radius: 16px;
-    padding: 25px;
-    margin-bottom: 30px;
-    margin-top: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
+.instellingen-kaart { background-color: #ffffff; border-radius: 16px; padding: 25px; margin-bottom: 30px; margin-top: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05); }
 .instellingen-header { margin-bottom: 20px; border-bottom: 2px solid #edf2f7; padding-bottom: 15px; }
 .instellingen-titel { font-size: 16px; font-weight: 800; color: #1a202c; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
 .instellingen-label { font-size: 13px; font-weight: 700; color: #4a5568; margin-bottom: 12px; }
@@ -459,17 +454,22 @@ const autoResize = (event) => {
 .download-knop { background: white; color: #4A90E2; border: 2px solid #4A90E2; border-radius: 20px; padding: 0 16px; height: 40px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
 .download-knop:hover { background: #eff6ff; transform: translateY(-1px); }
 
-/* De nieuwe CSS voor je header knoppen! */
-.header-acties {
-    display: flex; 
-    width: 100%;
-    justify-content: space-between; 
-    align-items: center;
-}
-.header-knoppen-links {
-    display: flex;
-    gap: 10px;
-}
+/* NIEUWE HEADER STYLING */
+.header-acties { display: flex; width: 100%; justify-content: space-between; align-items: center; }
+.header-knoppen-links { display: flex; gap: 10px; }
+
+/* NIEUWE KLEUR-KIEZER FADE WRAPPER */
+.kleur-container-wrapper { position: relative; width: 100%; }
+.kleur-container-wrapper::before,
+.kleur-container-wrapper::after { content: ""; position: absolute; top: 0; bottom: 0; width: 25px; z-index: 2; pointer-events: none; }
+.kleur-container-wrapper::before { left: 0; background: linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%); }
+.kleur-container-wrapper::after { right: 0; background: linear-gradient(to left, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%); }
+
+.kleur-kiezer { position: relative; z-index: 1; display: flex; gap: 12px; margin-bottom: 0; flex-wrap: nowrap; overflow-x: auto; padding: 5px 15px 15px 15px; -webkit-overflow-scrolling: touch; scrollbar-width: none; width: 100%; }
+.kleur-kiezer::-webkit-scrollbar { display: none; }
+.kleur-rondje { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.1s ease; flex-shrink: 0; position: relative; z-index: 3;}
+.kleur-rondje:hover { transform: scale(1.1); }
+.kleur-rondje.actief { border-color: #333; }
 
 @media (max-width: 768px) {
   .instellingen-kaart { padding: 15px; }
@@ -479,6 +479,11 @@ const autoResize = (event) => {
   .app-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+  
+  /* NIEUWE MOBIELE PADDING FIX */
+  .mobiel-marge-fix {
+    padding-bottom: 15px !important;
   }
 }
 </style>
