@@ -13,13 +13,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <!-- Loader -->
   <div v-if="isLaden" class="volledig-scherm center-inhoud">
     <div class="loader"></div>
     <p style="margin-top: 15px; color: #4a5568; font-weight: 600;">Even geduld...</p>
   </div>
 
-  <!-- Inlogscherm -->
   <div v-else-if="!gebruiker" class="volledig-scherm center-inhoud inlog-achtergrond">
     <div class="inlog-box">
       <h1 style="color: #333; margin-bottom: 10px; font-size: 24px;">CVPortaal</h1>
@@ -39,7 +37,6 @@ onMounted(() => {
     </div>
   </div>
 
-  <!-- Jouw app is nu netjes opgesplitst! -->
   <div v-else class="container relative">
     <CvFormulier />
     <CvPapier />
@@ -74,16 +71,10 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 
 /* Styling voor Dynamische Opslaan knop */
 .opslaan-knop { border-radius: 20px; padding: 0 16px; height: 40px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; outline: none; border: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-
-/* Staat 1: Inactief / Greyed out */
 .opslaan-knop.inactief { background-color: #edf2f7; color: #a0aec0; border: 1px solid #e2e8f0; cursor: not-allowed; opacity: 0.5; }
-
-/* Staat 2: Actief (Klaar om op te slaan) */
 .opslaan-knop.actief { background-color: #4A90E2; color: white; border: 1px solid #4A90E2; cursor: pointer; box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3); opacity: 1; }
 .opslaan-knop.actief:hover { background-color: #357ABD; transform: translateY(-1px); }
 .opslaan-knop.actief:active { transform: scale(0.95); }
-
-/* Staat 3: Succes (Groen vinkje) */
 .opslaan-knop.succes { background-color: #2ECC71; color: white; border: 1px solid #2ECC71; opacity: 1; cursor: default; animation: knopPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
 @keyframes knopPop { 0% { transform: scale(0.8); opacity: 0.5; } 50% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
@@ -140,13 +131,12 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 
 /* DYNAMISCHE BLOKKEN EN ALGEMENE KNOPPEN */
 .dynamisch-blok { 
-    background-color: #ffffff; 
+    background-color: #ffffff;
     border: none;
     border-radius: 20px; 
     padding: 30px; 
     margin-bottom: 25px; 
-    /* NIEUWE STRAKKE SCHADUW */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05); 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s ease, box-shadow 0.2s ease; 
 }
 .hoofd-knop { background: #4A90E2; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
@@ -161,22 +151,67 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 .ai-knop { background: linear-gradient(135deg, #2b6cb0 0%, #2c5282 100%); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 5px; }
 .ai-knop:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(43, 108, 176, 0.3); }
 .ai-knop:disabled { opacity: 0.6; cursor: not-allowed; }
-.spin-icon { animation: spin 1s linear infinite; }
 
-/* CV PAPIER RECHTERKOLOM */
-.rechterkolom { width: 50%; padding: 40px; background: #cbd5e0; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; }
+/* LOADER */
+.loader { border: 4px solid #f3f3f3; border-top: 4px solid #4A90E2; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* =========================================
+   CV PAPIER RECHTERKOLOM & STYLING
+   ========================================= */
+
+.rechterkolom { 
+    width: 50%; 
+    padding: 40px; 
+    background: #cbd5e0; 
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start; 
+    overflow-y: auto; 
+    /* Het grijze kussen aan de onderkant, zodat hij nooit de taakbalk raakt */
+    padding-bottom: 80px !important; 
+}
+
+/* De schaal-wrapper (Claude's techniek) */
+.cv-scaler {
+    width: calc(210mm * var(--scale));
+    height: calc(297mm * var(--scale));
+    flex-shrink: 0;
+    position: relative;
+}
+
 .cv-papier { 
-    width: 210mm; 
-    min-width: 210mm; 
-    height: 297mm; 
+    width: 210mm !important; 
+    min-width: 210mm !important; 
+    height: 297mm !important; 
     background: white; 
     display: flex; 
-    flex-shrink: 0;
-    transition: transform 0.4s ease-in-out, margin-bottom 0.4s ease-in-out;
-    /* NIEUWE DIEPE PAPIER-SCHADUW */
+    flex-direction: row;
+    /* Forceert de flex-kinderen (zijbalk) om mee te rekken */
+    align-items: stretch !important; 
+    box-sizing: border-box;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08); 
+    /* Kapt genadeloos alles af wat buiten het A4'tje valt */
+    overflow: hidden !important; 
+    
+    /* Het schalen */
+    transform: scale(var(--scale));
+    transform-origin: top left;
 }
-.cv-zijbalk { width: 35%; color: white; padding: 40px 25px; transition: background-color 0.3s ease; text-align: left; }
+
+/* DE FIX: Zorgt dat interne kolommen (zoals de blauwe zijbalk) ALTIJD de 297mm vullen */
+.cv-papier > * {
+    min-height: 100%;
+}
+
+.cv-zijbalk { 
+    width: 35%; 
+    color: white; 
+    padding: 40px 25px; 
+    transition: background-color 0.3s ease; 
+    text-align: left; 
+}
+
 .cv-hoofdkolom { width: 65%; padding: 40px 35px; text-align: left; }
 .cv-profielfoto { width: 130px; height: 130px; background-color: #e2e8f0; border-radius: 50%; margin: 0 auto 30px auto; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .cv-sectie-titel-zijbalk { font-size: 13px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255, 255, 255, 0.3); padding-bottom: 5px; }
@@ -189,52 +224,54 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
 .cv-p { font-size: 13px; line-height: 1.5; color: #4a5568; }
 .cv-p-italic { font-size: 13px; color: #a0aec0; font-style: italic; margin-bottom: 20px;}
 .cv-lijst { padding-left: 20px; margin-bottom: 25px; font-size: 13px; color: #4a5568; line-height: 1.6; }
-
-/* Styling voor de hobby tags */
 .cv-tag { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; background-color: #ffffff; }
-
-/* Styling voor de 'Meer over mij' informatiekaart */
 .cv-info-kaart { padding: 12px 18px; border-radius: 12px; border-top: 1.5px solid #edf2f7; border-right: 1.5px solid #edf2f7; border-bottom: 1.5px solid #edf2f7; border-left: 4px solid; font-size: 13px; color: #4a5568; line-height: 1.5; margin-bottom: 25px; background-color: #ffffff; }
 
-/* WYSIWYG SCHALING & RESPONSIVE DESIGN (APP BREED) */
+/* =========================================
+   WYSIWYG SCHALING & RESPONSIVE DESIGN
+   ========================================= */
 
-/* Grote laptops (iets uitzoomen) */
-@media (max-width: 1700px) and (min-width: 1367px) {
-    .rechterkolom { overflow-x: hidden; }
-    .cv-papier { transform: scale(0.85); transform-origin: top center; margin-bottom: -160px; }
+:root { 
+  --scale: 1; 
 }
 
-/* Kleine laptops (verder uitzoomen) */
-@media (max-width: 1366px) and (min-width: 1025px) {
-    .rechterkolom { overflow-x: hidden; }
-    .cv-papier { transform: scale(0.70); transform-origin: top center; margin-bottom: -320px; }
-}
-
-/* TABLET: Schermen onder elkaar plaatsen */
-@media (max-width: 1024px) {
+@media (max-width: 1700px) and (min-width: 1367px) { :root { --scale: 0.85; } }
+@media (max-width: 1366px) and (min-width: 1025px) { :root { --scale: 0.70; } }
+@media (max-width: 1024px) { 
+    :root { --scale: 0.80; } 
     .container { flex-direction: column; height: auto; min-height: 100vh; }
     .linkerkolom { width: 100%; border-right: none; border-bottom: 2px solid #e2e8f0; }
-    .rechterkolom { width: 100%; padding: 40px 20px; overflow: hidden; display: flex; justify-content: center; background-color: #cbd5e0; }
-    .cv-papier { transform: scale(0.80); transform-origin: top center; margin-bottom: -220px; }
+    .rechterkolom { width: 100%; padding: 40px 20px; background-color: #cbd5e0; }
 }
-
-/* MOBIEL: Formulier in 1 kolom en maximaal uitzoomen op het papier */
-@media (max-width: 600px) {
+@media (max-width: 600px) { 
+    :root { --scale: 0.42; } 
     .linkerkolom { padding: 20px 15px; }
-    
-    /* Formulier velden naar 1 kolom dwingen */
     .form-grid { grid-template-columns: 1fr; }
     .volledige-breedte { grid-column: span 1; }
-    
-    /* Variant knoppen onder elkaar op smalle schermen */
     .varianten-grid { flex-direction: column; gap: 10px; }
-    
-    /* CV papier passend maken voor telefoon (ca 42% van origineel) */
     .rechterkolom { padding: 30px 10px; }
-    .cv-papier { transform: scale(0.42); transform-origin: top center; margin-bottom: -650px; }
 }
 
-/* LOADER */
-.loader { border: 4px solid #f3f3f3; border-top: 4px solid #4A90E2; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+/* =========================================
+   PRINT STYLING VOOR DE PERFECTE PDF
+   ========================================= */
+@media print {
+    :root { --scale: 1 !important; }
+    
+    .linkerkolom, .app-header, .zwevende-pdf-knop, .opslaan-knop, .download-knop, .menu-container-header, .inlog-achtergrond {
+        display: none !important;
+    }
+    
+    body, html { background: white !important; margin: 0 !important; padding: 0 !important; }
+    .container { display: block !important; }
+    .rechterkolom { width: 100% !important; padding: 0 !important; background: none !important; overflow: visible !important; display: block !important; }
+    
+    .cv-papier {
+        margin: 0 !important; box-shadow: none !important;
+        page-break-after: avoid !important; page-break-before: avoid !important;
+    }
+
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    @page { size: A4 portrait; margin: 0mm; }
+}
 </style>

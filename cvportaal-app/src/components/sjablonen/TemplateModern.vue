@@ -98,7 +98,7 @@ import {
         </div>
         
         <div v-if="toonMeerOverMij && meerOverMijTekst" class="modern-card" style="background: #f8fafc; border: none;">
-          <h3 class="modern-sectietitel" :style="{ color: gekozenKleur }">Extra info</h3>
+          <h3 class="modern-sectietitel" :style="{ color: gekozenKleur }">Meer over mij</h3>
           <p class="modern-tekst">{{ meerOverMijTekst }}</p>
         </div>
       </div>

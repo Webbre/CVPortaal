@@ -13,7 +13,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
   voegHobbyToe, verwijderHobby, verbeterMetAI,
   triggerOpslaan, forceerOpslaan,
   emailFout, profielLengte, meerOverMijLengte,
-  isAiLadenMeerOverMij, isAiToegepastMeerOverMij, origineleMeerOverMijTekst
+  isAiLadenMeerOverMij, isAiToegepastMeerOverMij, origineleMeerOverMijTekst, downloadPDF
 } from '../cvStore.js'
 </script>
 
@@ -55,6 +55,15 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                   
                   <span v-if="toonOpgeslagenFeedback">Opgeslagen!</span>
                   <span v-else>Opslaan</span>
+              </button>
+
+              <button class="download-knop" @click="downloadPDF" aria-label="Download als PDF">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                          <polyline points="7 10 12 15 17 10"></polyline>
+                          <line x1="12" y1="15" x2="12" y2="3"></line>
+                      </svg>
+                      <span>PDF</span>
               </button>
 
               <div class="menu-container-header relative">
@@ -173,7 +182,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                   <p class="waarschuwing-tekst-rood">⚠️ Let op: je cv raakt te vol! Tekst die buiten het papier valt, wordt straks niet afgedrukt.</p>
               </div>
               
-              <textarea v-model="profieltekst" maxlength="400" @input="isAiToegepast = false" rows="5" placeholder="Denk aan je dagelijks leven, wat je leuk vindt of wat je graag wilt gaan doen..." :disabled="isAiLaden" :style="{ opacity: isAiLaden ? 0.6 : 1, borderColor: profielLengte >= 400 ? '#e53e3e' : '' }"></textarea>
+              <textarea v-model="profieltekst" @input="isAiToegepast = false; if(profieltekst.length > 400) profieltekst = profieltekst.substring(0, 400)" rows="5" placeholder="Denk aan je dagelijks leven, wat je leuk vindt of wat je graag wilt gaan doen..." :disabled="isAiLaden" :style="{ opacity: isAiLaden ? 0.6 : 1, borderColor: profielLengte >= 400 ? '#e53e3e' : '' }"></textarea>
           </div>
       </div>
 
@@ -193,11 +202,6 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
           <div class="waarschuwing-blauw">
               <p class="waarschuwing-tekst-blauw">
                   💡 Werkgevers houden van een cv van maximaal 1 pagina. Kies daarom je belangrijkste werkervaring en opleidingen. Of laat alles weg van meer dan 10 jaar geleden.
-              </p>
-          </div>
-          <div v-if="werkervaringen.length + opleidingen.length > 5" class="waarschuwing-rood">
-              <p class="waarschuwing-tekst-rood">
-                  ⚠️ Let op: Je hebt veel informatie toegevoegd. Kijk aan de rechterkant of je cv nog op één pagina past. Past het niet? Dan verdwijnt er tekst als je het cv opslaat als PDF.
               </p>
           </div>
       </div>
@@ -270,6 +274,10 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                           <textarea v-model="werk.omschrijving" rows="3" placeholder="Wat waren je taken?"></textarea>
                       </div>
                   </div>
+              </div>
+              
+              <div v-if="werkervaringen.length + opleidingen.length > 5" class="waarschuwing-rood">
+                  <p class="waarschuwing-tekst-rood">⚠️ Let op: Je hebt veel informatie toegevoegd. Kijk aan de rechterkant of je cv nog op één pagina past. Past het niet? Dan verdwijnt er tekst als je het cv opslaat als PDF.</p>
               </div>
               <button class="toevoeg-knop toevoeg-knop-marge" @click="voegWerkervaringToe">+ Voeg een werkervaring toe</button>
           </div>
@@ -360,6 +368,10 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                     </div>
                 </div>
               </div>
+              
+              <div v-if="werkervaringen.length + opleidingen.length > 5" class="waarschuwing-rood">
+                  <p class="waarschuwing-tekst-rood">⚠️ Let op: Je hebt veel informatie toegevoegd. Kijk aan de rechterkant of je cv nog op één pagina past. Past het niet? Dan verdwijnt er tekst als je het cv opslaat als PDF.</p>
+              </div>
               <button class="toevoeg-knop toevoeg-knop-marge" @click="voegOpleidingToe">+ Voeg een opleiding of cursus toe</button>
           </div>
       </div>
@@ -434,7 +446,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
                       <p class="waarschuwing-tekst-rood">⚠️ Let op: je cv raakt te vol! Tekst die buiten het papier valt, wordt straks niet afgedrukt.</p>
                   </div>
                   
-                  <textarea v-model="meerOverMijTekst" maxlength="400" @input="isAiToegepastMeerOverMij = false" rows="3" placeholder="Bijv. Ik ben vrijwilliger bij de voetbalclub van mijn dochter..." :disabled="isAiLadenMeerOverMij" :style="{ opacity: isAiLadenMeerOverMij ? 0.6 : 1, borderColor: meerOverMijLengte >= 400 ? '#e53e3e' : '' }"></textarea>
+                  <textarea v-model="meerOverMijTekst" @input="isAiToegepastMeerOverMij = false; if(meerOverMijTekst.length > 400) meerOverMijTekst = meerOverMijTekst.substring(0, 400)" rows="3" placeholder="Bijv. Ik ben vrijwilliger bij de voetbalclub van mijn dochter..." :disabled="isAiLadenMeerOverMij" :style="{ opacity: isAiLadenMeerOverMij ? 0.6 : 1, borderColor: meerOverMijLengte >= 400 ? '#e53e3e' : '' }"></textarea>
               </div>
           </div>
       </div>
@@ -551,6 +563,15 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
   font-weight: 600;
   text-align: center;
   margin: 10px 0 0 0;
+}
+
+.download-knop {
+  background: white; color: #4A90E2;
+  border: 2px solid #4A90E2; border-radius: 20px;
+  padding: 0 16px; height: 40px; display: flex; align-items: center; gap: 8px; font-size: 13px;
+  font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+}
+.download-knop:hover { background: #eff6ff; transform: translateY(-1px);
 }
 
 /* Responsieve regels voor mobiel en tablet */

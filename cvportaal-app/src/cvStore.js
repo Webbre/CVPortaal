@@ -293,3 +293,7 @@ export async function forceerOpslaan() {
   if (!heeftOngeslagenWijzigingen.value || !gebruiker.value || isLaden.value || toonOpgeslagenFeedback.value) return;
   clearTimeout(opslaanTimer); await voerOpslaanUit(); 
 }
+
+export function downloadPDF() {
+  window.print();
+}
