@@ -204,6 +204,26 @@ body { background-color: #f5f7fb; overflow-x: hidden; color: #333; }
     min-height: 100%;
 }
 
+/* FIX: Voorkom dubbele schaling als een sjabloon zelf ook de class .cv-papier heeft */
+.cv-papier .cv-papier {
+    transform: none !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+}
+
+/* FIX: Tekst netjes uitvullen (justified) in de sjablonen */
+.cv-papier p, 
+.cv-papier .cv-p, 
+.cv-papier .cv-info-kaart {
+    text-align: justify !important;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    word-wrap: break-word;
+}
+
 .cv-zijbalk { 
     width: 35%; 
     color: white; 
