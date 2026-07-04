@@ -1,11 +1,12 @@
 <script setup>
+import { watch, nextTick } from 'vue'
 import {
 gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar, profieltekst,
   heeftRijbewijs, heeftAuto, profielfoto, toonFotoOpCv, gekozenKleur,
   toonWerkervaring, werkervaringen, toonSterkePunten, sterkePunten,
   toonOpleidingen, opleidingen, toonTalen, talen, toonHobbys, hobbys,
   toonMeerOverMij, meerOverMijTekst, kleuren, jarenLijst, geboorteJarenLijst,
-  isAiLaden, isAiToegepast, origineleProfieltekst,
+  isLaden, isAiLaden, isAiToegepast, origineleProfieltekst,
   toonOpgeslagenFeedback, heeftOngeslagenWijzigingen,
   gebruiker, toonMenu, logMijUit, resetMijnCV, verwerkFoto, verwijderFoto, veranderKleur,
   voegWerkervaringToe, verwijderWerkervaring, voegSterkPuntToe, verwijderSterkPunt,
@@ -16,11 +17,25 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
   isAiLadenMeerOverMij, isAiToegepastMeerOverMij, origineleMeerOverMijTekst, downloadPDF
 } from '../cvStore.js'
 
-// De autoResize functie om tekstvakken te laten meegroeien
+// De autoResize functie om tekstvakken te laten meegroeien MET extra 15px ademruimte
 const autoResize = (event) => {
   event.target.style.height = 'auto';
-  event.target.style.height = event.target.scrollHeight + 'px';
+  event.target.style.height = (event.target.scrollHeight + 15) + 'px';
 }
+
+// FIX: Zorgt dat bestaande tekst direct de juiste hoogte krijgt bij inladen (Mobiel)
+watch(isLaden, async (nieuwLaden) => {
+  if (!nieuwLaden) {
+    await nextTick();
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(ta => {
+      if (ta.value) { // Alleen uitrekken als er daadwerkelijk tekst in staat
+        ta.style.height = 'auto';
+        ta.style.height = (ta.scrollHeight + 15) + 'px';
+      }
+    });
+  }
+});
 </script>
 
 <template>
@@ -35,7 +50,7 @@ const autoResize = (event) => {
                   <line x1="16" y1="17" x2="8" y2="17"></line>
                   <polyline points="10 9 9 9 8 9"></polyline>
               </svg>
-              <h1 class="app-titel">CVPortaal.</h1>
+              <h1 class="app-titel">CVPortaal. Jouw cv, simpel en snel.</h1>
           </div>
           
           <div class="header-acties">
@@ -59,11 +74,18 @@ const autoResize = (event) => {
                       <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                   </button>
                   <div v-if="toonMenu" class="dropdown-menu-header">
+                      <button class="menu-sluiten-knop" @click="toonMenu = false" aria-label="Menu sluiten">✕</button>
+                      
                       <p class="dropdown-header">{{ gebruiker.email }}</p>
                       
-                      <button class="dropdown-item" @click="toonMenu = false">✕ Sluiten</button>
-                      <button class="dropdown-item" @click="resetMijnCV">❌ Cv leegmaken</button>
-                      <button class="dropdown-item" @click="logMijUit">📴 Uitloggen</button>
+                      <button class="dropdown-item" @click="resetMijnCV">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                          Cv leegmaken
+                      </button>
+                      <button class="dropdown-item" @click="logMijUit">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9" /></svg>
+                          Uitloggen
+                      </button>
                   </div>
               </div>
           </div>
@@ -92,15 +114,19 @@ const autoResize = (event) => {
           <p class="instellingen-label">3. Kies je onderdelen</p>
           <div class="onderdelen-grid onderdelen-grid-instellingen">
               <button class="onderdeel-knop" :class="{ 'knop-uit': !toonSterkePunten }" @click="toonSterkePunten = !toonSterkePunten">Mijn sterke punten</button>
-              <button class="onderdeel-knop" :class="{ 'knop-uit': !toonWerkervaring }" @click="toonWerkervaring = !toonWerkervaring">Waar heb ik gewerkt?</button>
-              <button class="onderdeel-knop" :class="{ 'knop-uit': !toonOpleidingen }" @click="toonOpleidingen = !toonOpleidingen">Welke opleiding of cursus heb ik gedaan?</button>
+              <button class="onderdeel-knop" :class="{ 'knop-uit': !toonWerkervaring }" @click="toonWerkervaring = !toonWerkervaring">Werkervaring</button>
+              <button class="onderdeel-knop" :class="{ 'knop-uit': !toonOpleidingen }" @click="toonOpleidingen = !toonOpleidingen">Opleidingen & cursussen</button>
               <button class="onderdeel-knop" :class="{ 'knop-uit': !toonTalen }" @click="toonTalen = !toonTalen">Talen die ik spreek</button>
               <button class="onderdeel-knop" :class="{ 'knop-uit': !toonHobbys }" @click="toonHobbys = !toonHobbys">Dit vind ik leuk</button>
               <button class="onderdeel-knop" :class="{ 'knop-uit': !toonMeerOverMij }" @click="toonMeerOverMij = !toonMeerOverMij">Meer over mij</button>
           </div>
       </div>
 
-      <h2 class="hoofdtitel">Mijn gegevens</h2>
+      <div class="hoofdtitel-wrapper">
+          <svg class="hoofdtitel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+          <h2 class="hoofdtitel">Mijn gegevens</h2>
+      </div>
+      
       <div class="dynamisch-blok">
           <div class="form-grid">
             <div class="form-groep"><label>Voornaam</label><input type="text" v-model="voornaam" placeholder="Je voornaam"></div>
@@ -122,7 +148,13 @@ const autoResize = (event) => {
                     <option v-for="jaar in geboorteJarenLijst" :key="jaar" :value="jaar"></option>
                 </datalist>
             </div>
-            
+
+            <div class="form-groep">
+                <label>Vervoer</label>
+                <div class="toggle-container"><span class="toggle-label">Ik heb een rijbewijs</span><label class="toggle-switch"><input type="checkbox" v-model="heeftRijbewijs" aria-label="Ik heb een rijbewijs"><span class="toggle-slider"></span></label></div>
+                <div class="toggle-container"><span class="toggle-label">Ik heb een eigen auto</span><label class="toggle-switch"><input type="checkbox" v-model="heeftAuto" aria-label="Ik heb een auto"><span class="toggle-slider"></span></label></div>
+            </div>
+
             <div class="form-groep">
                 <div class="foto-upload-sectie">
                     <div class="foto-preview-container">
@@ -141,15 +173,14 @@ const autoResize = (event) => {
                 </div>
             </div>
 
-            <div class="form-groep">
-                <label>Vervoer</label>
-                <div class="toggle-container"><span class="toggle-label">Ik heb een rijbewijs</span><label class="toggle-switch"><input type="checkbox" v-model="heeftRijbewijs" aria-label="Ik heb een rijbewijs"><span class="toggle-slider"></span></label></div>
-                <div class="toggle-container"><span class="toggle-label">Ik heb een eigen auto</span><label class="toggle-switch"><input type="checkbox" v-model="heeftAuto" aria-label="Ik heb een auto"><span class="toggle-slider"></span></label></div>
-            </div>
           </div>
       </div>
 
-      <h2 class="hoofdtitel">Dit ben ik</h2>
+      <div class="hoofdtitel-wrapper">
+          <svg class="hoofdtitel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" /></svg>
+          <h2 class="hoofdtitel">Dit ben ik</h2>
+      </div>
+      
       <div class="dynamisch-blok">
           <div class="form-groep" style="margin-bottom: 0;">
               <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
@@ -173,7 +204,11 @@ const autoResize = (event) => {
       </div>
 
       <div v-if="toonSterkePunten">
-          <h2 class="hoofdtitel">Mijn sterke punten</h2>
+          <div class="hoofdtitel-wrapper">
+              <svg class="hoofdtitel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
+              <h2 class="hoofdtitel">Mijn sterke punten</h2>
+          </div>
+          
           <div class="dynamisch-blok">
               <div v-for="(punt, index) in sterkePunten" :key="punt.id" class="lijst-item-rij">
                   <input type="text" v-model="punt.tekst" placeholder="Bijv. Klantvriendelijk" class="lijst-input">
@@ -193,7 +228,11 @@ const autoResize = (event) => {
       </div>
 
       <div v-if="toonWerkervaring">
-          <h2 class="hoofdtitel">Werkervaring</h2>
+          <div class="hoofdtitel-wrapper">
+              <svg class="hoofdtitel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+              <h2 class="hoofdtitel">Werkervaring</h2>
+          </div>
+          
           <div class="dynamisch-blok">
               <div v-for="(werk, index) in werkervaringen" :key="werk.id" 
                    :style="{ 
@@ -257,7 +296,7 @@ const autoResize = (event) => {
 
                       <div class="form-groep volledige-breedte">
                           <label>Korte omschrijving</label>
-                          <textarea v-model="werk.omschrijving" @input="autoResize($event)" rows="3" style="overflow: hidden; resize: none;" placeholder="Wat waren je taken?"></textarea>
+                          <textarea v-model="werk.omschrijving" @input="autoResize($event)" rows="3" style="overflow: hidden; resize: none;" placeholder="Wat waren je taken?" class="mobiel-marge-fix"></textarea>
                       </div>
                   </div>
               </div>
@@ -270,7 +309,11 @@ const autoResize = (event) => {
       </div>
 
       <div v-if="toonOpleidingen">
-          <h2 class="hoofdtitel">Opleidingen & cursussen</h2>
+          <div class="hoofdtitel-wrapper">
+              <svg class="hoofdtitel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" /></svg>
+              <h2 class="hoofdtitel">Opleidingen & cursussen</h2>
+          </div>
+          
           <div class="dynamisch-blok">
               <div v-for="(opl, index) in opleidingen" :key="opl.id" 
                    :style="{ 
@@ -363,7 +406,11 @@ const autoResize = (event) => {
       </div>
 
       <div v-if="toonTalen">
-          <h2 class="hoofdtitel">Talen die ik spreek</h2>
+          <div class="hoofdtitel-wrapper">
+              <svg class="hoofdtitel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg>
+              <h2 class="hoofdtitel">Talen die ik spreek</h2>
+          </div>
+          
           <div class="dynamisch-blok">
               <div v-for="(taal, index) in talen" :key="taal.id" 
                    :style="{ 
@@ -397,7 +444,11 @@ const autoResize = (event) => {
       </div>
 
       <div v-if="toonHobbys">
-          <h2 class="hoofdtitel">Dit vind ik leuk</h2>
+          <div class="hoofdtitel-wrapper">
+              <svg class="hoofdtitel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
+              <h2 class="hoofdtitel">Dit vind ik leuk</h2>
+          </div>
+          
           <div class="dynamisch-blok">
               <div v-for="(hobby, index) in hobbys" :key="hobby.id" class="lijst-item-rij">
                   <input type="text" v-model="hobby.tekst" placeholder="Bijv. Fotografie, reizen of koken" class="lijst-input">
@@ -409,7 +460,11 @@ const autoResize = (event) => {
       </div>
 
       <div v-if="toonMeerOverMij">
-          <h2 class="hoofdtitel">Meer over mij</h2>
+          <div class="hoofdtitel-wrapper">
+              <svg class="hoofdtitel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg>
+              <h2 class="hoofdtitel">Meer over mij</h2>
+          </div>
+          
           <div class="dynamisch-blok">
               <div class="form-groep" style="margin-bottom: 0;">
                   <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
@@ -454,6 +509,18 @@ const autoResize = (event) => {
 .download-knop { background: white; color: #4A90E2; border: 2px solid #4A90E2; border-radius: 20px; padding: 0 16px; height: 40px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
 .download-knop:hover { background: #eff6ff; transform: translateY(-1px); }
 
+/* NIEUWE STYLING VOOR DE TITELS EN ICOONTJES */
+.hoofdtitel-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 35px; margin-bottom: 15px; }
+.hoofdtitel { margin-top: 0; margin-bottom: 0; }
+.hoofdtitel-icon { width: 24px; height: 24px; color: #4A90E2; flex-shrink: 0; }
+
+/* NIEUWE MENU STYLING (Icons en Kruisje) */
+.menu-sluiten-knop { position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 16px; color: #a0aec0; cursor: pointer; padding: 5px; line-height: 1; transition: color 0.2s; }
+.menu-sluiten-knop:hover { color: #4a5568; }
+.dropdown-header { padding: 15px 30px 15px 15px; } /* Extra ruimte rechts voor het kruisje */
+.dropdown-item { display: flex; align-items: center; }
+.menu-icon { margin-right: 8px; color: #718096; }
+
 /* NIEUWE HEADER STYLING */
 .header-acties { display: flex; width: 100%; justify-content: space-between; align-items: center; }
 .header-knoppen-links { display: flex; gap: 10px; }
@@ -481,7 +548,7 @@ const autoResize = (event) => {
     align-items: flex-start;
   }
   
-  /* NIEUWE MOBIELE PADDING FIX */
+  /* MOBIELE PADDING FIX */
   .mobiel-marge-fix {
     padding-bottom: 15px !important;
   }
