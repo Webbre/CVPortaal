@@ -1,5 +1,4 @@
 <script setup>
-import { watch, nextTick } from 'vue'
 import {
 gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar, profieltekst,
   heeftRijbewijs, heeftAuto, profielfoto, toonFotoOpCv, gekozenKleur,
@@ -16,28 +15,6 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
   emailFout, profielLengte, meerOverMijLengte,
   isAiLadenMeerOverMij, isAiToegepastMeerOverMij, origineleMeerOverMijTekst, downloadPDF
 } from '../cvStore.js'
-
-// De autoResize functie met nog meer ademruimte (+25px)
-const autoResize = (event) => {
-  event.target.style.height = 'auto';
-  event.target.style.height = (event.target.scrollHeight + 25) + 'px';
-}
-
-// FIX: Vertraging toegevoegd zodat mobiele browsers de tekst goed berekenen
-watch(isLaden, async (nieuwLaden) => {
-  if (!nieuwLaden) {
-    await nextTick();
-    setTimeout(() => {
-      const textareas = document.querySelectorAll('textarea');
-      textareas.forEach(ta => {
-        if (ta.value) {
-          ta.style.height = 'auto';
-          ta.style.height = (ta.scrollHeight + 25) + 'px';
-        }
-      });
-    }, 100);
-  }
-});
 </script>
 
 <template>
@@ -80,7 +57,6 @@ watch(isLaden, async (nieuwLaden) => {
                       
                       <p class="dropdown-header">{{ gebruiker.email }}</p>
                       
-                      <!-- FIX: width en height hard ingebakken op 16px -->
                       <button class="dropdown-item" @click="resetMijnCV">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" class="menu-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
                           Cv leegmaken
@@ -180,7 +156,6 @@ watch(isLaden, async (nieuwLaden) => {
       </div>
 
       <div class="hoofdtitel-wrapper">
-          <!-- FIX: Open boek icoon in plaats van sterretjes -->
           <svg class="hoofdtitel-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
           </svg>
@@ -205,7 +180,9 @@ watch(isLaden, async (nieuwLaden) => {
                   </div>
               </div>
               
-              <textarea v-model="profieltekst" @input="isAiToegepast = false; autoResize($event)" rows="5" placeholder="Denk aan je dagelijks leven, wat je leuk vindt of wat je graag wilt gaan doen..." :disabled="isAiLaden" style="overflow: hidden; resize: none;" :style="{ opacity: isAiLaden ? 0.6 : 1, borderColor: profielLengte > 400 ? '#e53e3e' : '' }" class="profieltekst mobiel-marge-fix"></textarea>
+              <div class="autogrow-wrapper" :data-value="(profieltekst || '') + ' '">
+                  <textarea v-model="profieltekst" @input="isAiToegepast = false" placeholder="Denk aan je dagelijks leven, wat je leuk vindt of wat je graag wilt gaan doen..." :disabled="isAiLaden" :style="{ opacity: isAiLaden ? 0.6 : 1, borderColor: profielLengte > 400 ? '#e53e3e' : '' }"></textarea>
+              </div>
           </div>
       </div>
 
@@ -228,7 +205,7 @@ watch(isLaden, async (nieuwLaden) => {
       <div v-if="toonWerkervaring || toonOpleidingen">
           <div class="waarschuwing-blauw">
               <p class="waarschuwing-tekst-blauw">
-                  💡 Werkgevers houden van een cv van maximaal 1 pagina. Kies daarom je belangrijkste werkervaring en opleidingen. Of laat alles weg van meer dan 10 jaar geleden.
+                  💡 Werkgevers houden van een cv van maximaal 1 pagina. Kies daarom alleen je belangrijkste werkervaring en opleidingen. Laat alles weg van meer dan 10 jaar geleden.
               </p>
           </div>
       </div>
@@ -302,7 +279,9 @@ watch(isLaden, async (nieuwLaden) => {
 
                       <div class="form-groep volledige-breedte">
                           <label>Korte omschrijving</label>
-                          <textarea v-model="werk.omschrijving" @input="autoResize($event)" rows="3" style="overflow: hidden; resize: none;" placeholder="Wat waren je taken?" class="mobiel-marge-fix"></textarea>
+                          <div class="autogrow-wrapper" :data-value="(werk.omschrijving || '') + ' '">
+                              <textarea v-model="werk.omschrijving" placeholder="Wat waren je taken?"></textarea>
+                          </div>
                       </div>
                   </div>
               </div>
@@ -489,7 +468,9 @@ watch(isLaden, async (nieuwLaden) => {
                       </div>
                   </div>
                   
-                  <textarea v-model="meerOverMijTekst" @input="isAiToegepastMeerOverMij = false; autoResize($event)" rows="3" placeholder="Bijv. Ik ben vrijwilliger bij de voetbalclub van mijn dochter..." :disabled="isAiLadenMeerOverMij" style="overflow: hidden; resize: none;" :style="{ opacity: isAiLadenMeerOverMij ? 0.6 : 1, borderColor: meerOverMijLengte > 400 ? '#e53e3e' : '' }" class="mobiel-marge-fix"></textarea>
+                  <div class="autogrow-wrapper" :data-value="(meerOverMijTekst || '') + ' '">
+                      <textarea v-model="meerOverMijTekst" @input="isAiToegepastMeerOverMij = false" placeholder="Bijv. Ik ben vrijwilliger bij de voetbalclub van mijn dochter..." :disabled="isAiLadenMeerOverMij" :style="{ opacity: isAiLadenMeerOverMij ? 0.6 : 1, borderColor: meerOverMijLengte > 400 ? '#e53e3e' : '' }"></textarea>
+                  </div>
               </div>
           </div>
       </div>
@@ -540,9 +521,60 @@ watch(isLaden, async (nieuwLaden) => {
 .kleur-rondje:hover { transform: scale(1.1); }
 .kleur-rondje.actief { border-color: #333; }
 
-/* FIX: Forceer de witruimte aan de onderkant van elk tekstvak */
-textarea {
-  padding-bottom: 25px !important;
+/* =========================================
+   CLAUDE'S GRID REPLICATOR (AUTO-RESIZE CSS FIX)
+   ========================================= */
+.autogrow-wrapper {
+  display: grid;
+  width: 100%;
+}
+
+.autogrow-wrapper::after,
+.autogrow-wrapper > textarea {
+  width: 100%;
+  grid-area: 1 / 1;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 12px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  box-sizing: border-box;
+  line-height: 1.5; /* Zorgt voor perfecte uitlijning tussen replica en textarea */
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-height: 100px; /* Base height in plaats van rows="5" */
+}
+
+.autogrow-wrapper > textarea {
+  resize: none;
+  overflow: hidden;
+  background: #ffffff;
+  transition: border-color 0.2s;
+}
+
+.autogrow-wrapper > textarea:focus {
+  border-color: #4A90E2;
+  outline: none;
+}
+
+.autogrow-wrapper::after {
+  content: attr(data-value) " "; /* De geniale trailing space fix van Claude */
+  visibility: hidden;
+}
+
+/* Formulier groep margin fix om oude textarea styles te overschrijven */
+.form-groep .autogrow-wrapper textarea {
+  margin-bottom: 0;
+}
+
+/* Laag 1: field-sizing voor de allernieuwste browsers (zoals de nieuwste Chrome en Samsung Internet) */
+@supports (field-sizing: content) {
+  .autogrow-wrapper { display: block; }
+  .autogrow-wrapper::after { display: none; }
+  .autogrow-wrapper > textarea {
+    field-sizing: content;
+  }
 }
 
 @media (max-width: 768px) {
