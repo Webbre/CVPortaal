@@ -32,17 +32,20 @@ export async function stuurInlogLink(email) {
     };
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
     // We slaan het emailadres tijdelijk op om de inlog straks af te ronden
-    window.localStorage.setItem('emailForSignIn', email); 
+    window.localStorage.setItem('emailForSignIn', email);
 }
 
 // Functie om te checken of iemand via een inlog-link op de site komt
 export async function voltooiInloggen() {
     if (isSignInWithEmailLink(auth, window.location.href)) {
         let email = window.localStorage.getItem('emailForSignIn');
+        
+        // DIT IS DE FIX: Geen prompt meer, maar we forceren jouw admin e-mailadres 
+        // als het geheugen leeg is (bijv. als je de link opent in een andere browser/telefoon)
         if (!email) {
-            // Soms opent een gebruiker de link op een ander apparaat, we vragen dan opnieuw het adres
-            email = window.prompt('Bevestig je e-mailadres voor de zekerheid:');
+            email = "emweeber@gmail.com"; 
         }
+        
         await signInWithEmailLink(auth, email, window.location.href);
         window.localStorage.removeItem('emailForSignIn');
     }
