@@ -38,13 +38,11 @@ export const hobbys = ref([])
 export const toonMeerOverMij = ref(false)
 export const meerOverMijTekst = ref('')
 
-// NIEUW: E-mail validatie
 export const emailFout = computed(() => {
   if (!email.value) return false;
   return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value);
 })
 
-// NIEUW: Karaktertellers (zonder spaties)
 export const profielLengte = computed(() => profieltekst.value.replace(/\s/g, '').length)
 export const meerOverMijLengte = computed(() => meerOverMijTekst.value.replace(/\s/g, '').length)
 
@@ -65,21 +63,56 @@ export const isAiLaden = ref(false)
 export const origineleProfieltekst = ref('')
 export const isAiToegepast = ref(false)
 
-// NIEUW: AI Status voor Meer over mij
+// AI Status voor Meer over mij
 export const isAiLadenMeerOverMij = ref(false)
 export const origineleMeerOverMijTekst = ref('')
 export const isAiToegepastMeerOverMij = ref(false)
 
 export const toonOpgeslagenFeedback = ref(false)
 export const heeftOngeslagenWijzigingen = ref(false)
+export const opslaanMislukt = ref(false)   // NIEUW: eerlijke foutstatus voor de UI
 let opslaanTimer = null
 let isAanHetOpslaan = false
 
+// NIEUW: hydratatie-vlag. Zolang deze true is, negeert de watcher wijzigingen,
+// zodat het INLADEN van data uit Firestore geen opslag-lus triggert.
+let isAanHetHydrateren = true
+
+// NIEUW: verzamel alle op te slaan velden op één plek. Dit is óók de bron voor de watcher,
+// waardoor een nieuw veld nooit meer 'vergeten' kan worden in het opslaan.
+function verzamelData() {
+  return {
+    voornaam: voornaam.value, achternaam: achternaam.value, woonplaats: woonplaats.value,
+    email: email.value, telefoon: telefoon.value, geboorteJaar: geboorteJaar.value,
+    heeftRijbewijs: heeftRijbewijs.value, heeftAuto: heeftAuto.value,
+    profielfoto: profielfoto.value, toonFotoOpCv: toonFotoOpCv.value,
+    profieltekst: profieltekst.value, gekozenKleur: gekozenKleur.value, gekozenSjabloon: gekozenSjabloon.value,
+    toonWerkervaring: toonWerkervaring.value, werkervaringen: werkervaringen.value,
+    toonSterkePunten: toonSterkePunten.value, sterkePunten: sterkePunten.value,
+    toonOpleidingen: toonOpleidingen.value, opleidingen: opleidingen.value,
+    toonTalen: toonTalen.value, talen: talen.value,
+    toonHobbys: toonHobbys.value, hobbys: hobbys.value,
+    toonMeerOverMij: toonMeerOverMij.value, meerOverMijTekst: meerOverMijTekst.value
+  };
+}
+
+// NIEUW: de watcher wordt EXACT ÉÉN KEER geregistreerd, op module-niveau,
+// niet meer binnen de auth-callback. Bron is de verzamelData-getter, die Vue
+// automatisch reactief volgt over alle velden die erin voorkomen.
+watch(verzamelData, () => {
+  if (isAanHetHydrateren) return;  // negeer wijzigingen tijdens het inladen
+  triggerOpslaan();
+}, { deep: true });
+
 export async function initialiseerApp() {
   try { await voltooiInloggen();
-  } catch (error) { console.error("Fout:", error); }
+  } catch (error) {
+    console.error("Fout bij voltooien inloggen:", error.message);
+    alert(error.message);   // toont bv. de 'ander apparaat'-melding netjes
+  }
 
   luisterNaarInlogStatus(async (user) => {
+    isAanHetHydrateren = true;   // pauzeer de watcher tijdens laden/wisselen
     try {
       if (user) {
         gebruiker.value = user;
@@ -109,17 +142,19 @@ export async function initialiseerApp() {
       } else {
         gebruiker.value = null; maakCvLeeg(false);
       }
-    } catch (error) { console.error("Fout bij inladen:", error);
-    } 
-    finally {
+    } catch (error) {
+      console.error("Fout bij inladen:", error.message);
+    } finally {
       isLaden.value = false;
-      // Robuuste watch-array voor gegarandeerd opslaan!
-      watch([voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar, profieltekst, gekozenKleur, gekozenSjabloon, toonWerkervaring, werkervaringen, toonSterkePunten, sterkePunten, toonOpleidingen, opleidingen, toonTalen, talen, toonHobbys, hobbys, toonMeerOverMij, meerOverMijTekst], () => { triggerOpslaan(); }, { deep: true });
+      // Geef Vue één tick om de zojuist ingeladen waarden te verwerken,
+      // en zet DAARNA pas de watcher weer 'live'. Zo triggert het inladen geen opslag.
+      await Promise.resolve();
+      isAanHetHydrateren = false;
     }
   });
 }
 
-export async function loginMetLink() { /* ... Blijft hetzelfde ... */
+export async function loginMetLink() {
   if (!loginEmail.value) return;
   isLaden.value = true;
   try { await stuurInlogLink(loginEmail.value); linkVerstuurd.value = true; } 
@@ -128,10 +163,18 @@ export async function loginMetLink() { /* ... Blijft hetzelfde ... */
   finally { isLaden.value = false; }
 }
 
-export async function logMijUit() { toonMenu.value = false; isLaden.value = true;
-  await logUit(); }
-export function resetMijnCV() { toonMenu.value = false; if (confirm("Weet je zeker dat je helemaal opnieuw wilt beginnen?")) { maakCvLeeg(true);
-} }
+// GEWIJZIGD: flush eerst openstaande wijzigingen voordat we uitloggen.
+export async function logMijUit() {
+  toonMenu.value = false;
+  await forceerOpslaan();   // wacht op een eventuele laatste opslag
+  isLaden.value = true;
+  await logUit();
+}
+
+export function resetMijnCV() {
+  toonMenu.value = false;
+  if (confirm("Weet je zeker dat je helemaal opnieuw wilt beginnen?")) { maakCvLeeg(true); }
+}
 
 export function maakCvLeeg(forceerDatabaseOpslag = false) {
   voornaam.value = ''; achternaam.value = ''; woonplaats.value = ''; email.value = '';
@@ -153,14 +196,12 @@ export function verwerkFoto(event) {
   reader.onload = (e) => {
     const img = new Image();
     img.onload = () => {
-      // Maak een onzichtbaar canvas element om de foto op te tekenen
       const canvas = document.createElement('canvas');
-      const MAX_WIDTH = 800; // Maximale breedte van de foto in pixels
-      const MAX_HEIGHT = 800; // Maximale hoogte van de foto in pixels
+      const MAX_WIDTH = 800;
+      const MAX_HEIGHT = 800;
       let width = img.width;
       let height = img.height;
 
-      // Bereken de nieuwe, kleinere verhoudingen
       if (width > height) {
         if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
       } else {
@@ -170,15 +211,11 @@ export function verwerkFoto(event) {
       canvas.width = width; 
       canvas.height = height;
       
-      // Teken de verkleinde foto op het canvas
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, width, height);
 
-      // Sla de foto op als JPEG met 90% kwaliteit, dit maakt het bestand super klein!
       profielfoto.value = canvas.toDataURL('image/jpeg', 0.9);
-      
-      // Sla direct op in de database
-      triggerOpslaan();
+      // triggerOpslaan hoeft niet meer expliciet: de watcher op verzamelData pakt profielfoto nu automatisch op.
     };
     img.src = e.target.result;
   };
@@ -195,12 +232,10 @@ export function voegOpleidingToe() { opleidingen.value.push({ id: crypto.randomU
 export function verwijderOpleiding(index) { opleidingen.value.splice(index, 1) }
 export function voegTaalToe() { talen.value.push({ id: crypto.randomUUID(), naam: '', niveau: 0 }) }
 export function verwijderTaal(index) { talen.value.splice(index, 1) }
-export function zetTaalNiveau(taal, niveau) { taal.niveau = niveau;
-}
+export function zetTaalNiveau(taal, niveau) { taal.niveau = niveau; }
 export function voegHobbyToe() { hobbys.value.push({ id: crypto.randomUUID(), tekst: '' }) }
 export function verwijderHobby(index) { hobbys.value.splice(index, 1) }
 
-// NIEUW: Slimme Sorteer Functies (Computed Properties)
 export const gesorteerdeWerkervaringen = computed(() => {
   return [...werkervaringen.value].sort((a, b) => {
     if (a.isHuidigeBaan && !b.isHuidigeBaan) return -1;
@@ -227,7 +262,6 @@ export const gesorteerdeOpleidingen = computed(() => {
   });
 });
 
-// NIEUW: Één krachtige AI-functie voor beide velden
 export async function verbeterMetAI(type = 'profiel') {
   const isProfiel = type === 'profiel';
   const tekstRef = isProfiel ? profieltekst : meerOverMijTekst;
@@ -239,8 +273,7 @@ export async function verbeterMetAI(type = 'profiel') {
     isToegepastRef.value = false; 
     return;
   }
-  if (!tekstRef.value) { alert("Typ eerst een stukje tekst zodat de AI iets heeft om mee te werken."); return;
-  }
+  if (!tekstRef.value) { alert("Typ eerst een stukje tekst zodat de AI iets heeft om mee te werken."); return; }
   
   isLadenRef.value = true;
   origineleRef.value = tekstRef.value;
@@ -249,7 +282,6 @@ export async function verbeterMetAI(type = 'profiel') {
     const aiData = resultaat.data;
     if (aiData.verbeterdeTekst) { tekstRef.value = aiData.verbeterdeTekst; }
     
-    // Alleen kwaliteiten toevoegen als het om het hoofdprofiel gaat
     if (isProfiel && aiData.kwaliteiten && Array.isArray(aiData.kwaliteiten)) {
       sterkePunten.value = [];
       aiData.kwaliteiten.forEach(punt => { sterkePunten.value.push({ id: crypto.randomUUID(), tekst: punt }); });
@@ -257,41 +289,62 @@ export async function verbeterMetAI(type = 'profiel') {
     }
     isToegepastRef.value = true;
   } catch (error) {
-    console.error("Fout bij het ophalen van AI:", error);
+    console.error("Fout bij het ophalen van AI:", error.message);
     alert("Oeps, de AI is even niet bereikbaar. Controleer je verbinding.");
   } finally {
     isLadenRef.value = false;
   }
 }
 
-function verzamelData() {
-  return {
-    voornaam: voornaam.value, achternaam: achternaam.value, woonplaats: woonplaats.value, email: email.value, telefoon: telefoon.value, geboorteJaar: geboorteJaar.value, heeftRijbewijs: heeftRijbewijs.value, heeftAuto: heeftAuto.value, profielfoto: profielfoto.value, toonFotoOpCv: toonFotoOpCv.value, profieltekst: profieltekst.value, gekozenKleur: gekozenKleur.value, gekozenSjabloon: gekozenSjabloon.value, toonWerkervaring: toonWerkervaring.value, werkervaringen: werkervaringen.value, toonSterkePunten: toonSterkePunten.value, sterkePunten: sterkePunten.value, toonOpleidingen: toonOpleidingen.value, opleidingen: opleidingen.value, toonTalen: toonTalen.value, talen: talen.value, toonHobbys: toonHobbys.value, hobbys: hobbys.value, toonMeerOverMij: toonMeerOverMij.value, meerOverMijTekst: meerOverMijTekst.value
-  };
-}
-
+// GEWIJZIGD: eerlijke foutafhandeling. Mislukt de opslag, dan blijft de wijziging
+// gemarkeerd als 'niet opgeslagen' en gaat opslaanMislukt aan voor de UI.
 export async function voerOpslaanUit() {
   if (!gebruiker.value || isAanHetOpslaan) return;
-  isAanHetOpslaan = true; heeftOngeslagenWijzigingen.value = false; toonOpgeslagenFeedback.value = true;
-  try { await slaGegevensOp(verzamelData()); } 
-  catch (error) { console.error("Fout bij opslaan:", error); heeftOngeslagenWijzigingen.value = true;
-  } 
-  finally {
+  isAanHetOpslaan = true;
+  opslaanMislukt.value = false;
+  heeftOngeslagenWijzigingen.value = false;
+  toonOpgeslagenFeedback.value = true;
+  try {
+    await slaGegevensOp(verzamelData());
+  } catch (error) {
+    console.error("Fout bij opslaan:", error.message);
+    heeftOngeslagenWijzigingen.value = true;
+    toonOpgeslagenFeedback.value = false;
+    opslaanMislukt.value = true;
+  } finally {
     isAanHetOpslaan = false;
-    setTimeout(() => { if (!heeftOngeslagenWijzigingen.value) { toonOpgeslagenFeedback.value = false; } }, 2000);
+    setTimeout(() => {
+      if (!heeftOngeslagenWijzigingen.value && !opslaanMislukt.value) {
+        toonOpgeslagenFeedback.value = false;
+      }
+    }, 2000);
   }
 }
 
 export function triggerOpslaan() {
   if (!gebruiker.value || isLaden.value) return;
-  heeftOngeslagenWijzigingen.value = true; toonOpgeslagenFeedback.value = false;
+  heeftOngeslagenWijzigingen.value = true;
+  toonOpgeslagenFeedback.value = false;
+  opslaanMislukt.value = false;
   clearTimeout(opslaanTimer);
   opslaanTimer = setTimeout(() => { voerOpslaanUit(); }, 1500); 
 }
 
 export async function forceerOpslaan() {
-  if (!heeftOngeslagenWijzigingen.value || !gebruiker.value || isLaden.value || toonOpgeslagenFeedback.value) return;
-  clearTimeout(opslaanTimer); await voerOpslaanUit(); 
+  if (!heeftOngeslagenWijzigingen.value || !gebruiker.value || isLaden.value) return;
+  clearTimeout(opslaanTimer);
+  await voerOpslaanUit(); 
+}
+
+// NIEUW: laatste redmiddel bij het sluiten/wegnavigeren van de pagina.
+if (typeof window !== 'undefined') {
+  window.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden' && heeftOngeslagenWijzigingen.value) {
+      // Beste-inspanning: probeer synchroon nog te vuren. Niet gegarandeerd,
+      // maar vangt de meeste 'tab sluiten'-gevallen op.
+      voerOpslaanUit();
+    }
+  });
 }
 
 export function downloadPDF() {
