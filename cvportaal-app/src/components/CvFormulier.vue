@@ -20,7 +20,7 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
 <template>
   <div class="linkerkolom">
 
-    <div class="app-header">
+    <div class="app-header" :style="{ borderBottomColor: gekozenKleur }">
 <div class="app-logo-groep">
     <img src="/LogoCVP.png" alt="CVPortaal logo" class="app-logo" width="40" height="40">
     <h1 class="app-titel app-titel-lang">CVPortaal. Jouw cv, simpel en snel.</h1>
@@ -474,6 +474,22 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
 </template>
 
 <style scoped>
+/* Nette header-balk met merk-lijntje in de accentkleur */
+.app-header {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px 25px;
+  margin-top: 10px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+  border-bottom: 3px solid #4A90E2; /* valt terug op blauw; wordt overschreven door de gekozen kleur */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+.app-logo-groep { gap: 14px; }
 .instellingen-kaart { background-color: #ffffff; border-radius: 16px; padding: 25px; margin-bottom: 30px; margin-top: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05); }
 .instellingen-header { margin-bottom: 20px; border-bottom: 2px solid #edf2f7; padding-bottom: 15px; }
 .instellingen-titel { font-size: 16px; font-weight: 800; color: #1a202c; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
