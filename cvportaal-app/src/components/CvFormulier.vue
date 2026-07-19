@@ -23,7 +23,8 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
     <div class="app-header">
 <div class="app-logo-groep">
     <img src="/LogoCVP.png" alt="CVPortaal logo" class="app-logo" width="40" height="40">
-    <h1 class="app-titel">CVPortaal. Jouw cv, simpel en snel.</h1>
+    <h1 class="app-titel app-titel-lang">CVPortaal. Jouw cv, simpel en snel.</h1>
+<h1 class="app-titel app-titel-kort">CVPortaal</h1>
 </div>
           
           <div class="header-acties">
@@ -490,6 +491,8 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
 .download-knop { background: white; color: #4A90E2; border: 2px solid #4A90E2; border-radius: 20px; padding: 0 16px; height: 40px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
 .download-knop:hover { background: #eff6ff; transform: translateY(-1px); }
 .app-logo { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; }
+.app-titel-kort { display: none; }
+.app-titel-lang { display: block; }
 
 @media (max-width: 600px) {
   .app-logo { width: 34px; height: 34px; }
@@ -584,5 +587,8 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
     flex-direction: column;
     align-items: flex-start;
   }
+  .app-logo { width: 34px; height: 34px; }
+  .app-titel-lang { display: none; }
+  .app-titel-kort { display: block; }
 }
 </style>
