@@ -3,6 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebas
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js";
+import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app-check.js";
 
 // Config uit omgevingsvariabelen (Vite: alles met VITE_ prefix is beschikbaar in de client).
 // Deze Firebase web-keys zijn niet geheim, maar horen niet hardcoded in de repo.
@@ -16,6 +17,11 @@ const firebaseConfig = {
 };
 
 export const app = initializeApp(firebaseConfig);
+// App Check: zorgt dat alleen deze eigen app de Firebase-diensten mag aanroepen.
+initializeAppCheck(app, {
+  provider: new ReCaptchaV3Provider(import.meta.env.VITE_RECAPTCHA_SITE_KEY),
+  isTokenAutoRefreshEnabled: true,
+});
 const functions = getFunctions(app, 'europe-west3');
 export const aiBrug = httpsCallable(functions, 'verbeterProfiel');
 const db = getFirestore(app);
