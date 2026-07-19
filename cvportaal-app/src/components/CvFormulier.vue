@@ -21,16 +21,10 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
   <div class="linkerkolom">
 
     <div class="app-header">
-          <div class="app-logo-groep">
-               <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="#4A90E2" stroke-width="2" width="28" height="28">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
-              </svg>
-              <h1 class="app-titel">CVPortaal. Jouw cv, simpel en snel.</h1>
-          </div>
+<div class="app-logo-groep">
+    <img src="/LogoCVP.png" alt="CVPortaal logo" class="app-logo" width="40" height="40">
+    <h1 class="app-titel">CVPortaal. Jouw cv, simpel en snel.</h1>
+</div>
           
           <div class="header-acties">
               <div class="header-knoppen-links">
@@ -495,7 +489,11 @@ gekozenSjabloon, voornaam, achternaam, woonplaats, email, telefoon, geboorteJaar
 .maximum-bereikt { font-size: 13px; color: #718096; font-weight: 600; text-align: center; margin: 10px 0 0 0; }
 .download-knop { background: white; color: #4A90E2; border: 2px solid #4A90E2; border-radius: 20px; padding: 0 16px; height: 40px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
 .download-knop:hover { background: #eff6ff; transform: translateY(-1px); }
+.app-logo { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; }
 
+@media (max-width: 600px) {
+  .app-logo { width: 34px; height: 34px; }
+}
 .hoofdtitel-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 35px; margin-bottom: 15px; }
 .hoofdtitel { margin-top: 0; margin-bottom: 0; }
 .hoofdtitel-icon { width: 24px; height: 24px; color: #4A90E2; flex-shrink: 0; }
