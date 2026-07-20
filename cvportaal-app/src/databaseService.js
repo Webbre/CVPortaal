@@ -1,4 +1,13 @@
 // databaseService.js
+// ---------------------------------------------------------------------------
+// LET OP: importeer de functies uit dit bestand NIET rechtstreeks in stores
+// of componenten. Ga altijd via cvRepository.js (de "balie").
+//
+// Dit bestand is de Firebase-uitvoering áchter de balie. Bij de migratie naar
+// Supabase (Fase 3) wordt alleen de binnenkant van cvRepository.js vervangen;
+// dit bestand kan dan komen te vervallen. Rechtstreeks importeren hieruit zou
+// die scheiding doorbreken en Firebase opnieuw door de hele app laten lekken.
+// ---------------------------------------------------------------------------
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
