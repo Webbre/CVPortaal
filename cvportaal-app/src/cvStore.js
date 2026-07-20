@@ -1,9 +1,5 @@
 import { ref, watch, computed } from 'vue'
-import { 
-  aiBrug, slaGegevensOp, haalGegevensOp, 
-  stuurInlogLink, voltooiInloggen, 
-  logUit, luisterNaarInlogStatus 
-} from './databaseService.js'
+import { cvRepository } from './cvRepository.js'
 
 export const gebruiker = ref(null)
 export const isLaden = ref(true)
@@ -70,16 +66,15 @@ export const isAiToegepastMeerOverMij = ref(false)
 
 export const toonOpgeslagenFeedback = ref(false)
 export const heeftOngeslagenWijzigingen = ref(false)
-export const opslaanMislukt = ref(false)   // NIEUW: eerlijke foutstatus voor de UI
+export const opslaanMislukt = ref(false)
 let opslaanTimer = null
 let isAanHetOpslaan = false
 
-// NIEUW: hydratatie-vlag. Zolang deze true is, negeert de watcher wijzigingen,
-// zodat het INLADEN van data uit Firestore geen opslag-lus triggert.
+// Hydratatie-vlag. Zolang deze true is, negeert de watcher wijzigingen,
+// zodat het INLADEN van data geen opslag-lus triggert.
 let isAanHetHydrateren = true
 
-// NIEUW: verzamel alle op te slaan velden op één plek. Dit is óók de bron voor de watcher,
-// waardoor een nieuw veld nooit meer 'vergeten' kan worden in het opslaan.
+// Verzamel alle op te slaan velden op één plek. Dit is óók de bron voor de watcher.
 function verzamelData() {
   return {
     voornaam: voornaam.value, achternaam: achternaam.value, woonplaats: woonplaats.value,
@@ -96,27 +91,25 @@ function verzamelData() {
   };
 }
 
-// NIEUW: de watcher wordt EXACT ÉÉN KEER geregistreerd, op module-niveau,
-// niet meer binnen de auth-callback. Bron is de verzamelData-getter, die Vue
-// automatisch reactief volgt over alle velden die erin voorkomen.
+// De watcher wordt EXACT ÉÉN KEER geregistreerd, op module-niveau.
 watch(verzamelData, () => {
-  if (isAanHetHydrateren) return;  // negeer wijzigingen tijdens het inladen
+  if (isAanHetHydrateren) return;
   triggerOpslaan();
 }, { deep: true });
 
 export async function initialiseerApp() {
-  try { await voltooiInloggen();
+  try { await cvRepository.voltooiInloggen();
   } catch (error) {
     console.error("Fout bij voltooien inloggen:", error.message);
-    alert(error.message);   // toont bv. de 'ander apparaat'-melding netjes
+    alert(error.message);
   }
 
-  luisterNaarInlogStatus(async (user) => {
-    isAanHetHydrateren = true;   // pauzeer de watcher tijdens laden/wisselen
+  cvRepository.luisterNaarInlogStatus(async (user) => {
+    isAanHetHydrateren = true;
     try {
       if (user) {
         gebruiker.value = user;
-        const data = await haalGegevensOp();
+        const data = await cvRepository.laadCv();
         if (data) {
           voornaam.value = data.voornaam || ''; achternaam.value = data.achternaam || '';
           woonplaats.value = data.woonplaats || ''; email.value = data.email || '';
@@ -146,8 +139,6 @@ export async function initialiseerApp() {
       console.error("Fout bij inladen:", error.message);
     } finally {
       isLaden.value = false;
-      // Geef Vue één tick om de zojuist ingeladen waarden te verwerken,
-      // en zet DAARNA pas de watcher weer 'live'. Zo triggert het inladen geen opslag.
       await Promise.resolve();
       isAanHetHydrateren = false;
     }
@@ -157,18 +148,18 @@ export async function initialiseerApp() {
 export async function loginMetLink() {
   if (!loginEmail.value) return;
   isLaden.value = true;
-  try { await stuurInlogLink(loginEmail.value); linkVerstuurd.value = true; } 
+  try { await cvRepository.stuurInlogLink(loginEmail.value); linkVerstuurd.value = true; } 
   catch (error) { alert("Er ging iets mis: " + error.message);
   } 
   finally { isLaden.value = false; }
 }
 
-// GEWIJZIGD: flush eerst openstaande wijzigingen voordat we uitloggen.
+// Flush eerst openstaande wijzigingen voordat we uitloggen.
 export async function logMijUit() {
   toonMenu.value = false;
-  await forceerOpslaan();   // wacht op een eventuele laatste opslag
+  await forceerOpslaan();
   isLaden.value = true;
-  await logUit();
+  await cvRepository.logUit();
 }
 
 export function resetMijnCV() {
@@ -215,7 +206,6 @@ export function verwerkFoto(event) {
       ctx.drawImage(img, 0, 0, width, height);
 
       profielfoto.value = canvas.toDataURL('image/jpeg', 0.9);
-      // triggerOpslaan hoeft niet meer expliciet: de watcher op verzamelData pakt profielfoto nu automatisch op.
     };
     img.src = e.target.result;
   };
@@ -278,7 +268,7 @@ export async function verbeterMetAI(type = 'profiel') {
   isLadenRef.value = true;
   origineleRef.value = tekstRef.value;
   try {
-    const resultaat = await aiBrug({ tekst: tekstRef.value, type: type });
+    const resultaat = await cvRepository.verbeterTekst({ tekst: tekstRef.value, type: type });
     const aiData = resultaat.data;
     if (aiData.verbeterdeTekst) { tekstRef.value = aiData.verbeterdeTekst; }
     
@@ -296,7 +286,7 @@ export async function verbeterMetAI(type = 'profiel') {
   }
 }
 
-// GEWIJZIGD: eerlijke foutafhandeling. Mislukt de opslag, dan blijft de wijziging
+// Eerlijke foutafhandeling. Mislukt de opslag, dan blijft de wijziging
 // gemarkeerd als 'niet opgeslagen' en gaat opslaanMislukt aan voor de UI.
 export async function voerOpslaanUit() {
   if (!gebruiker.value || isAanHetOpslaan) return;
@@ -305,7 +295,7 @@ export async function voerOpslaanUit() {
   heeftOngeslagenWijzigingen.value = false;
   toonOpgeslagenFeedback.value = true;
   try {
-    await slaGegevensOp(verzamelData());
+    await cvRepository.slaCvOp(verzamelData());
   } catch (error) {
     console.error("Fout bij opslaan:", error.message);
     heeftOngeslagenWijzigingen.value = true;
@@ -336,12 +326,10 @@ export async function forceerOpslaan() {
   await voerOpslaanUit(); 
 }
 
-// NIEUW: laatste redmiddel bij het sluiten/wegnavigeren van de pagina.
+// Laatste redmiddel bij het sluiten/wegnavigeren van de pagina.
 if (typeof window !== 'undefined') {
   window.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden' && heeftOngeslagenWijzigingen.value) {
-      // Beste-inspanning: probeer synchroon nog te vuren. Niet gegarandeerd,
-      // maar vangt de meeste 'tab sluiten'-gevallen op.
       voerOpslaanUit();
     }
   });
