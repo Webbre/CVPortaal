@@ -47,4 +47,55 @@ import {
 .hoofdtitel-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 35px; margin-bottom: 15px; }
 .hoofdtitel { margin-top: 0; margin-bottom: 0; }
 .hoofdtitel-icon { width: 24px; height: 24px; color: #4A90E2; flex-shrink: 0; }
+/* Meegroeiend tekstvak (grid-replicator + field-sizing fallback) */
+.autogrow-wrapper {
+  display: grid;
+  width: 100%;
+}
+
+.autogrow-wrapper::after,
+.autogrow-wrapper > textarea {
+  width: 100%;
+  grid-area: 1 / 1;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 12px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  box-sizing: border-box;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-height: 100px;
+}
+
+.autogrow-wrapper > textarea {
+  resize: none;
+  overflow: hidden;
+  background: #ffffff;
+  transition: border-color 0.2s;
+}
+
+.autogrow-wrapper > textarea:focus {
+  border-color: #4A90E2;
+  outline: none;
+}
+
+.autogrow-wrapper::after {
+  content: attr(data-value) " ";
+  visibility: hidden;
+}
+
+.form-groep .autogrow-wrapper textarea {
+  margin-bottom: 0;
+}
+
+@supports (field-sizing: content) {
+  .autogrow-wrapper { display: block; }
+  .autogrow-wrapper::after { display: none; }
+  .autogrow-wrapper > textarea {
+    field-sizing: content;
+  }
+}
 </style>
