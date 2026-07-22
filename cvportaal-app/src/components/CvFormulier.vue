@@ -105,9 +105,7 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
       </div>
 
 <SectieGegevens />
-
 <SectieProfiel />
-
 <SectieSterkePunten v-if="toonSterkePunten" />
 
       <div v-if="toonWerkervaring || toonOpleidingen">
@@ -118,8 +116,8 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
           </div>
       </div>
 
+<SectieWerkervaring v-if="toonWerkervaring" />
 <SectieOpleidingen v-if="toonOpleidingen" />
-
 <SectieTalen v-if="toonTalen" />
 <SectieHobbys v-if="toonHobbys" />
 <SectieMeerOverMij v-if="toonMeerOverMij" />
