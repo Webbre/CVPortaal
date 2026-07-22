@@ -1,0 +1,53 @@
+/* ---------------------------------------------------------------------------
+   Design tokens
+   Centrale plek voor kleuren, vormen en schaduwen van de hele applicatie.
+   Componenten verwijzen naar deze variabelen in plaats van naar losse
+   kleurcodes, zodat de huisstijl op één plek aanpasbaar is (straks per
+   organisatie/gemeente).
+   --------------------------------------------------------------------------- */
+
+:root {
+  /* Accent — de herkenbare hoofdkleur van de applicatie */
+  --kleur-accent: #4A90E2;
+  --kleur-accent-hover: #357ABD;
+  --kleur-accent-donker: #2b6cb0;
+  --kleur-accent-licht: #DBEAFE;
+  --kleur-accent-licht-hover: #BFDBFE;
+  --kleur-accent-zacht: #eff6ff;
+
+  /* Tekst, van sterk naar flauw */
+  --kleur-tekst: #333333;
+  --kleur-tekst-sterk: #1a202c;
+  --kleur-tekst-titel: #2d3748;
+  --kleur-tekst-gedempt: #4a5568;
+  --kleur-tekst-zacht: #718096;
+  --kleur-tekst-flauw: #a0aec0;
+
+  /* Vlakken en randen */
+  --kleur-wit: #ffffff;
+  --kleur-achtergrond: #f5f7fb;
+  --kleur-achtergrond-kolom: #f0f4f8;
+  --kleur-achtergrond-zacht: #f8fafc;
+  --kleur-rand: #e2e8f0;
+  --kleur-rand-sterk: #cbd5e0;
+  --kleur-scheiding: #edf2f7;
+
+  /* Statuskleuren */
+  --kleur-fout: #e53e3e;
+  --kleur-fout-tekst: #c53030;
+  --kleur-fout-vlak: #fff5f5;
+  --kleur-fout-vlak-sterk: #fee2e2;
+  --kleur-succes: #2ECC71;
+
+  /* Afgeronde hoeken */
+  --radius-klein: 6px;
+  --radius-middel: 8px;
+  --radius-groot: 12px;
+  --radius-kaart: 16px;
+  --radius-blok: 20px;
+
+  /* Schaduwen */
+  --schaduw-kaart: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+  --schaduw-zacht: 0 4px 10px rgba(0, 0, 0, 0.03);
+  --schaduw-menu: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
