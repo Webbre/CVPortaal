@@ -92,7 +92,7 @@ import {
             </div>
             <div class="card-sub">
               {{ o.instelling || 'Instituut' }}
-              <span v-if="!o.isHuidigeOpleiding && o.isBehaald" style="margin-left: 5px;">✓ Behaald</span>
+              <span v-if="!o.isHuidigeOpleiding && o.isBehaald" style="margin-left: 5px;"><span :style="{ color: gekozenKleur }">✓</span> {{ o.type === 'Cursus' ? 'Certificaat' : 'Diploma' }}</span>
             </div>
           </div>
         </div>
