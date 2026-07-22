@@ -51,3 +51,122 @@
   --schaduw-zacht: 0 4px 10px rgba(0, 0, 0, 0.03);
   --schaduw-menu: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
+
+/* ---------------------------------------------------------------------------
+   Gedeelde opmaak voor de formuliersecties
+   Deze stijlen worden door alle secties in components/secties/ gebruikt en
+   staan daarom centraal in plaats van in elk sectiebestand apart.
+   --------------------------------------------------------------------------- */
+
+/* Sectiekop met icoon */
+.hoofdtitel-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 35px;
+  margin-bottom: 15px;
+}
+.hoofdtitel {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--kleur-tekst-titel);
+  margin: 0;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.hoofdtitel-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--kleur-accent);
+  flex-shrink: 0;
+}
+
+/* Rijen met een invoerveld en een verwijderknop (sterke punten, hobby's, talen) */
+.lijst-item-rij {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  align-items: center;
+}
+.lijst-input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--kleur-rand-sterk);
+  border-radius: var(--radius-klein);
+  background: var(--kleur-wit);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s;
+}
+.toevoeg-knop-marge {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+.maximum-bereikt {
+  font-size: 13px;
+  color: var(--kleur-tekst-zacht);
+  font-weight: 600;
+  text-align: center;
+  margin: 10px 0 0 0;
+}
+
+/* Waarschuwing bij te veel inhoud */
+.waarschuwing-rood {
+  background-color: var(--kleur-fout-vlak);
+  border-left: 4px solid var(--kleur-fout);
+  padding: 12px;
+  border-radius: var(--radius-middel);
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+.waarschuwing-tekst-rood {
+  font-size: 13px;
+  color: var(--kleur-fout-tekst);
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* Meegroeiend tekstvak: grid-replicator met field-sizing als moderne variant */
+.autogrow-wrapper {
+  display: grid;
+  width: 100%;
+}
+.autogrow-wrapper::after,
+.autogrow-wrapper > textarea {
+  width: 100%;
+  grid-area: 1 / 1;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 12px;
+  border: 1px solid var(--kleur-rand-sterk);
+  border-radius: var(--radius-klein);
+  box-sizing: border-box;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-height: 100px;
+}
+.autogrow-wrapper > textarea {
+  resize: none;
+  overflow: hidden;
+  background: var(--kleur-wit);
+  transition: border-color 0.2s;
+}
+.autogrow-wrapper > textarea:focus {
+  border-color: var(--kleur-accent);
+  outline: none;
+}
+.autogrow-wrapper::after {
+  content: attr(data-value) " ";
+  visibility: hidden;
+}
+.form-groep .autogrow-wrapper textarea {
+  margin-bottom: 0;
+}
+@supports (field-sizing: content) {
+  .autogrow-wrapper { display: block; }
+  .autogrow-wrapper::after { display: none; }
+  .autogrow-wrapper > textarea { field-sizing: content; }
+}
