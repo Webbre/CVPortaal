@@ -22,7 +22,7 @@ import SectieTalen from './secties/SectieTalen.vue'
 import SectieProfiel from './secties/SectieProfiel.vue'
 import SectieGegevens from './secties/SectieGegevens.vue'
 import SectieWerkervaring from './secties/SectieWerkervaring.vue'
-import SectieWerkervaring from './secties/SectieWerkervaring.vue'
+import SectieOpleidingen from './secties/SectieOpleidingen.vue'
 </script>
 
 <template>
