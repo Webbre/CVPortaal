@@ -126,15 +126,15 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
 </template>
 
 <style scoped>
-/* Nette header-balk met merk-lijntje in de accentkleur */
+/* Header-balk met merk-lijntje in de accentkleur (kleur wordt via :style gezet) */
 .app-header {
-  background: #ffffff;
-  border-radius: 16px;
+  background: var(--kleur-wit);
+  border-radius: var(--radius-kaart);
   padding: 20px 25px;
   margin-top: 10px;
   margin-bottom: 30px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
-  border-bottom: 3px solid #4A90E2; /* valt terug op blauw; wordt overschreven door de gekozen kleur */
+  box-shadow: var(--schaduw-kaart);
+  border-bottom: 3px solid var(--kleur-accent);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -142,42 +142,46 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
   gap: 15px;
 }
 .app-logo-groep { gap: 14px; }
-.instellingen-kaart { background-color: #ffffff; border-radius: 16px; padding: 25px; margin-bottom: 30px; margin-top: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05); }
-.instellingen-header { margin-bottom: 20px; border-bottom: 2px solid #edf2f7; padding-bottom: 15px; }
-.instellingen-titel { font-size: 16px; font-weight: 800; color: #1a202c; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
-.instellingen-label { font-size: 13px; font-weight: 700; color: #4a5568; margin-bottom: 12px; }
-.instellingen-marge { margin-bottom: 25px; }
-.onderdelen-grid-instellingen { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
-.waarschuwing-rood { background-color: #fff5f5; border-left: 4px solid #e53e3e; padding: 12px; border-radius: 8px; margin-top: 10px; margin-bottom: 15px; }
-.waarschuwing-tekst-rood { font-size: 13px; color: #c53030; margin: 0; font-weight: 600; line-height: 1.5; }
-.waarschuwing-blauw { background-color: #ebf8ff; border-left: 4px solid #4A90E2; padding: 15px; border-radius: 8px; margin-bottom: 20px; margin-top: 35px; }
-.waarschuwing-tekst-blauw { font-size: 13px; color: #2b6cb0; margin: 0; font-weight: 600; line-height: 1.5; }
-.lijst-item-rij { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; }
-.lijst-input { flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #ffffff; font-size: 14px; outline: none; transition: all 0.2s; }
-.toevoeg-knop-marge { margin-bottom: 0; margin-top: 0; }
-.maximum-bereikt { font-size: 13px; color: #718096; font-weight: 600; text-align: center; margin: 10px 0 0 0; }
-.download-knop { background: white; color: #4A90E2; border: 2px solid #4A90E2; border-radius: 20px; padding: 0 16px; height: 40px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
-.download-knop:hover { background: #eff6ff; transform: translateY(-1px); }
 .app-logo { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; }
 .app-titel-kort { display: none; }
 .app-titel-lang { display: block; }
 
-@media (max-width: 600px) {
-  .app-logo { width: 34px; height: 34px; }
-}
-.hoofdtitel-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 35px; margin-bottom: 15px; }
-.hoofdtitel { margin-top: 0; margin-bottom: 0; }
-.hoofdtitel-icon { width: 24px; height: 24px; color: #4A90E2; flex-shrink: 0; }
-
-.menu-sluiten-knop { position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 16px; color: #a0aec0; cursor: pointer; padding: 5px; line-height: 1; transition: color 0.2s; }
-.menu-sluiten-knop:hover { color: #4a5568; }
-.dropdown-header { padding: 15px 30px 15px 15px; } 
-.dropdown-item { display: flex; align-items: center; }
-.menu-icon { margin-right: 8px; color: #718096; }
-
 .header-acties { display: flex; width: 100%; justify-content: space-between; align-items: center; }
 .header-knoppen-links { display: flex; gap: 10px; }
 
+.download-knop {
+  background: var(--kleur-wit);
+  color: var(--kleur-accent);
+  border: 2px solid var(--kleur-accent);
+  border-radius: var(--radius-blok);
+  padding: 0 16px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.download-knop:hover { background: var(--kleur-accent-zacht); transform: translateY(-1px); }
+
+/* Menu onder het tandwiel */
+.menu-sluiten-knop { position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 16px; color: var(--kleur-tekst-flauw); cursor: pointer; padding: 5px; line-height: 1; transition: color 0.2s; }
+.menu-sluiten-knop:hover { color: var(--kleur-tekst-gedempt); }
+.dropdown-header { padding: 15px 30px 15px 15px; }
+.dropdown-item { display: flex; align-items: center; }
+.menu-icon { margin-right: 8px; color: var(--kleur-tekst-zacht); }
+
+/* Instellingen-kaart bovenaan het formulier */
+.instellingen-kaart { background-color: var(--kleur-wit); border-radius: var(--radius-kaart); padding: 25px; margin-bottom: 30px; margin-top: 10px; box-shadow: var(--schaduw-kaart); }
+.instellingen-header { margin-bottom: 20px; border-bottom: 2px solid var(--kleur-scheiding); padding-bottom: 15px; }
+.instellingen-titel { font-size: 16px; font-weight: 800; color: var(--kleur-tekst-sterk); margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+.instellingen-label { font-size: 13px; font-weight: 700; color: var(--kleur-tekst-gedempt); margin-bottom: 12px; }
+.instellingen-marge { margin-bottom: 25px; }
+.onderdelen-grid-instellingen { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
+
+/* Kleurkiezer met vervagende randen links en rechts */
 .kleur-container-wrapper { position: relative; width: 100%; }
 .kleur-container-wrapper::before,
 .kleur-container-wrapper::after { content: ""; position: absolute; top: 0; bottom: 0; width: 25px; z-index: 2; pointer-events: none; }
@@ -188,63 +192,11 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
 .kleur-kiezer::-webkit-scrollbar { display: none; }
 .kleur-rondje { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.1s ease; flex-shrink: 0; position: relative; z-index: 3;}
 .kleur-rondje:hover { transform: scale(1.1); }
-.kleur-rondje.actief { border-color: #333; }
+.kleur-rondje.actief { border-color: var(--kleur-tekst); }
 
-/* =========================================
-   CLAUDE'S GRID REPLICATOR (AUTO-RESIZE CSS FIX)
-   ========================================= */
-.autogrow-wrapper {
-  display: grid;
-  width: 100%;
-}
-
-.autogrow-wrapper::after,
-.autogrow-wrapper > textarea {
-  width: 100%;
-  grid-area: 1 / 1;
-  font-family: inherit;
-  font-size: 14px;
-  padding: 12px;
-  border: 1px solid #cbd5e0;
-  border-radius: 6px;
-  box-sizing: border-box;
-  line-height: 1.5; /* Zorgt voor perfecte uitlijning tussen replica en textarea */
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  min-height: 100px; /* Base height in plaats van rows="5" */
-}
-
-.autogrow-wrapper > textarea {
-  resize: none;
-  overflow: hidden;
-  background: #ffffff;
-  transition: border-color 0.2s;
-}
-
-.autogrow-wrapper > textarea:focus {
-  border-color: #4A90E2;
-  outline: none;
-}
-
-.autogrow-wrapper::after {
-  content: attr(data-value) " "; /* De geniale trailing space fix van Claude */
-  visibility: hidden;
-}
-
-/* Formulier groep margin fix om oude textarea styles te overschrijven */
-.form-groep .autogrow-wrapper textarea {
-  margin-bottom: 0;
-}
-
-/* Laag 1: field-sizing voor de allernieuwste browsers (zoals de nieuwste Chrome en Samsung Internet) */
-@supports (field-sizing: content) {
-  .autogrow-wrapper { display: block; }
-  .autogrow-wrapper::after { display: none; }
-  .autogrow-wrapper > textarea {
-    field-sizing: content;
-  }
-}
+/* Blauw informatieblok boven werkervaring/opleidingen */
+.waarschuwing-blauw { background-color: #ebf8ff; border-left: 4px solid var(--kleur-accent); padding: 15px; border-radius: var(--radius-middel); margin-bottom: 20px; margin-top: 35px; }
+.waarschuwing-tekst-blauw { font-size: 13px; color: var(--kleur-accent-donker); margin: 0; font-weight: 600; line-height: 1.5; }
 
 @media (max-width: 768px) {
   .instellingen-kaart { padding: 15px; }
