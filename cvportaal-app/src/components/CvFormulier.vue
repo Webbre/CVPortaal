@@ -204,29 +204,30 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  background: var(--kleur-accent-zacht);
-  border: 1px solid var(--kleur-accent-licht);
+  background: var(--kleur-wit);
+  border-left: 5px solid var(--kleur-accent);
   border-radius: var(--radius-groot);
-  padding: 18px 20px;
+  padding: 18px 22px;
   margin-top: 35px;
   margin-bottom: 20px;
+  box-shadow: var(--schaduw-kaart);
 }
 .tip-icoon {
   flex-shrink: 0;
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--kleur-accent-licht);
-  color: var(--kleur-accent-donker);
+  background: var(--kleur-accent);
+  color: var(--kleur-wit);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .tip-inhoud { min-width: 0; }
 .tip-kop {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
-  color: var(--kleur-accent-donker);
+  color: var(--kleur-tekst-sterk);
   margin: 0 0 4px 0;
   letter-spacing: 0.2px;
 }
@@ -237,6 +238,7 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
   margin: 0;
   line-height: 1.6;
 }
+
 @media (max-width: 768px) {
   .instellingen-kaart { padding: 15px; }
 }
