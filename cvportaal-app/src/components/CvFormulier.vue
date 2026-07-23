@@ -149,7 +149,7 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  row-gap: 26px;
+  row-gap: 46px;
   column-gap: 15px;
 }
 .app-logo-groep { gap: 14px; }
