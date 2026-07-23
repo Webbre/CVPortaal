@@ -5,29 +5,36 @@ import TemplateBasis from './sjablonen/TemplateBasis.vue'
 import TemplateKlassiek from './sjablonen/TemplateKlassiek.vue'
 import TemplateModern from './sjablonen/TemplateModern.vue'
 
-// De tekst moet onderaan net zoveel ruimte houden als links en rechts van het
-// cv. Komt de melding te laat of te vroeg, dan is dit getal de stelknop.
-const ONDERMARGE_PX = 40
+// Speling in pixels voordat we alarm slaan. De sjablonen houden zelf al een
+// marge van ongeveer 40 pixels onderaan aan, gelijk aan de zijkanten; deze
+// waarde vangt alleen afrondingsverschillen op. Slaat de melding te vroeg aan,
+// verhoog dit getal. Slaat hij te laat aan, verlaag het.
+const SPELING_PX = 2
 
 const cvInhoud = ref(null)
 const cvIsTeLang = ref(false)
 let formaatBewaker = null
 
-// Vergelijkt de hoogte van de inhoud met de beschikbare ruimte op het papier,
-// verminderd met de gewenste ondermarge.
+// Loopt alle onderdelen van het cv langs en kijkt of er ergens inhoud buiten
+// zijn vak valt. Zo werkt de controle bij alle drie de sjablonen gelijk,
+// ongeacht hoe ze intern zijn opgebouwd.
 function meetOverloop() {
-  const papier = cvInhoud.value?.querySelector('.cv-papier') || cvInhoud.value
+  const papier = cvInhoud.value
   if (!papier) return
-  cvIsTeLang.value = papier.scrollHeight > (papier.clientHeight - ONDERMARGE_PX)
+
+  const onderdelen = [papier, ...papier.querySelectorAll('*')]
+  cvIsTeLang.value = onderdelen.some(
+    (el) => el.scrollHeight > el.clientHeight + SPELING_PX
+  )
 }
 
-// Zet de bewaking op. Naast het papier zelf houden we ook de kolommen in de
-// gaten: die groeien wél mee met de inhoud, het papier heeft een vaste maat.
+// Houdt de afmetingen van het cv in de gaten en meet opnieuw zodra er iets
+// verandert.
 async function startBewaking() {
   await nextTick()
   if (formaatBewaker) formaatBewaker.disconnect()
 
-  const papier = cvInhoud.value?.querySelector('.cv-papier') || cvInhoud.value
+  const papier = cvInhoud.value
   if (!papier) return
 
   formaatBewaker = new ResizeObserver(() => meetOverloop())
@@ -39,7 +46,7 @@ async function startBewaking() {
 
 onMounted(() => {
   setTimeout(startBewaking, 100)
-  // Lettertypen laden soms later; daarna kan de tekst net iets hoger uitvallen.
+  // Lettertypen laden soms later; daarna kan de tekst iets hoger uitvallen.
   if (document.fonts?.ready) document.fonts.ready.then(meetOverloop)
 })
 
