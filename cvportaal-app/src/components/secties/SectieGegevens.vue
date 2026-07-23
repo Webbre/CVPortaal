@@ -74,10 +74,3 @@ import {
     </div>
   </div>
 </template>
-
-<style scoped>
-.hoofdtitel-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 35px; margin-bottom: 15px; }
-.hoofdtitel { margin-top: 0; margin-bottom: 0; }
-.hoofdtitel-icon { width: 24px; height: 24px; color: #4A90E2; flex-shrink: 0; }
-.waarschuwing-tekst-rood { font-size: 13px; color: #c53030; margin: 0; font-weight: 600; line-height: 1.5; }
-</style>

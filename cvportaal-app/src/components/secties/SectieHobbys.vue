@@ -23,13 +23,3 @@ import {
     <p v-else class="maximum-bereikt">Maximum bereikt</p>
   </div>
 </template>
-
-<style scoped>
-.hoofdtitel-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 35px; margin-bottom: 15px; }
-.hoofdtitel { margin-top: 0; margin-bottom: 0; }
-.hoofdtitel-icon { width: 24px; height: 24px; color: #4A90E2; flex-shrink: 0; }
-.lijst-item-rij { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; }
-.lijst-input { flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; background: #ffffff; font-size: 14px; outline: none; transition: all 0.2s; }
-.toevoeg-knop-marge { margin-bottom: 0; margin-top: 0; }
-.maximum-bereikt { font-size: 13px; color: #718096; font-weight: 600; text-align: center; margin: 10px 0 0 0; }
-</style>
