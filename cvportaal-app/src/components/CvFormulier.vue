@@ -108,7 +108,7 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
 <SectieProfiel />
 <SectieSterkePunten v-if="toonSterkePunten" />
 
-<div v-if="toonWerkervaring || toonOpleidingen" class="tip-blok">
+<div v-if="toonWerkervaring || toonOpleidingen" class="tip-blok" :style="{ backgroundColor: gekozenKleur }">
           <div class="tip-icoon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="22" height="22" aria-hidden="true">
                   <path d="M9 18h6M10 22h4"></path>
@@ -204,12 +204,12 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  background: var(--kleur-accent);
   border-radius: var(--radius-groot);
   padding: 20px 24px;
   margin-top: 35px;
   margin-bottom: 20px;
-  box-shadow: 0 6px 18px rgba(74, 144, 226, 0.35);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  transition: background-color 0.3s ease;
 }
 .tip-icoon {
   flex-shrink: 0;
