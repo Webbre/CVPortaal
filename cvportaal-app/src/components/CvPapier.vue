@@ -1,33 +1,58 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
-import { gekozenSjabloon, downloadPDF } from '../cvStore.js'
+import { gekozenSjabloon, downloadPDF, verzamelData } from '../cvStore.js'
 import TemplateBasis from './sjablonen/TemplateBasis.vue'
 import TemplateKlassiek from './sjablonen/TemplateKlassiek.vue'
 import TemplateModern from './sjablonen/TemplateModern.vue'
 
+// De tekst moet onderaan net zoveel ruimte houden als links en rechts van het
+// cv. Komt de melding te laat of te vroeg, dan is dit getal de stelknop.
+const ONDERMARGE_PX = 40
+
 const cvInhoud = ref(null)
 const cvIsTeLang = ref(false)
-let resizeObserver = null
+let formaatBewaker = null
 
-const observePaper = async () => {
-  await nextTick() 
-  if (resizeObserver) resizeObserver.disconnect()
-  
-  const paperElement = cvInhoud.value?.querySelector('.cv-papier') || cvInhoud.value
-  
-  if (paperElement) {
-    resizeObserver = new ResizeObserver(entries => {
-      for (let entry of entries) {
-        cvIsTeLang.value = entry.target.scrollHeight > (entry.target.clientHeight + 2)
-      }
-    })
-    resizeObserver.observe(paperElement)
-  }
+// Vergelijkt de hoogte van de inhoud met de beschikbare ruimte op het papier,
+// verminderd met de gewenste ondermarge.
+function meetOverloop() {
+  const papier = cvInhoud.value?.querySelector('.cv-papier') || cvInhoud.value
+  if (!papier) return
+  cvIsTeLang.value = papier.scrollHeight > (papier.clientHeight - ONDERMARGE_PX)
 }
 
-onMounted(() => setTimeout(observePaper, 100))
-watch(gekozenSjabloon, () => setTimeout(observePaper, 100))
-onUnmounted(() => { if (resizeObserver) resizeObserver.disconnect() })
+// Zet de bewaking op. Naast het papier zelf houden we ook de kolommen in de
+// gaten: die groeien wél mee met de inhoud, het papier heeft een vaste maat.
+async function startBewaking() {
+  await nextTick()
+  if (formaatBewaker) formaatBewaker.disconnect()
+
+  const papier = cvInhoud.value?.querySelector('.cv-papier') || cvInhoud.value
+  if (!papier) return
+
+  formaatBewaker = new ResizeObserver(() => meetOverloop())
+  formaatBewaker.observe(papier)
+  Array.from(papier.children).forEach((kolom) => formaatBewaker.observe(kolom))
+
+  meetOverloop()
+}
+
+onMounted(() => {
+  setTimeout(startBewaking, 100)
+  // Lettertypen laden soms later; daarna kan de tekst net iets hoger uitvallen.
+  if (document.fonts?.ready) document.fonts.ready.then(meetOverloop)
+})
+
+// Bij een ander sjabloon verandert de hele opbouw: opnieuw instellen.
+watch(gekozenSjabloon, () => setTimeout(startBewaking, 150))
+
+// Bij elke inhoudelijke wijziging opnieuw meten, nadat het cv is bijgetekend.
+watch(verzamelData, async () => {
+  await nextTick()
+  meetOverloop()
+}, { deep: true })
+
+onUnmounted(() => { if (formaatBewaker) formaatBewaker.disconnect() })
 </script>
 
 <template>
@@ -38,8 +63,18 @@ onUnmounted(() => { if (resizeObserver) resizeObserver.disconnect() })
         </div>
     </div>
 
-    <div v-if="cvIsTeLang" class="smart-waarschuwing">
-      ⚠️ Let op: Je cv is te lang! Tekst aan de onderkant wordt nu onzichtbaar afgekapt.
+    <div v-if="cvIsTeLang" class="overloop-melding" role="status">
+      <div class="overloop-icoon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" aria-hidden="true">
+          <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+      <div class="overloop-inhoud">
+        <p class="overloop-kop">Je cv past niet meer op één pagina</p>
+        <p class="overloop-tekst">De onderste tekst valt weg zodra je het cv opslaat. Maak een tekst korter of zet een onderdeel uit.</p>
+      </div>
     </div>
 
     <button class="zwevende-pdf-knop" @click="downloadPDF" aria-label="Download CV als PDF" title="Sla je cv op als PDF">
@@ -53,29 +88,52 @@ onUnmounted(() => { if (resizeObserver) resizeObserver.disconnect() })
 </template>
 
 <style scoped>
-.rechterkolom { position: relative; display: flex; justify-content: center; align-items: flex-start; padding-bottom: 80px; } 
+.rechterkolom { position: relative; display: flex; justify-content: center; align-items: flex-start; padding-bottom: 80px; }
 
 .zwevende-pdf-knop {
   position: fixed; bottom: 40px; right: 40px; width: 60px; height: 60px;
-  border-radius: 50%; background-color: #4A90E2; color: white; border: none;
-  box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4); cursor: pointer; display: flex;
+  border-radius: 50%; background-color: var(--kleur-accent); color: var(--kleur-wit); border: none;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25); cursor: pointer; display: flex;
   justify-content: center; align-items: center; transition: all 0.2s ease; z-index: 100;
 }
-.zwevende-pdf-knop:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 10px 25px rgba(74, 144, 226, 0.6); }
+.zwevende-pdf-knop:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
 
-.smart-waarschuwing {
-  position: fixed; bottom: 115px; right: 40px; background-color: #e53e3e; color: white;
-  padding: 15px 20px; border-radius: 8px; font-size: 14px; font-weight: 600;
-  box-shadow: 0 10px 25px rgba(229, 62, 62, 0.4); z-index: 100; animation: slideIn 0.3s ease-out;
+/* Melding wanneer het cv niet meer op één pagina past */
+.overloop-melding {
+  position: fixed;
+  bottom: 120px;
+  right: 40px;
+  max-width: 340px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--kleur-fout);
+  color: var(--kleur-wit);
+  padding: 18px 22px;
+  border-radius: var(--radius-groot);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+  z-index: 100;
+  animation: meldingIn 0.3s ease-out;
 }
-@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.overloop-icoon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.overloop-kop { font-size: 14px; font-weight: 700; margin: 0 0 4px 0; }
+.overloop-tekst { font-size: 13px; font-weight: 400; margin: 0; line-height: 1.5; color: rgba(255, 255, 255, 0.92); }
 
-/* Dit is de CSS-regel die de knop verbergt op mobiele apparaten */
-@media (max-width: 600px) { 
-  .zwevende-pdf-knop { 
-    display: none; 
-  } 
+@keyframes meldingIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+@media (max-width: 600px) {
+  .zwevende-pdf-knop { display: none; }
+  .overloop-melding { left: 15px; right: 15px; bottom: 20px; max-width: none; }
 }
 
-@media print { .smart-waarschuwing, .zwevende-pdf-knop { display: none !important; } }
+@media print { .overloop-melding, .zwevende-pdf-knop { display: none !important; } }
 </style>

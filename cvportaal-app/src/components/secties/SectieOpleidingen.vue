@@ -4,7 +4,6 @@
 // "diploma/certificaat behaald"-optie en een "ik volg dit nog"-optie.
 import {
   opleidingen,
-  werkervaringen,
   jarenLijst,
   voegOpleidingToe,
   verwijderOpleiding,
@@ -101,9 +100,6 @@ import {
       </div>
     </div>
 
-    <div v-if="werkervaringen.length + opleidingen.length > 5" class="waarschuwing-rood">
-      <p class="waarschuwing-tekst-rood">⚠️ Let op: Je hebt veel informatie toegevoegd. Kijk aan de rechterkant of je cv nog op één pagina past. Past het niet? Dan verdwijnt er tekst als je het cv opslaat als PDF.</p>
-    </div>
     <button class="toevoeg-knop toevoeg-knop-marge" @click="voegOpleidingToe">+ Voeg een opleiding of cursus toe</button>
   </div>
 </template>

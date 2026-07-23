@@ -101,7 +101,7 @@ let isAanHetHydrateren = true
 
 // Verzamelt alle op te slaan velden op één plek. Dit is tevens de bron voor de
 // watcher, waardoor een nieuw veld nooit vergeten kan worden bij het opslaan.
-function verzamelData() {
+export function verzamelData() {
   return {
     voornaam: voornaam.value, achternaam: achternaam.value, woonplaats: woonplaats.value,
     email: email.value, telefoon: telefoon.value, geboorteJaar: geboorteJaar.value,
