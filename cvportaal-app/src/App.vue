@@ -242,7 +242,7 @@ body { background-color: var(--kleur-achtergrond); overflow-x: hidden; color: va
     text-align: left; 
 }
 
-.cv-hoofdkolom { width: 65%; padding: 40px; text-align: left; }
+.cv-hoofdkolom { width: 65%; padding: 40px 35px; text-align: left; }
 .cv-profielfoto { width: 130px; height: 130px; background-color: var(--kleur-rand); border-radius: 50%; margin: 0 auto 30px auto; border: 4px solid var(--kleur-wit); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .cv-sectie-titel-zijbalk { font-size: 13px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255, 255, 255, 0.3); padding-bottom: 5px; }
 .cv-tekst-zijbalk { font-size: 12px; margin-bottom: 12px; line-height: 1.4; }
