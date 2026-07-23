@@ -203,21 +203,20 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
 .tip-blok {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
-  background: var(--kleur-wit);
-  border-left: 5px solid var(--kleur-accent);
+  gap: 16px;
+  background: var(--kleur-accent);
   border-radius: var(--radius-groot);
-  padding: 18px 22px;
+  padding: 20px 24px;
   margin-top: 35px;
   margin-bottom: 20px;
-  box-shadow: var(--schaduw-kaart);
+  box-shadow: 0 6px 18px rgba(74, 144, 226, 0.35);
 }
 .tip-icoon {
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: var(--kleur-accent);
+  background: rgba(255, 255, 255, 0.22);
   color: var(--kleur-wit);
   display: flex;
   align-items: center;
@@ -225,16 +224,16 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
 }
 .tip-inhoud { min-width: 0; }
 .tip-kop {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
-  color: var(--kleur-tekst-sterk);
-  margin: 0 0 4px 0;
+  color: var(--kleur-wit);
+  margin: 0 0 5px 0;
   letter-spacing: 0.2px;
 }
 .tip-tekst {
   font-size: 13px;
   font-weight: 400;
-  color: var(--kleur-tekst-gedempt);
+  color: rgba(255, 255, 255, 0.92);
   margin: 0;
   line-height: 1.6;
 }
