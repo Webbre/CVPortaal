@@ -47,19 +47,27 @@ export async function stuurInlogLink(email) {
     window.localStorage.setItem('emailForSignIn', email);
 }
 
-export async function voltooiInloggen() {
-    if (isSignInWithEmailLink(auth, window.location.href)) {
-        const email = window.localStorage.getItem('emailForSignIn');
+// Geeft aan of de huidige pagina is geopend via een inloglink uit een e-mail.
+export function isInlogLink() {
+    return isSignInWithEmailLink(auth, window.location.href);
+}
 
-        // Geen hardcoded fallback meer. Kan het e-mailadres niet worden bepaald
-        // (bijv. link geopend op een ander apparaat), dan stoppen we netjes.
-        if (!email) {
-            throw new Error("Open de inloglink op hetzelfde apparaat waarop je hem hebt aangevraagd.");
-        }
+// Het e-mailadres dat bij het aanvragen van de link op dit apparaat is onthouden.
+// Leeg wanneer de link op een ander apparaat wordt geopend.
+export function onthoudenInlogEmail() {
+    return window.localStorage.getItem('emailForSignIn') || '';
+}
 
-        await signInWithEmailLink(auth, email, window.location.href);
-        window.localStorage.removeItem('emailForSignIn');
-    }
+// Rondt het inloggen af met het opgegeven e-mailadres.
+export async function voltooiInloggen(email) {
+    if (!isSignInWithEmailLink(auth, window.location.href)) return;
+
+    await signInWithEmailLink(auth, email, window.location.href);
+    window.localStorage.removeItem('emailForSignIn');
+
+    // Verwijder de inloggegevens uit de adresbalk, zodat een verversing niet
+    // opnieuw een inmiddels verbruikte link probeert te gebruiken.
+    window.history.replaceState({}, document.title, window.location.pathname);
 }
 
 export async function logUit() {

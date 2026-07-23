@@ -16,15 +16,19 @@ import {
   loginEmail,
   linkVerstuurd,
   toonMenu,
+  vraagInlogEmail,
+  inlogFout,
   loginMetLink,
-  voltooiInloggen,
+  bevestigInlogEmail,
+  verwerkInlogLink,
   luisterNaarInlogStatus,
   logUit,
 } from './authStore.js'
 
 // Auth-toestand en -acties doorgeven, zodat componenten deze uit cvStore
 // kunnen blijven importeren zonder te weten dat ze uit authStore komen.
-export { gebruiker, isLaden, loginEmail, linkVerstuurd, toonMenu, loginMetLink }
+export { gebruiker, isLaden, loginEmail, linkVerstuurd, toonMenu, loginMetLink,
+         vraagInlogEmail, inlogFout, bevestigInlogEmail }
 
 // --- CV-velden ---
 export const voornaam = ref('')
@@ -122,11 +126,10 @@ watch(verzamelData, () => {
 // Start de applicatie: rondt een eventuele inlog-link af en luistert daarna
 // naar wijzigingen in de inlogstatus om het juiste CV in te laden.
 export async function initialiseerApp() {
-  try {
-    await voltooiInloggen()
+try {
+    await verwerkInlogLink()
   } catch (error) {
-    console.error("Fout bij voltooien inloggen:", error.message)
-    alert(error.message)
+    console.error("Fout bij verwerken inloglink:", error.message)
   }
 
   luisterNaarInlogStatus(async (user) => {

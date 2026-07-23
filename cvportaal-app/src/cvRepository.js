@@ -2,13 +2,12 @@
 // ---------------------------------------------------------------------------
 // DE "BALIE" (repository-laag).
 //
-// Dit bestand is de enige plek die de store gebruikt om data op te halen,
-// op te slaan, in te loggen en uit te loggen. De store weet NIET dat er
-// Firebase achter zit — hij praat alleen met deze balie.
+// Dit bestand is de enige plek die de stores gebruiken om data op te halen,
+// op te slaan, in te loggen en uit te loggen. De stores weten niet dat er
+// Firebase achter zit — ze praten alleen met deze balie.
 //
-// Nu zit Firebase erachter (via databaseService.js). Bij de latere migratie
-// naar Supabase vervangen we ALLEEN de binnenkant van dit bestand; de store
-// en de componenten hoeven dan niet aangeraakt te worden.
+// Bij de latere migratie naar Supabase vervangen we alleen de binnenkant van
+// dit bestand; de stores en componenten hoeven dan niet aangeraakt te worden.
 // ---------------------------------------------------------------------------
 
 import {
@@ -17,6 +16,8 @@ import {
   haalGegevensOp,
   stuurInlogLink,
   voltooiInloggen,
+  isInlogLink,
+  onthoudenInlogEmail,
   logUit,
   luisterNaarInlogStatus,
 } from './databaseService.js'
@@ -41,8 +42,16 @@ export const cvRepository = {
     return await stuurInlogLink(email);
   },
 
-  async voltooiInloggen() {
-    return await voltooiInloggen();
+  isInlogLink() {
+    return isInlogLink();
+  },
+
+  onthoudenInlogEmail() {
+    return onthoudenInlogEmail();
+  },
+
+  async voltooiInloggen(email) {
+    return await voltooiInloggen(email);
   },
 
   async logUit() {
