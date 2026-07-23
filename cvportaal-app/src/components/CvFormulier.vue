@@ -108,11 +108,16 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
 <SectieProfiel />
 <SectieSterkePunten v-if="toonSterkePunten" />
 
-      <div v-if="toonWerkervaring || toonOpleidingen">
-          <div class="waarschuwing-blauw">
-              <p class="waarschuwing-tekst-blauw">
-                  💡 Werkgevers houden van een cv van maximaal 1 pagina. Kies daarom alleen je belangrijkste werkervaring en opleidingen. Laat alles weg van meer dan 10 jaar geleden.
-              </p>
+<div v-if="toonWerkervaring || toonOpleidingen" class="tip-blok">
+          <div class="tip-icoon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="22" height="22" aria-hidden="true">
+                  <path d="M9 18h6M10 22h4"></path>
+                  <path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"></path>
+              </svg>
+          </div>
+          <div class="tip-inhoud">
+              <p class="tip-kop">Tip voor een sterk cv</p>
+              <p class="tip-tekst">Werkgevers houden van een cv van maximaal 1 pagina. Kies daarom alleen je belangrijkste werkervaring en opleidingen. Laat de rest weg.</p>
           </div>
       </div>
 
@@ -194,10 +199,44 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
 .kleur-rondje:hover { transform: scale(1.1); }
 .kleur-rondje.actief { border-color: var(--kleur-tekst); }
 
-/* Blauw informatieblok boven werkervaring/opleidingen */
-.waarschuwing-blauw { background-color: #ebf8ff; border-left: 4px solid var(--kleur-accent); padding: 15px; border-radius: var(--radius-middel); margin-bottom: 20px; margin-top: 35px; }
-.waarschuwing-tekst-blauw { font-size: 13px; color: var(--kleur-accent-donker); margin: 0; font-weight: 600; line-height: 1.5; }
-
+/* Informatieblok met tip, verschijnt bij werkervaring en/of opleidingen */
+.tip-blok {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--kleur-accent-zacht);
+  border: 1px solid var(--kleur-accent-licht);
+  border-radius: var(--radius-groot);
+  padding: 18px 20px;
+  margin-top: 35px;
+  margin-bottom: 20px;
+}
+.tip-icoon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--kleur-accent-licht);
+  color: var(--kleur-accent-donker);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tip-inhoud { min-width: 0; }
+.tip-kop {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--kleur-accent-donker);
+  margin: 0 0 4px 0;
+  letter-spacing: 0.2px;
+}
+.tip-tekst {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--kleur-tekst-gedempt);
+  margin: 0;
+  line-height: 1.6;
+}
 @media (max-width: 768px) {
   .instellingen-kaart { padding: 15px; }
 }
