@@ -35,7 +35,7 @@ import {
       </div>
 
       <div class="autogrow-wrapper" :data-value="(meerOverMijTekst || '') + ' '">
-        <textarea v-model="meerOverMijTekst" @input="isAiToegepastMeerOverMij = false" placeholder="Bijv. Ik ben vrijwilliger bij de voetbalclub van mijn dochter..." :disabled="isAiLadenMeerOverMij" :style="{ opacity: isAiLadenMeerOverMij ? 0.6 : 1, borderColor: meerOverMijLengte > 400 ? '#e53e3e' : '' }"></textarea>
+        <textarea dir="auto" v-model="meerOverMijTekst" @input="isAiToegepastMeerOverMij = false" placeholder="Bijv. Ik ben vrijwilliger bij de voetbalclub van mijn dochter..." :disabled="isAiLadenMeerOverMij" :style="{ opacity: isAiLadenMeerOverMij ? 0.6 : 1, borderColor: meerOverMijLengte > 400 ? '#e53e3e' : '' }"></textarea>
       </div>
     </div>
   </div>

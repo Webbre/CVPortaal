@@ -170,3 +170,14 @@
   .autogrow-wrapper::after { display: none; }
   .autogrow-wrapper > textarea { field-sizing: content; }
 }
+/* Ondersteuning voor talen die van rechts naar links lezen (Arabisch, Farsi,
+   Dari, Pashto). De leesrichting volgt automatisch de ingevoerde tekst. */
+.autogrow-wrapper > textarea,
+.cv-papier p,
+.cv-p,
+.cv-info-kaart,
+.item-tekst,
+.klassiek-profiel,
+.modern-tekst {
+  unicode-bidi: plaintext;
+}

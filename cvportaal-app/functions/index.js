@@ -6,7 +6,7 @@ const PROJECT_ID = "cvportaal-ae317";
 const MAX_INPUT_LENGTE = 2000; // ruim boven de client-limiet van 400, maar dicht tegen misbruik
 
 exports.verbeterProfiel = onCall(
-  { region: REGION, timeoutSeconds: 120 },
+{ region: REGION, timeoutSeconds: 120, enforceAppCheck: true },
   async (request) => {
     // --- BEVEILIGING: alleen ingelogde gebruikers ---
     if (!request.auth) {

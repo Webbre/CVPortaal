@@ -37,7 +37,7 @@ import {
       </div>
 
       <div class="autogrow-wrapper" :data-value="(profieltekst || '') + ' '">
-        <textarea v-model="profieltekst" @input="isAiToegepast = false" placeholder="Denk aan je dagelijks leven, wat je leuk vindt of wat je graag wilt gaan doen..." :disabled="isAiLaden" :style="{ opacity: isAiLaden ? 0.6 : 1, borderColor: profielLengte > 400 ? '#e53e3e' : '' }"></textarea>
+        <textarea dir="auto" v-model="profieltekst" @input="isAiToegepast = false" placeholder="Denk aan je dagelijks leven, wat je leuk vindt of wat je graag wilt gaan doen..." :disabled="isAiLaden" :style="{ opacity: isAiLaden ? 0.6 : 1, borderColor: profielLengte > 400 ? '#e53e3e' : '' }"></textarea>
       </div>
     </div>
   </div>

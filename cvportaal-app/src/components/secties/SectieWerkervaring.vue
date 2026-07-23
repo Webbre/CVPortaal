@@ -81,7 +81,7 @@ import {
         <div class="form-groep volledige-breedte">
           <label>Korte omschrijving</label>
           <div class="autogrow-wrapper" :data-value="(werk.omschrijving || '') + ' '">
-            <textarea v-model="werk.omschrijving" placeholder="Wat waren je taken?"></textarea>
+            <textarea dir="auto" v-model="werk.omschrijving" placeholder="Wat waren je taken?"></textarea>
           </div>
         </div>
       </div>
