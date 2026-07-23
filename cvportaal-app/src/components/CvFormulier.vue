@@ -35,6 +35,11 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
 <h1 class="app-titel app-titel-kort">CVPortaal</h1>
 </div>
           
+<!-- Logo van de opdrachtgever. Nu een plaatshouder; wordt later
+               per organisatie geladen vanuit de tenant-instellingen. -->
+          <div class="organisatie-logo">
+              <span>Logo</span>
+          </div>
           <div class="header-acties">
               <div class="header-knoppen-links">
                   <button class="opslaan-knop" 
@@ -144,12 +149,29 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 15px;
+  row-gap: 26px;
+  column-gap: 15px;
 }
 .app-logo-groep { gap: 14px; }
 .app-logo { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; }
 .app-titel-kort { display: none; }
 .app-titel-lang { display: block; }
+
+/* Plaatshouder voor het logo van de opdrachtgever (rechtsboven in de header) */
+.organisatie-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  min-width: 96px;
+  padding: 0 14px;
+  border: 1px dashed var(--kleur-rand-sterk);
+  border-radius: var(--radius-middel);
+  color: var(--kleur-tekst-flauw);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
 
 .header-acties { display: flex; width: 100%; justify-content: space-between; align-items: center; }
 .header-knoppen-links { display: flex; gap: 10px; }
