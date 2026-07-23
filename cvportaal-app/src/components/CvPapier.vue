@@ -6,24 +6,24 @@ import TemplateKlassiek from './sjablonen/TemplateKlassiek.vue'
 import TemplateModern from './sjablonen/TemplateModern.vue'
 
 // Speling in pixels voordat we alarm slaan. De sjablonen houden zelf al een
-// marge van ongeveer 40 pixels onderaan aan, gelijk aan de zijkanten; deze
-// waarde vangt alleen afrondingsverschillen op. Slaat de melding te vroeg aan,
-// verhoog dit getal. Slaat hij te laat aan, verlaag het.
+// marge van ongeveer 40 pixels onderaan aan, gelijk aan de zijkanten. Hoger
+// getal = de melding verschijnt later, lager = eerder.
 const SPELING_PX = 2
 
 const cvInhoud = ref(null)
 const cvIsTeLang = ref(false)
 let formaatBewaker = null
 
-// Loopt alle onderdelen van het cv langs en kijkt of er ergens inhoud buiten
-// zijn vak valt. Zo werkt de controle bij alle drie de sjablonen gelijk,
-// ongeacht hoe ze intern zijn opgebouwd.
+// Kijkt alleen naar het papier als geheel: de buitenrand en het sjabloon dat
+// erin zit. Bewust NIET naar elk onderdeel apart, want sommige sjablonen laten
+// iets met opzet buiten zijn vak vallen — zoals de profielfoto die in Modern
+// over de rand van de kopbalk hangt.
 function meetOverloop() {
   const papier = cvInhoud.value
   if (!papier) return
 
-  const onderdelen = [papier, ...papier.querySelectorAll('*')]
-  cvIsTeLang.value = onderdelen.some(
+  const paginas = [papier, papier.firstElementChild].filter(Boolean)
+  cvIsTeLang.value = paginas.some(
     (el) => el.scrollHeight > el.clientHeight + SPELING_PX
   )
 }
