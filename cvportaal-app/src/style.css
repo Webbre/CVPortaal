@@ -181,3 +181,9 @@
 .modern-tekst {
   unicode-bidi: plaintext;
 }
+/* Witregels en regelafbrekingen uit de tekstvakken behouden op het cv, zodat
+   de weergave overeenkomt met wat de gebruiker heeft getypt. */
+.cv-papier p,
+.cv-info-kaart {
+  white-space: pre-wrap;
+}
