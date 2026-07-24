@@ -80,7 +80,7 @@ onUnmounted(() => { if (formaatBewaker) formaatBewaker.disconnect() })
       </div>
       <div class="overloop-inhoud">
         <p class="overloop-kop">Je cv past niet meer op één pagina</p>
-        <p class="overloop-tekst">De onderste tekst valt weg zodra je het cv opslaat. Maak een tekst korter of zet een onderdeel uit.</p>
+        <p class="overloop-tekst">LET OP: De onderste tekst valt nu weg op je cv. Gebruik een andere cv-variant, verwijder iets of maak een tekst korter.</p>
       </div>
     </div>
 

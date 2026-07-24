@@ -21,7 +21,7 @@ import {
          :style="{
              marginBottom: index < werkervaringen.length - 1 ? '25px' : '15px',
              paddingBottom: index < werkervaringen.length - 1 ? '25px' : '0px',
-             borderBottom: index < werkervaringen.length - 1 ? '1px solid #e2e8f0' : 'none'
+             borderBottom: index < werkervaringen.length - 1 ? '2px solid var(--kleur-rand-sterk)' : 'none'
          }">
       <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
         <button class="verwijder-knop" @click="verwijderWerkervaring(index)">Verwijderen</button>
@@ -80,7 +80,7 @@ import {
         <div class="form-groep volledige-breedte">
           <label>Korte omschrijving</label>
           <div class="autogrow-wrapper" :data-value="(werk.omschrijving || '') + ' '">
-            <textarea dir="auto" v-model="werk.omschrijving" placeholder="Wat waren je taken?"></textarea>
+            <textarea dir="auto" v-model="werk.omschrijving" :placeholder="werk.isHuidigeBaan ? 'Wat zijn je taken?' : 'Wat waren je taken?'"></textarea>
           </div>
         </div>
       </div>

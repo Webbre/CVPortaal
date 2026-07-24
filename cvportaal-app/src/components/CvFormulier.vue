@@ -121,8 +121,8 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
               </svg>
           </div>
           <div class="tip-inhoud">
-              <p class="tip-kop">Tip voor een sterk cv</p>
-              <p class="tip-tekst">Werkgevers houden van een cv van maximaal 1 pagina. Kies daarom alleen je belangrijkste werkervaring en opleidingen. Laat de rest weg.</p>
+              <p class="tip-kop">Een kort cv</p>
+              <p class="tip-tekst">CVPortaal maakt je cv precies 1 pagina lang. Dat is wat werkgevers graag zien. Kies daarom alleen je beste werkervaring en opleidingen.</p>
           </div>
       </div>
 

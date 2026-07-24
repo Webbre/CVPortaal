@@ -21,7 +21,7 @@ import {
          :style="{
              marginBottom: index < opleidingen.length - 1 ? '25px' : '15px',
              paddingBottom: index < opleidingen.length - 1 ? '25px' : '0px',
-             borderBottom: index < opleidingen.length - 1 ? '1px solid #e2e8f0' : 'none'
+             borderBottom: index < opleidingen.length - 1 ? '2px solid var(--kleur-rand-sterk)' : 'none'
          }">
       <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
         <button class="verwijder-knop" @click="verwijderOpleiding(index)">Verwijderen</button>

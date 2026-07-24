@@ -12,13 +12,13 @@ import {
   <div class="cv-modern-papier">
     <div class="modern-header" :style="{ backgroundColor: gekozenKleur }">
       <div class="header-content">
-        <h1 class="modern-naam">{{ voornaam || 'Jouw' }} {{ achternaam || 'Naam' }}</h1>
+        <h1 class="modern-naam">{{ voornaam || 'Jouw' }} {{ achternaam || 'naam' }}</h1>
         <div class="modern-contact">
-  <span v-if="woonplaats">{{ woonplaats }}</span>
-  <span v-if="email">• {{ email }}</span>
-  <span v-if="telefoon">• {{ telefoon }}</span>
-  <span v-if="geboorteJaar">• {{ geboorteJaar }}</span>
-</div>
+          <span>{{ woonplaats || 'Woonplaats' }}</span>
+          <span>• {{ email || 'E-mail' }}</span>
+          <span>• {{ telefoon || 'Telefoon' }}</span>
+          <span v-if="geboorteJaar">• {{ geboorteJaar }}</span>
+        </div>
       </div>
       <div v-if="profielfoto && toonFotoOpCv" class="modern-foto" :style="{ backgroundImage: `url(${profielfoto})` }"></div>
     </div>
@@ -30,16 +30,18 @@ import {
           <p class="modern-tekst">{{ profieltekst || 'Jouw profieltekst verschijnt hier...' }}</p>
         </div>
 
-        <div v-if="toonSterkePunten && sterkePunten.length > 0" class="modern-sectie">
+        <div v-if="toonSterkePunten" class="modern-sectie">
           <h3 class="modern-sectietitel" :style="{ color: gekozenKleur }">Sterke punten</h3>
-          <div class="modern-tags">
+          <p v-if="sterkePunten.length === 0" class="modern-leeg">Nog geen sterke punten toegevoegd.</p>
+          <div v-else class="modern-tags">
             <span v-for="p in sterkePunten" :key="p.id" v-show="p.tekst" class="modern-tag" :style="{ backgroundColor: gekozenKleur + '20', color: gekozenKleur }">{{ p.tekst }}</span>
           </div>
         </div>
 
-        <div v-if="toonTalen && talen.length > 0" class="modern-sectie">
+        <div v-if="toonTalen" class="modern-sectie">
           <h3 class="modern-sectietitel" :style="{ color: gekozenKleur }">Talen</h3>
-          <div v-for="t in talen" :key="t.id" v-show="t.naam" class="modern-taal">
+          <p v-if="talen.length === 0" class="modern-leeg">Nog geen talen toegevoegd.</p>
+          <div v-else v-for="t in talen" :key="t.id" v-show="t.naam" class="modern-taal">
             <span class="taal-naam">{{ t.naam }}</span>
             <div class="taal-balk">
               <div class="taal-vul" :style="{ width: (t.niveau * 20) + '%', backgroundColor: gekozenKleur }"></div>
@@ -47,25 +49,28 @@ import {
           </div>
         </div>
 
-        <div v-if="toonHobbys && hobbys.length > 0" class="modern-sectie">
+        <div v-if="toonHobbys" class="modern-sectie">
           <h3 class="modern-sectietitel" :style="{ color: gekozenKleur }">Dit vind ik leuk</h3>
-          <ul class="modern-lijst">
+          <p v-if="hobbys.length === 0" class="modern-leeg">Nog geen items toegevoegd.</p>
+          <ul v-else class="modern-lijst">
             <li v-for="h in hobbys" :key="h.id" v-show="h.tekst">{{ h.tekst }}</li>
           </ul>
         </div>
+
         <div v-if="heeftRijbewijs || heeftAuto" class="modern-sectie">
-  <h3 class="modern-sectietitel" :style="{ color: gekozenKleur }">Vervoer</h3>
-  <ul class="modern-lijst">
-    <li v-if="heeftRijbewijs">Rijbewijs B</li>
-    <li v-if="heeftAuto">Eigen auto</li>
-  </ul>
-</div>
+          <h3 class="modern-sectietitel" :style="{ color: gekozenKleur }">Vervoer</h3>
+          <ul class="modern-lijst">
+            <li v-if="heeftRijbewijs">Rijbewijs B</li>
+            <li v-if="heeftAuto">Eigen auto</li>
+          </ul>
+        </div>
       </div>
 
       <div class="modern-hoofd">
         <div v-if="toonWerkervaring">
           <h2 class="modern-hoofdtitel" :style="{ color: gekozenKleur }">Werkervaring</h2>
-          <div v-for="w in gesorteerdeWerkervaringen" :key="w.id" class="modern-card">
+          <p v-if="werkervaringen.length === 0" class="modern-leeg">Nog geen werkervaring toegevoegd.</p>
+          <div v-else v-for="w in gesorteerdeWerkervaringen" :key="w.id" class="modern-card">
             <div class="card-header">
               <span class="card-titel">{{ w.functie || 'Functie' }}</span>
               <span class="card-datum" :style="{ color: gekozenKleur }">
@@ -81,7 +86,8 @@ import {
 
         <div v-if="toonOpleidingen">
           <h2 class="modern-hoofdtitel" :style="{ color: gekozenKleur }">Opleidingen</h2>
-          <div v-for="o in gesorteerdeOpleidingen" :key="o.id" class="modern-card">
+          <p v-if="opleidingen.length === 0" class="modern-leeg">Nog geen opleidingen of cursussen toegevoegd.</p>
+          <div v-else v-for="o in gesorteerdeOpleidingen" :key="o.id" class="modern-card">
             <div class="card-header">
               <span class="card-titel">{{ o.studie || 'Opleiding of cursus' }}</span>
               <span class="card-datum" :style="{ color: gekozenKleur }">
@@ -97,9 +103,10 @@ import {
           </div>
         </div>
         
-        <div v-if="toonMeerOverMij && meerOverMijTekst" class="modern-card" style="background: #f8fafc; border: none;">
+        <div v-if="toonMeerOverMij" class="modern-card" style="background: #f8fafc; border: none;">
           <h3 class="modern-sectietitel" :style="{ color: gekozenKleur }">Meer over mij</h3>
-          <p class="modern-tekst">{{ meerOverMijTekst }}</p>
+          <p v-if="!meerOverMijTekst" class="modern-leeg">Nog geen tekst toegevoegd.</p>
+          <p v-else class="modern-tekst">{{ meerOverMijTekst }}</p>
         </div>
       </div>
     </div>
@@ -149,4 +156,7 @@ import {
 .card-titel { font-size: 16px; font-weight: 800; color: #1a202c; }
 .card-datum { font-size: 12px; font-weight: 700; }
 .card-sub { font-size: 14px; font-weight: 600; color: #718096; margin-bottom: 8px; }
+
+/* Grijze hint wanneer een aangezette sectie nog leeg is */
+.modern-leeg { font-size: 13px; font-style: italic; color: #a0aec0; margin: 0 0 10px 0; }
 </style>

@@ -19,9 +19,9 @@ import {
         </div>
       </div>
       <div class="header-rechts">
-        <p v-if="woonplaats">{{ woonplaats }}</p>
-        <p v-if="email">{{ email }}</p>
-        <p v-if="telefoon">{{ telefoon }}</p>
+        <p>{{ woonplaats || 'Woonplaats' }}</p>
+        <p>{{ email || 'E-mail' }}</p>
+        <p>{{ telefoon || 'Telefoon' }}</p>
         <p v-if="geboorteJaar">{{ geboorteJaar }}</p>
       </div>
     </div>
@@ -30,7 +30,8 @@ import {
       <div class="klassiek-hoofd">
         <div v-if="toonWerkervaring">
           <h2 class="klassiek-sectietitel" :style="{ color: gekozenKleur }">Werkervaring</h2>
-          <div v-for="w in gesorteerdeWerkervaringen" :key="w.id" class="klassiek-item">
+          <p v-if="werkervaringen.length === 0" class="klassiek-leeg">Nog geen werkervaring toegevoegd.</p>
+          <div v-else v-for="w in gesorteerdeWerkervaringen" :key="w.id" class="klassiek-item">
             <div class="item-header">
               <span class="item-titel">{{ w.functie || 'Functie' }}</span>
               <span class="item-datum">
@@ -45,8 +46,9 @@ import {
         </div>
 
         <div v-if="toonOpleidingen">
-          <h2 class="klassiek-sectietitel" :style="{ color: gekozenKleur }">Opleidingen & Cursussen</h2>
-          <div v-for="o in gesorteerdeOpleidingen" :key="o.id" class="klassiek-item">
+          <h2 class="klassiek-sectietitel" :style="{ color: gekozenKleur }">Opleidingen &amp; Cursussen</h2>
+          <p v-if="opleidingen.length === 0" class="klassiek-leeg">Nog geen opleidingen of cursussen toegevoegd.</p>
+          <div v-else v-for="o in gesorteerdeOpleidingen" :key="o.id" class="klassiek-item">
             <div class="item-header">
               <span class="item-titel">{{ o.studie || 'Opleiding of cursus' }}</span>
               <span class="item-datum">
@@ -64,24 +66,27 @@ import {
       </div>
 
       <div class="klassiek-zijbalk">
-        <div v-if="toonSterkePunten && sterkePunten.length > 0" class="zijbalk-sectie">
+        <div v-if="toonSterkePunten" class="zijbalk-sectie">
           <h3 class="zijbalk-titel" :style="{ color: gekozenKleur }">Sterke punten</h3>
-          <ul class="klassiek-lijst">
+          <p v-if="sterkePunten.length === 0" class="klassiek-leeg">Nog geen sterke punten toegevoegd.</p>
+          <ul v-else class="klassiek-lijst">
             <li v-for="p in sterkePunten" :key="p.id" v-show="p.tekst">{{ p.tekst }}</li>
           </ul>
         </div>
 
-        <div v-if="toonTalen && talen.length > 0" class="zijbalk-sectie">
+        <div v-if="toonTalen" class="zijbalk-sectie">
           <h3 class="zijbalk-titel" :style="{ color: gekozenKleur }">Talen</h3>
-          <div v-for="t in talen" :key="t.id" v-show="t.naam" class="taal-item">
+          <p v-if="talen.length === 0" class="klassiek-leeg">Nog geen talen toegevoegd.</p>
+          <div v-else v-for="t in talen" :key="t.id" v-show="t.naam" class="taal-item">
             <span>{{ t.naam }}</span>
             <span class="taal-niveau">{{ t.niveau }}/5</span>
           </div>
         </div>
 
-        <div v-if="toonHobbys && hobbys.length > 0" class="zijbalk-sectie">
+        <div v-if="toonHobbys" class="zijbalk-sectie">
           <h3 class="zijbalk-titel" :style="{ color: gekozenKleur }">Dit vind ik leuk</h3>
-          <ul class="klassiek-lijst">
+          <p v-if="hobbys.length === 0" class="klassiek-leeg">Nog geen items toegevoegd.</p>
+          <ul v-else class="klassiek-lijst">
             <li v-for="h in hobbys" :key="h.id" v-show="h.tekst">{{ h.tekst }}</li>
           </ul>
         </div>
@@ -94,9 +99,10 @@ import {
           </ul>
         </div>
 
-        <div v-if="toonMeerOverMij && meerOverMijTekst" class="zijbalk-sectie">
+        <div v-if="toonMeerOverMij" class="zijbalk-sectie">
           <h3 class="zijbalk-titel" :style="{ color: gekozenKleur }">Meer over mij</h3>
-          <p style="font-size: 13px; line-height: 1.5; color: #444;">{{ meerOverMijTekst }}</p>
+          <p v-if="!meerOverMijTekst" class="klassiek-leeg">Nog geen tekst toegevoegd.</p>
+          <p v-else style="font-size: 13px; line-height: 1.5; color: #444;">{{ meerOverMijTekst }}</p>
         </div>
       </div>
     </div>
@@ -138,4 +144,7 @@ import {
 .klassiek-lijst { list-style-type: square; padding-left: 15px; font-size: 13px; line-height: 1.8; color: #444; }
 .taal-item { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; border-bottom: 1px dotted #ccc; padding-bottom: 2px;}
 .taal-niveau { font-weight: bold; color: #666; }
+
+/* Grijze hint wanneer een aangezette sectie nog leeg is */
+.klassiek-leeg { font-family: 'Arial', sans-serif; font-size: 13px; font-style: italic; color: #a0aec0; margin-bottom: 20px; }
 </style>
