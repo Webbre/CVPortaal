@@ -121,7 +121,7 @@ import SectieOpleidingen from './secties/SectieOpleidingen.vue'
               </svg>
           </div>
           <div class="tip-inhoud">
-              <p class="tip-kop">Een kort cv</p>
+              <p class="tip-kop">Je cv wordt één pagina</p>
               <p class="tip-tekst">CVPortaal maakt je cv precies 1 pagina lang. Dat is wat werkgevers graag zien. Kies daarom alleen je beste werkervaring en opleidingen.</p>
           </div>
       </div>
