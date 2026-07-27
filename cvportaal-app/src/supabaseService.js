@@ -34,7 +34,12 @@ async function huidigeGebruiker() {
 export async function stuurInlogLink(email) {
   const { error } = await supabase.auth.signInWithOtp({
     email,
-    options: { emailRedirectTo: window.location.origin },
+    options: {
+      emailRedirectTo: window.location.origin,
+      // Alleen bestaande accounts kunnen inloggen. In CVPortaal worden
+      // accounts aangemaakt door een coach, niet door de gebruiker zelf.
+      shouldCreateUser: false,
+    },
   })
   if (error) throw error
 }
