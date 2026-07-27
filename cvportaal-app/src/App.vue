@@ -3,7 +3,7 @@ import { onMounted } from 'vue'
 import { 
   gebruiker, isLaden, loginEmail, linkVerstuurd, 
   loginMetLink, initialiseerApp,
-  vraagInlogEmail, inlogFout, bevestigInlogEmail
+  inlogFout, 
 } from './cvStore.js'
 import CvFormulier from './components/CvFormulier.vue'
 import CvPapier from './components/CvPapier.vue'
@@ -17,21 +17,6 @@ onMounted(() => {
   <div v-if="isLaden" class="volledig-scherm center-inhoud">
     <div class="loader"></div>
     <p style="margin-top: 15px; color: #4a5568; font-weight: 600;">Even geduld...</p>
-  </div>
-
-<div v-else-if="vraagInlogEmail" class="volledig-scherm center-inhoud inlog-achtergrond">
-    <div class="inlog-box">
-      <h1 style="color: #333; margin-bottom: 10px; font-size: 24px;">Nog één stap</h1>
-      <p style="color: #718096; font-size: 14px; margin-bottom: 25px; line-height: 1.5;">
-        Vul ter bevestiging het e-mailadres in waarmee je de inloglink hebt aangevraagd.
-      </p>
-      <div class="form-groep" style="text-align: left;">
-        <label>E-mailadres</label>
-        <input type="email" v-model="loginEmail" placeholder="jouw@email.nl" @keyup.enter="bevestigInlogEmail">
-      </div>
-      <p v-if="inlogFout" style="color: #c53030; font-size: 13px; font-weight: 600; margin-top: 12px;">{{ inlogFout }}</p>
-      <button class="hoofd-knop" style="width: 100%; margin-top: 15px;" @click="bevestigInlogEmail">Inloggen</button>
-    </div>
   </div>
 
   <div v-else-if="!gebruiker" class="volledig-scherm center-inhoud inlog-achtergrond">

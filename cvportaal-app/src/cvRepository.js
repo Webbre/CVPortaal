@@ -3,62 +3,54 @@
 // DE "BALIE" (repository-laag).
 //
 // Dit bestand is de enige plek die de stores gebruiken om data op te halen,
-// op te slaan, in te loggen en uit te loggen. De stores weten niet dat er
-// Firebase achter zit — ze praten alleen met deze balie.
+// op te slaan, in te loggen en uit te loggen. De stores weten niet welke
+// dienst erachter zit.
 //
-// Bij de latere migratie naar Supabase vervangen we alleen de binnenkant van
-// dit bestand; de stores en componenten hoeven dan niet aangeraakt te worden.
+// Sinds de migratie loopt alles via Supabase (supabaseService.js). De oude
+// Firebase-uitvoering staat nog in databaseService.js; die wordt nergens meer
+// gebruikt en kan vervallen zodra de overstap zich bewezen heeft.
 // ---------------------------------------------------------------------------
 
 import {
-  aiBrug,
-  slaGegevensOp,
-  haalGegevensOp,
   stuurInlogLink,
-  voltooiInloggen,
-  isInlogLink,
-  onthoudenInlogEmail,
-  logUit,
   luisterNaarInlogStatus,
-} from './databaseService.js'
+  logUit,
+  haalProfielOp,
+  haalGegevensOp,
+  slaGegevensOp,
+  verbeterTekst,
+} from './supabaseService.js'
 
 export const cvRepository = {
   // --- Data ---
   async laadCv() {
-    return await haalGegevensOp();
+    return await haalGegevensOp()
   },
 
   async slaCvOp(data) {
-    return await slaGegevensOp(data);
+    return await slaGegevensOp(data)
+  },
+
+  // --- Profiel ---
+  async laadProfiel() {
+    return await haalProfielOp()
   },
 
   // --- AI ---
   async verbeterTekst(payload) {
-    return await aiBrug(payload);
+    return await verbeterTekst(payload)
   },
 
   // --- Authenticatie ---
   async stuurInlogLink(email) {
-    return await stuurInlogLink(email);
-  },
-
-  isInlogLink() {
-    return isInlogLink();
-  },
-
-  onthoudenInlogEmail() {
-    return onthoudenInlogEmail();
-  },
-
-  async voltooiInloggen(email) {
-    return await voltooiInloggen(email);
+    return await stuurInlogLink(email)
   },
 
   async logUit() {
-    return await logUit();
+    return await logUit()
   },
 
   luisterNaarInlogStatus(callback) {
-    return luisterNaarInlogStatus(callback);
+    return luisterNaarInlogStatus(callback)
   },
 }

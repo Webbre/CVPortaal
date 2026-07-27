@@ -12,23 +12,22 @@ import { ref, watch, computed } from 'vue'
 import { cvRepository } from './cvRepository.js'
 import {
   gebruiker,
+  profiel,
   isLaden,
   loginEmail,
   linkVerstuurd,
   toonMenu,
-  vraagInlogEmail,
   inlogFout,
   loginMetLink,
-  bevestigInlogEmail,
-  verwerkInlogLink,
+  laadProfiel,
   luisterNaarInlogStatus,
   logUit,
 } from './authStore.js'
 
 // Auth-toestand en -acties doorgeven, zodat componenten deze uit cvStore
 // kunnen blijven importeren zonder te weten dat ze uit authStore komen.
-export { gebruiker, isLaden, loginEmail, linkVerstuurd, toonMenu, loginMetLink,
-         vraagInlogEmail, inlogFout, bevestigInlogEmail }
+export { gebruiker, profiel, isLaden, loginEmail, linkVerstuurd, toonMenu,
+         loginMetLink, inlogFout }
 
 // --- CV-velden ---
 export const voornaam = ref('')
@@ -125,18 +124,24 @@ watch(verzamelData, () => {
 
 // Start de applicatie: rondt een eventuele inlog-link af en luistert daarna
 // naar wijzigingen in de inlogstatus om het juiste CV in te laden.
+// Start de applicatie: luistert naar wijzigingen in de inlogstatus en laadt
+// bij het inloggen eerst het profiel en daarna het cv.
 export async function initialiseerApp() {
-try {
-    await verwerkInlogLink()
-  } catch (error) {
-    console.error("Fout bij verwerken inloglink:", error.message)
-  }
-
   luisterNaarInlogStatus(async (user) => {
     isAanHetHydrateren = true
     try {
       if (user) {
         gebruiker.value = user
+
+        // Zonder profiel is het account nog niet door een begeleider gereedgemaakt.
+        const eigenProfiel = await laadProfiel()
+        if (!eigenProfiel) {
+          inlogFout.value =
+            'Je account is nog niet gereed. Neem contact op met je begeleider.'
+          maakCvLeeg(false)
+          return
+        }
+
         const data = await cvRepository.laadCv()
         if (data) {
           voornaam.value = data.voornaam || ''; achternaam.value = data.achternaam || ''
