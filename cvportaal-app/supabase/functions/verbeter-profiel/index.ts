@@ -108,7 +108,10 @@ ${inputTekst}
       },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { responseMimeType: 'application/json' },
+          generationConfig: {
+          responseMimeType: 'application/json',
+          thinkingConfig: { thinkingLevel: 'low' },
+        },
       }),
     })
 
