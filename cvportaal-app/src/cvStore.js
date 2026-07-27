@@ -15,10 +15,13 @@ import {
   profiel,
   isLaden,
   loginEmail,
-  linkVerstuurd,
   toonMenu,
   inlogFout,
-  loginMetLink,
+  inlogCode, 
+  codeVerstuurd, 
+  vraagCodeAan, 
+  bevestigCode, 
+  terugNaarEmail,
   laadProfiel,
   luisterNaarInlogStatus,
   logUit,
@@ -26,8 +29,8 @@ import {
 
 // Auth-toestand en -acties doorgeven, zodat componenten deze uit cvStore
 // kunnen blijven importeren zonder te weten dat ze uit authStore komen.
-export { gebruiker, profiel, isLaden, loginEmail, linkVerstuurd, toonMenu,
-         loginMetLink, inlogFout }
+export { gebruiker, profiel, isLaden, loginEmail, toonMenu, inlogFout,
+         inlogCode, codeVerstuurd, vraagCodeAan, bevestigCode, terugNaarEmail }
 
 // --- CV-velden ---
 export const voornaam = ref('')

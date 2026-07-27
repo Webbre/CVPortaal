@@ -19,6 +19,7 @@ import {
   haalGegevensOp,
   slaGegevensOp,
   verbeterTekst,
+  bevestigCode,
 } from './supabaseService.js'
 
 export const cvRepository = {
@@ -44,6 +45,10 @@ export const cvRepository = {
   // --- Authenticatie ---
   async stuurInlogLink(email) {
     return await stuurInlogLink(email)
+  },
+
+async bevestigCode(email, code) {
+    return await bevestigCode(email, code)
   },
 
   async logUit() {

@@ -44,6 +44,17 @@ export async function stuurInlogLink(email) {
   if (error) throw error
 }
 
+// Controleert de zescijferige code die per e-mail is verstuurd. Klopt hij,
+// dan is de gebruiker ingelogd.
+export async function bevestigCode(email, code) {
+  const { error } = await supabase.auth.verifyOtp({
+    email,
+    token: code,
+    type: 'email',
+  })
+  if (error) throw error
+}
+
 // Reageert op in- en uitloggen. Vuurt ook direct bij het laden van de pagina,
 // zodat een bestaande sessie meteen wordt opgepikt.
 export function luisterNaarInlogStatus(callback) {

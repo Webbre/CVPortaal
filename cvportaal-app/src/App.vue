@@ -1,8 +1,8 @@
 <script setup>
 import { onMounted } from 'vue'
 import { 
-  gebruiker, isLaden, loginEmail, linkVerstuurd, 
-  loginMetLink, initialiseerApp,
+  gebruiker, isLaden, loginEmail, inlogCode, codeVerstuurd, 
+  vraagCodeAan, bevestigCode, terugNaarEmail, initialiseerApp,
   inlogFout, 
 } from './cvStore.js'
 import CvFormulier from './components/CvFormulier.vue'
@@ -19,23 +19,41 @@ onMounted(() => {
     <p style="margin-top: 15px; color: #4a5568; font-weight: 600;">Even geduld...</p>
   </div>
 
-  <div v-else-if="!gebruiker" class="volledig-scherm center-inhoud inlog-achtergrond">
+  <div v-else-if="!gebruiker && !codeVerstuurd" class="volledig-scherm center-inhoud inlog-achtergrond">
     <div class="inlog-box">
-      <h1 style="color: #333; margin-bottom: 10px; font-size: 24px;">CVPortaal</h1>
-      <div v-if="!linkVerstuurd">
-        <p style="color: #718096; font-size: 14px; margin-bottom: 25px; line-height: 1.5;">Log in met een magische link.</p>
-        <div class="form-groep" style="text-align: left;">
-          <label>E-mailadres</label>
-          <input type="email" v-model="loginEmail" placeholder="jouw@email.nl" @keyup.enter="loginMetLink">
-        </div>
-        <p v-if="inlogFout" style="color: #c53030; font-size: 13px; font-weight: 600; margin-top: 12px;">{{ inlogFout }}</p>
-        <button class="hoofd-knop" style="width: 100%; margin-top: 15px;" @click="loginMetLink">Stuur inloglink</button>
+      <h1 style="color: #333; margin-bottom: 10px; font-size: 24px;">Inloggen bij CVPortaal</h1>
+      <p style="color: #718096; font-size: 14px; margin-bottom: 25px; line-height: 1.5;">
+        Vul je e-mailadres in. Je krijgt dan een code toegestuurd.
+      </p>
+      <div class="form-groep" style="text-align: left;">
+        <label>E-mailadres</label>
+        <input type="email" v-model="loginEmail" placeholder="jouw@email.nl" @keyup.enter="vraagCodeAan">
       </div>
-      <div v-else>
-        <div style="font-size: 40px; margin-bottom: 15px;" role="status">✉️</div>
-        <h2 style="color: #4A90E2; margin-bottom: 10px; font-size: 18px;">Check je mailbox!</h2>
-        <p style="color: #718096; font-size: 14px;">Link gestuurd naar <strong>{{ loginEmail }}</strong></p>
+      <p v-if="inlogFout" style="color: #c53030; font-size: 13px; font-weight: 600; margin-top: 12px;">{{ inlogFout }}</p>
+      <button class="hoofd-knop" style="width: 100%; margin-top: 15px;" @click="vraagCodeAan">Stuur mij een code</button>
+    </div>
+  </div>
+
+  <div v-else-if="!gebruiker && codeVerstuurd" class="volledig-scherm center-inhoud inlog-achtergrond">
+    <div class="inlog-box">
+      <h1 style="color: #333; margin-bottom: 10px; font-size: 24px;">Vul je code in</h1>
+      <p style="color: #718096; font-size: 14px; margin-bottom: 25px; line-height: 1.5;">
+        We hebben een code gestuurd naar<br><strong>{{ loginEmail }}</strong>
+      </p>
+      <div class="form-groep" style="text-align: left;">
+        <label>Code uit de e-mail</label>
+        <input type="text" v-model="inlogCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6"
+               placeholder="123456" @keyup.enter="bevestigCode"
+               style="font-size: 28px; letter-spacing: 8px; text-align: center; font-weight: 700;">
       </div>
+      <p v-if="inlogFout" style="color: #c53030; font-size: 13px; font-weight: 600; margin-top: 12px;">{{ inlogFout }}</p>
+      <button class="hoofd-knop" style="width: 100%; margin-top: 15px;" @click="bevestigCode">Inloggen</button>
+      <p style="font-size: 13px; color: #718096; margin-top: 20px; line-height: 1.6;">
+        Geen e-mail gekregen? Kijk ook in je map ongewenste e-mail.<br>
+        <button class="toevoeg-knop-sec" @click="vraagCodeAan">Stuur een nieuwe code</button>
+        &nbsp;·&nbsp;
+        <button class="toevoeg-knop-sec" @click="terugNaarEmail">Ander e-mailadres</button>
+      </p>
     </div>
   </div>
 
