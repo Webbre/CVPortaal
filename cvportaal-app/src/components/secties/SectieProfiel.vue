@@ -1,6 +1,8 @@
 <script setup>
 // Sectie "Dit ben ik": het profieltekstveld met AI-verbeterknop en tekenteller.
 // Deze sectie is altijd zichtbaar (geen aan/uit-schakelaar).
+
+import TaalHulp from '../TaalHulp.vue'
 import {
   profieltekst,
   profielLengte,
@@ -27,6 +29,7 @@ import {
           <span :style="{ color: profielLengte > 400 ? '#e53e3e' : '#718096', fontSize: '11px', fontWeight: '600' }">
             {{ profielLengte }} / 400 tekens
           </span>
+          <TaalHulp />
           <button class="ai-knop" @click="verbeterMetAI('profiel')" :disabled="isAiLaden">
             <svg v-if="!isAiToegepast && !isAiLaden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
             <svg v-if="isAiToegepast && !isAiLaden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
