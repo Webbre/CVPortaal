@@ -73,9 +73,9 @@ onUnmounted(() => {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 1px solid var(--kleur-rand);
+  border: 1px solid #2ECC71;
   background: var(--kleur-wit);
-  color: var(--kleur-tekst-zacht);
+  color: #2ECC71;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -85,9 +85,9 @@ onUnmounted(() => {
 }
 .taalhulp-knop:hover,
 .taalhulp-knop.is-open {
-  border-color: var(--kleur-accent);
-  color: var(--kleur-accent);
-  background: var(--kleur-accent-zacht);
+  border-color: #27AE60;
+  color: var(--kleur-wit);
+  background: #2ECC71;
 }
 
 .taalhulp-paneel {
