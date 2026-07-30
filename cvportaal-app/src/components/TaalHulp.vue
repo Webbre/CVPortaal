@@ -158,4 +158,15 @@ onUnmounted(() => {
   margin: 0;
   font-style: italic;
 }
+@media (max-width: 600px) {
+  .taalhulp-paneel {
+    position: fixed;
+    top: auto;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+    max-height: 70vh;
+  }
+}
 </style>

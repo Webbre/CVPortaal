@@ -42,7 +42,7 @@ onMounted(() => {
       </p>
       <div class="form-groep" style="text-align: left;">
         <label>Code uit de e-mail</label>
-        <input type="text" v-model="inlogCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6"
+        <input type="text" class="code-invoer" v-model="inlogCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6"
                placeholder="123456" @keyup.enter="bevestigCode"
                style="font-size: 28px; letter-spacing: 8px; text-align: center; font-weight: 700;">
       </div>
@@ -306,5 +306,11 @@ body { background-color: var(--kleur-achtergrond); overflow-x: hidden; color: va
 
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     @page { size: A4 portrait; margin: 0mm; }
+}
+/* De plaatshouder van de inlogcode lichter en dunner, zodat hij niet
+   verward wordt met een al ingevulde code. */
+.code-invoer::placeholder {
+  color: var(--kleur-rand-sterk);
+  font-weight: 400;
 }
 </style>

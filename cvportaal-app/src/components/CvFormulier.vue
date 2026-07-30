@@ -177,10 +177,23 @@ onUnmounted(() => {
   row-gap: 46px;
   column-gap: 15px;
 }
-.app-logo-groep { gap: 14px; }
+
+/* De titelgroep mag krimpen als de ruimte krap wordt, zodat het klantlogo
+   rechtsboven blijft staan in plaats van naar een volgende regel te vallen. */
+.app-logo-groep { gap: 14px; min-width: 0; flex-shrink: 1; }
+.app-titel { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
 .app-logo { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; }
 .app-titel-kort { display: none; }
 .app-titel-lang { display: block; }
+
+/* De lange titel past alleen naast het klantlogo als de kolom breed genoeg is.
+   Daaronder verschijnt de korte variant. Valt het op jouw scherm net verkeerd,
+   dan is 1400 het getal om aan te passen: hoger = eerder de korte titel. */
+@media (max-width: 1400px) {
+  .app-titel-lang { display: none; }
+  .app-titel-kort { display: block; }
+}
 
 /* Plaatshouder voor het logo van de opdrachtgever (rechtsboven in de header) */
 .organisatie-logo {
@@ -196,6 +209,7 @@ onUnmounted(() => {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.5px;
+  flex-shrink: 0;
 }
 
 .header-acties { display: flex; width: 100%; justify-content: space-between; align-items: center; }
@@ -290,12 +304,7 @@ onUnmounted(() => {
 }
 
 @media (max-width: 600px) {
-  .app-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
   .app-logo { width: 34px; height: 34px; }
-  .app-titel-lang { display: none; }
-  .app-titel-kort { display: block; }
+  .organisatie-logo { min-width: 76px; height: 38px; padding: 0 10px; font-size: 11px; }
 }
 </style>
