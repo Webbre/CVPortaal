@@ -160,7 +160,20 @@ export async function maakAccount(gegevens) {
   const { data, error } = await supabase.functions.invoke('maak-account', {
     body: gegevens,
   })
-  if (error) throw error
+
+  if (error) {
+    // Bij een foutcode geeft de bibliotheek een algemene melding. De echte
+    // uitleg zit in het antwoord zelf; die halen we eruit.
+    let melding = 'Het account kon niet worden aangemaakt.'
+    try {
+      const inhoud = await error.context?.json()
+      if (inhoud?.fout) melding = inhoud.fout
+    } catch {
+      // Geen leesbaar antwoord; we houden de algemene melding aan.
+    }
+    throw new Error(melding)
+  }
+
   if (data?.fout) throw new Error(data.fout)
   return data
 }

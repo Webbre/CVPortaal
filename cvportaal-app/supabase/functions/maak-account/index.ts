@@ -70,14 +70,21 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     )
 
-    const { data: aanvrager } = await beheerder
+const { data: aanvrager, error: aanvragerFout } = await beheerder
       .from('gebruikers')
       .select('id, rol, organisatie_id, actief')
       .eq('id', user.id)
       .maybeSingle()
 
-    if (!aanvrager || !aanvrager.actief) {
-      return antwoord({ fout: 'Je account is niet actief.' }, 403)
+    if (aanvragerFout) {
+      console.error('Kon aanvrager niet ophalen:', aanvragerFout.message)
+      return antwoord({ fout: 'Je gegevens konden niet worden opgehaald.' }, 500)
+    }
+    if (!aanvrager) {
+      return antwoord({ fout: 'Er is geen profiel gevonden bij je account.' }, 403)
+    }
+    if (!aanvrager.actief) {
+      return antwoord({ fout: 'Je account staat op inactief.' }, 403)
     }
 
     const verzoek = await req.json()
@@ -88,7 +95,7 @@ Deno.serve(async (req) => {
 
     const toegestaan = MAG_AANMAKEN[aanvrager.rol] ?? []
     if (!toegestaan.includes(rol)) {
-      return antwoord({ fout: 'Je mag dit soort account niet aanmaken.' }, 403)
+      return antwoord({ fout: `Je mag geen account met rol "${rol}" aanmaken (jouw rol: ${aanvrager.rol}).` }, 403)
     }
 
     // --- Klopt de invoer? ---------------------------------------------------
