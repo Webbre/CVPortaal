@@ -152,3 +152,41 @@ export async function verbeterTekst(payload) {
   if (data?.fout) throw new Error(data.fout)
   return { data }
 }
+// --- Beheer ----------------------------------------------------------------
+
+// Maakt een nieuw account aan via de serverfunctie. Wat is toegestaan bepaalt
+// die functie zelf, op basis van de rol van de aanvrager.
+export async function maakAccount(gegevens) {
+  const { data, error } = await supabase.functions.invoke('maak-account', {
+    body: gegevens,
+  })
+  if (error) throw error
+  if (data?.fout) throw new Error(data.fout)
+  return data
+}
+
+// Haalt de cliënten op die aan de ingelogde coach zijn toegewezen.
+export async function haalMijnClienten() {
+  const gebruiker = await huidigeGebruiker()
+  if (!gebruiker) return []
+
+  const { data: toewijzingen, error: toewijzingFout } = await supabase
+    .from('coach_toewijzingen')
+    .select('inwoner_id, toegewezen_op')
+    .eq('coach_id', gebruiker.id)
+    .is('beeindigd_op', null)
+
+  if (toewijzingFout) throw toewijzingFout
+  if (!toewijzingen?.length) return []
+
+  const ids = toewijzingen.map((t) => t.inwoner_id)
+
+  const { data: personen, error: personenFout } = await supabase
+    .from('gebruikers')
+    .select('id, voornaam, achternaam, email, actief, laatst_actief_op')
+    .in('id', ids)
+    .order('achternaam')
+
+  if (personenFout) throw personenFout
+  return personen ?? []
+}
