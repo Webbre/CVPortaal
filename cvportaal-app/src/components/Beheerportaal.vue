@@ -34,19 +34,12 @@ const gekopieerdVoor = ref(null)
 
 // Het adres van de app zoals de coach het nu voor zich heeft, zodat de tekst
 // klopt ongeacht op welk adres de app draait.
-const appAdres = computed(() => window.location.origin.replace(/^https?:\/\//, ''))
-
 function maakUitnodiging(client) {
   return `Hallo ${client.voornaam},
 
-Er staat een account voor je klaar om je cv te maken.
+Er staat een account voor je klaar om je cv te maken. Ga naar: ${window.location.origin} en vul je e-mailadres in: ${client.email}
 
-Ga naar: ${appAdres.value}
-Vul dit e-mailadres in: ${client.email}
-
-Je krijgt dan een code van 6 cijfers per e-mail. Vul die code in en je kunt beginnen.
-
-Geen e-mail ontvangen? Kijk ook even in je map ongewenste e-mail of spam.`
+Je krijgt dan een code van 6 cijfers per e-mail. Vul die code in en je kunt beginnen! Geen e-mail ontvangen? Kijk ook even in je map ongewenste e-mail of spam.`
 }
 
 async function kopieer(client) {
