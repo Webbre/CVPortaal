@@ -20,6 +20,8 @@ import {
   slaGegevensOp,
   verbeterTekst,
   bevestigCode,
+  maakAccount,
+  haalMijnClienten,
 } from './supabaseService.js'
 
 export const cvRepository = {
@@ -59,3 +61,10 @@ async bevestigCode(email, code) {
     return luisterNaarInlogStatus(callback)
   },
 }
+async maakAccount(gegevens) {
+    return await maakAccount(gegevens)
+  },
+
+  async haalMijnClienten() {
+    return await haalMijnClienten()
+  },
