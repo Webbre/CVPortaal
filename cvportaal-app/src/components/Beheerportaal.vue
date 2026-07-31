@@ -5,10 +5,9 @@
 // Voorlopig is alleen het coach-gedeelte ingericht: een overzicht van de eigen
 // cliënten en een formulier om er een toe te voegen.
 //
-// Na het aanmaken verschijnt een kant-en-klare tekst die de coach kan kopiëren
-// en doorsturen. Bewust geen automatische e-mail: bij dienstverlening aan tafel
-// vertelt de coach het zelf, en of een automatische mail nodig is moet uit de
-// testfase blijken.
+// Bewust geen automatische uitnodigingsmail: de coach krijgt een kant-en-klare
+// tekst die hij kan doorsturen. Die is bij ELKE cliënt op te vragen, niet
+// alleen direct na het aanmaken — zodat hij later alsnog kan worden verstuurd.
 import { ref, computed, onMounted } from 'vue'
 import { profiel, logMijUit } from '../cvStore.js'
 import { cvRepository } from '../cvRepository.js'
@@ -28,36 +27,36 @@ const nieuw = ref({ voornaam: '', achternaam: '', email: '' })
 const bezigMetOpslaan = ref(false)
 const formulierFout = ref('')
 
-// Gegevens van de zojuist aangemaakte cliënt, voor het kopieerblok.
+// De zojuist aangemaakte cliënt, voor het uitgeklapte blok bovenaan.
 const zojuistToegevoegd = ref(null)
-const kopieerMelding = ref('')
+// Bij welke cliënt de bevestiging "Gekopieerd" moet verschijnen.
+const gekopieerdVoor = ref(null)
 
-// Het adres van de app zoals de coach het nu voor zich heeft. Zo klopt de
-// tekst altijd, ook wanneer het domein straks verandert.
+// Het adres van de app zoals de coach het nu voor zich heeft, zodat de tekst
+// klopt ongeacht op welk adres de app draait.
 const appAdres = computed(() => window.location.origin.replace(/^https?:\/\//, ''))
 
-const uitnodigingsTekst = computed(() => {
-  if (!zojuistToegevoegd.value) return ''
-  return `Hallo ${zojuistToegevoegd.value.voornaam},
+function maakUitnodiging(client) {
+  return `Hallo ${client.voornaam},
 
 Er staat een account voor je klaar om je cv te maken.
 
 Ga naar: ${appAdres.value}
-Vul dit e-mailadres in: ${zojuistToegevoegd.value.email}
+Vul dit e-mailadres in: ${client.email}
 
 Je krijgt dan een code van 6 cijfers per e-mail. Vul die code in en je kunt beginnen.
 
-Krijg je geen e-mail? Kijk dan ook in je map ongewenste e-mail (spam).`
-})
+Geen e-mail ontvangen? Kijk ook even in je map ongewenste e-mail of spam.`
+}
 
-async function kopieerTekst() {
+async function kopieer(client) {
   try {
-    await navigator.clipboard.writeText(uitnodigingsTekst.value)
-    kopieerMelding.value = 'Gekopieerd'
+    await navigator.clipboard.writeText(maakUitnodiging(client))
+    gekopieerdVoor.value = client.id ?? 'nieuw'
   } catch {
-    kopieerMelding.value = 'Kopiëren lukte niet — selecteer de tekst handmatig'
+    gekopieerdVoor.value = 'mislukt'
   }
-  setTimeout(() => { kopieerMelding.value = '' }, 3000)
+  setTimeout(() => { gekopieerdVoor.value = null }, 3000)
 }
 
 async function laadClienten() {
@@ -135,7 +134,7 @@ onMounted(() => {
         </button>
       </div>
 
-      <!-- Kant-en-klare uitnodiging na het aanmaken -->
+      <!-- Uitnodiging direct na het aanmaken -->
       <div v-if="zojuistToegevoegd" class="uitnodiging-kaart">
         <div class="uitnodiging-kop">
           <span>Account aangemaakt — stuur dit door</span>
@@ -143,12 +142,16 @@ onMounted(() => {
         </div>
         <p class="uitnodiging-uitleg">
           Er is geen e-mail verstuurd. Geef onderstaande tekst door via e-mail,
-          WhatsApp of persoonlijk.
+          WhatsApp of persoonlijk. Je kunt hem later ook opnieuw ophalen bij de
+          cliënt in de lijst.
         </p>
-        <pre class="uitnodiging-tekst">{{ uitnodigingsTekst }}</pre>
+        <pre class="uitnodiging-tekst">{{ maakUitnodiging(zojuistToegevoegd) }}</pre>
         <div class="knoppen-rij">
-          <button class="hoofd-knop" @click="kopieerTekst">Tekst kopiëren</button>
-          <span v-if="kopieerMelding" class="kopieer-melding">{{ kopieerMelding }}</span>
+          <button class="hoofd-knop" @click="kopieer(zojuistToegevoegd)">Tekst kopiëren</button>
+          <span v-if="gekopieerdVoor === 'nieuw'" class="kopieer-melding">Gekopieerd</span>
+          <span v-else-if="gekopieerdVoor === 'mislukt'" class="kopieer-melding-fout">
+            Kopiëren lukte niet — selecteer de tekst handmatig
+          </span>
         </div>
       </div>
 
@@ -204,6 +207,7 @@ onMounted(() => {
               <th>Naam</th>
               <th>E-mailadres</th>
               <th>Laatst actief</th>
+              <th class="kolom-actie">Uitnodiging</th>
             </tr>
           </thead>
           <tbody>
@@ -211,6 +215,11 @@ onMounted(() => {
               <td class="cel-naam">{{ client.voornaam }} {{ client.achternaam }}</td>
               <td class="cel-email">{{ client.email }}</td>
               <td class="cel-datum">{{ datumKort(client.laatst_actief_op) }}</td>
+              <td class="cel-actie">
+                <button class="kopieer-knop" @click="kopieer(client)">
+                  {{ gekopieerdVoor === client.id ? 'Gekopieerd' : 'Kopieer tekst' }}
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -246,7 +255,7 @@ onMounted(() => {
 }
 .beheer-uitlog:hover { border-color: var(--kleur-accent); color: var(--kleur-accent); }
 
-.beheer-inhoud { max-width: 900px; margin: 0 auto; }
+.beheer-inhoud { max-width: 1000px; margin: 0 auto; }
 
 .beheer-welkomregel {
   display: flex; justify-content: space-between; align-items: flex-end;
@@ -288,6 +297,7 @@ onMounted(() => {
   white-space: pre-wrap; word-wrap: break-word;
 }
 .kopieer-melding { font-size: 13px; font-weight: 600; color: var(--kleur-succes); }
+.kopieer-melding-fout { font-size: 13px; font-weight: 600; color: var(--kleur-fout-tekst); }
 
 .knoppen-rij { display: flex; gap: 12px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
 .annuleer-knop {
@@ -314,12 +324,30 @@ onMounted(() => {
 .cel-naam { font-weight: 600; color: var(--kleur-tekst-sterk); }
 .cel-email { color: var(--kleur-tekst-gedempt); word-break: break-all; }
 .cel-datum { color: var(--kleur-tekst-zacht); white-space: nowrap; }
+.kolom-actie, .cel-actie { text-align: right; padding-right: 0 !important; white-space: nowrap; }
 
-@media (max-width: 600px) {
+.kopieer-knop {
+  background: var(--kleur-accent-zacht);
+  color: var(--kleur-accent);
+  border: none;
+  border-radius: var(--radius-blok);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.kopieer-knop:hover { background: var(--kleur-accent-licht); }
+
+@media (max-width: 700px) {
   .beheer-scherm { padding: 12px; }
   .beheer-kaart, .uitnodiging-kaart { padding: 20px; }
   .clienten-tabel thead { display: none; }
-  .clienten-tabel tr { display: block; padding: 12px 0; border-bottom: 1px solid var(--kleur-scheiding); }
+  .clienten-tabel tr {
+    display: block; padding: 14px 0;
+    border-bottom: 1px solid var(--kleur-scheiding);
+  }
   .clienten-tabel td { display: block; padding: 2px 0; border: none; }
+  .kolom-actie, .cel-actie { text-align: left; padding-top: 10px !important; }
 }
 </style>
