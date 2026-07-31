@@ -15,7 +15,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="isLaden" class="volledig-scherm center-inhoud">
+  <div v-if="isLaden || (gebruiker && !profiel)" class="volledig-scherm center-inhoud">
     <div class="loader"></div>
     <p style="margin-top: 15px; color: #4a5568; font-weight: 600;">Even geduld...</p>
   </div>
