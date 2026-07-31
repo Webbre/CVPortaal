@@ -145,6 +145,9 @@ export async function initialiseerApp() {
           return
         }
 
+        // Alleen cliënten hebben een cv. Voor coaches en beheerders slaan we
+        // het inladen over; zij krijgen het beheerportaal te zien.
+        if (eigenProfiel.rol !== 'inwoner') return
         const data = await cvRepository.laadCv()
         if (data) {
           voornaam.value = data.voornaam || ''; achternaam.value = data.achternaam || ''

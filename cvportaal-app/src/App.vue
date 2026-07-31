@@ -1,12 +1,13 @@
 <script setup>
 import { onMounted } from 'vue'
 import { 
-  gebruiker, isLaden, loginEmail, inlogCode, codeVerstuurd, 
+  gebruiker, profiel, isLaden, loginEmail, inlogCode, codeVerstuurd, 
   vraagCodeAan, bevestigCode, terugNaarEmail, initialiseerApp,
   inlogFout, 
 } from './cvStore.js'
 import CvFormulier from './components/CvFormulier.vue'
 import CvPapier from './components/CvPapier.vue'
+import Beheerportaal from './components/Beheerportaal.vue'
 
 onMounted(() => {
   initialiseerApp()
@@ -57,10 +58,14 @@ onMounted(() => {
     </div>
   </div>
 
-  <div v-else class="container relative">
+ <!-- Cliënten krijgen de cv-maker; coaches, keyusers en de administrator
+       krijgen het beheerportaal. -->
+  <div v-else-if="profiel?.rol === 'inwoner'" class="container relative">
     <CvFormulier />
     <CvPapier />
   </div>
+
+  <Beheerportaal v-else-if="profiel" />
 </template>
 
 <style>
