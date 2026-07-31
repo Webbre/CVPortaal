@@ -6,20 +6,18 @@
 // op te slaan, in te loggen en uit te loggen. De stores weten niet welke
 // dienst erachter zit.
 //
-// Sinds de migratie loopt alles via Supabase (supabaseService.js). De oude
-// Firebase-uitvoering staat nog in databaseService.js; die wordt nergens meer
-// gebruikt en kan vervallen zodra de overstap zich bewezen heeft.
+// Alles loopt via Supabase (supabaseService.js).
 // ---------------------------------------------------------------------------
 
 import {
   stuurInlogLink,
+  bevestigCode,
   luisterNaarInlogStatus,
   logUit,
   haalProfielOp,
   haalGegevensOp,
   slaGegevensOp,
   verbeterTekst,
-  bevestigCode,
   maakAccount,
   haalMijnClienten,
 } from './supabaseService.js'
@@ -49,7 +47,7 @@ export const cvRepository = {
     return await stuurInlogLink(email)
   },
 
-async bevestigCode(email, code) {
+  async bevestigCode(email, code) {
     return await bevestigCode(email, code)
   },
 
@@ -60,11 +58,13 @@ async bevestigCode(email, code) {
   luisterNaarInlogStatus(callback) {
     return luisterNaarInlogStatus(callback)
   },
-}
-async maakAccount(gegevens) {
+
+  // --- Beheer ---
+  async maakAccount(gegevens) {
     return await maakAccount(gegevens)
   },
 
   async haalMijnClienten() {
     return await haalMijnClienten()
   },
+}
